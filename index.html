@@ -1291,12 +1291,28 @@
         function openModal() {
             const now = new Date();
             document.getElementById('f_date').value = now.toISOString().split('T')[0];
-            document.getElementById('f_time').value = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('f_time_start').value = `${hh}:${mm}`;
+            document.getElementById('f_time_end').value = '';
+            document.getElementById('f_duration').value = '1';
             document.getElementById('addModal').classList.add('open');
         }
 
         function closeModal() {
             document.getElementById('addModal').classList.remove('open');
+        }
+
+        function calcDuration() {
+            const start = document.getElementById('f_time_start').value;
+            const end = document.getElementById('f_time_end').value;
+            if (start && end) {
+                const s = start.split(':');
+                const e = end.split(':');
+                let diff = (parseInt(e[0]) * 60 + parseInt(e[1])) - (parseInt(s[0]) * 60 + parseInt(s[1]));
+                if (diff < 0) diff += 24 * 60;
+                document.getElementById('f_duration').value = Math.max(1, diff);
+            }
         }
 
         function submitLog(e) {
@@ -1306,10 +1322,10 @@
             btn.disabled = true;
 
             const dateVal = document.getElementById('f_date').value;
-            const timeVal = document.getElementById('f_time').value;
+            const timeStart = document.getElementById('f_time_start').value;
             const roundVal = parseInt(document.getElementById('f_round').value);
-            const catVal = document.getElementById('f_category').value;
-            const hourVal = parseInt(timeVal.split(':')[0]);
+            const symptomMain = document.getElementById('f_symptom_main').value;
+            const hourVal = parseInt(timeStart.split(':')[0]);
             
             const dObj = new Date(dateVal);
             const dayNames = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
@@ -1317,17 +1333,19 @@
 
             const payload = {
                 date: dateVal,
-                time: timeVal,
+                time_start: timeStart,
                 round: roundVal,
-                doctor_count: catVal.includes('พบแพทย์') ? 0 : (roundVal === 1 ? 1 : 0),
+                doctor_count: symptomMain.includes('พบแพทย์') ? 0 : (roundVal === 1 ? 1 : 0),
                 hour: hourVal,
                 day: dayName,
                 vns: document.getElementById('f_vns').value,
                 vns_result: document.getElementById('f_vns').value === 'Yes' ? 'หยุดทันที' : 'ไม่ได้ใช้',
-                symptom: document.getElementById('f_symptom').value || catVal
+                symptom_main: symptomMain,
+                duration: document.getElementById('f_duration').value || 1,
+                trigger: document.getElementById('f_trigger').value || '',
+                note: document.getElementById('f_note').value || ''
             };
 
-            // Google Apps Script requires no-cors or standard text output redirect handling
             fetch(scriptUrl, {
                 method: 'POST',
                 mode: 'no-cors',
@@ -1335,15 +1353,15 @@
                 body: JSON.stringify(payload)
             })
             .then(() => {
-                alert("บันทึกข้อมูลเข้า Google Sheets เรียบร้อยแล้ว!");
+                alert("บันทึกข้อมูลเข้า Google Sheets ตรงคอลัมน์เรียบร้อยแล้ว!");
                 closeModal();
                 btn.innerText = "บันทึกข้อมูล";
                 btn.disabled = false;
                 document.getElementById('logForm').reset();
                 setTimeout(fetchLiveSheet, 2000);
             })
-            .catch(err => {
-                alert("ส่งข้อมูลแล้ว (ระบบกำลังประมวลผล)");
+            .catch(() => {
+                alert("ส่งข้อมูลแล้ว (กำลังซิงค์)");
                 closeModal();
                 btn.innerText = "บันทึกข้อมูล";
                 btn.disabled = false;
@@ -1359,7 +1377,7 @@
             fetchLiveSheet();
         };
     </script>
-    <!-- Modal Form Input -->
+    <!-- Modal Form Input (ครบทุกช่องตาม Sheet A-N) -->
     <div class="modal-overlay" id="addModal">
         <div class="modal-card">
             <h3 style="font-size:15px; margin-bottom:14px; color:#fff; display:flex; justify-content:space-between; align-items:center;">
@@ -1367,17 +1385,28 @@
                 <span onclick="closeModal()" style="cursor:pointer; font-size:18px; color:var(--text-muted);">&times;</span>
             </h3>
             <form id="logForm" onsubmit="submitLog(event)">
+                <div class="form-group">
+                    <label>วันที่</label>
+                    <input type="date" id="f_date" class="form-input" required>
+                </div>
+                
+                <!-- เวลาเริ่ม - เวลาหยุด -->
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
                     <div class="form-group">
-                        <label>วันที่</label>
-                        <input type="date" id="f_date" class="form-input" required>
+                        <label>เวลาเริ่มชัก</label>
+                        <input type="time" id="f_time_start" class="form-input" onchange="calcDuration()" required>
                     </div>
                     <div class="form-group">
-                        <label>เวลาที่เริ่มชัก</label>
-                        <input type="time" id="f_time" class="form-input" required>
+                        <label>เวลาหยุดชัก</label>
+                        <input type="time" id="f_time_end" class="form-input" onchange="calcDuration()">
                     </div>
                 </div>
+
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                    <div class="form-group">
+                        <label>ระยะเวลา (นาที)</label>
+                        <input type="number" id="f_duration" class="form-input" placeholder="คำนวณอัตโนมัติ" min="0" step="0.5">
+                    </div>
                     <div class="form-group">
                         <label>รอบชักของวัน</label>
                         <select id="f_round" class="form-select">
@@ -1387,6 +1416,21 @@
                             <option value="4">รอบ 4 (ชักซ้ำ)</option>
                         </select>
                     </div>
+                </div>
+
+                <!-- Dropdown ลักษณะอาการหลัก (ตรงกับ Sheet ช่อง J) -->
+                <div class="form-group">
+                    <label>ลักษณะอาการหลัก (Dropdown)</label>
+                    <select id="f_symptom_main" class="form-select">
+                        <option value="เกร็งกระตุก">เกร็งกระตุก</option>
+                        <option value="ตาค้างนิ่ง">ตาค้างนิ่ง</option>
+                        <option value="เหม่อลอย">เหม่อลอย</option>
+                        <option value="กระตุกแขนขา">กระตุกแขนขา</option>
+                        <option value="พบแพทย์ (ไม่มีชัก)">พบแพทย์ (ไม่มีชัก)</option>
+                    </select>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
                     <div class="form-group">
                         <label>ใช้แม่เหล็ก VNS</label>
                         <select id="f_vns" class="form-select">
@@ -1394,18 +1438,17 @@
                             <option value="Yes">Yes (ใช้แม่เหล็ก)</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label>ตัวกระตุ้น / ปัจจัย</label>
+                        <input type="text" id="f_trigger" class="form-input" placeholder="เช่น มีไข้, อาบน้ำ, ร้อน">
+                    </div>
                 </div>
+
                 <div class="form-group">
-                    <label>หมวดหมู่ / ประเภท</label>
-                    <select id="f_category" class="form-select">
-                        <option value="ชัก">ชัก</option>
-                        <option value="พบแพทย์ (ไม่มีชัก)">พบแพทย์ (ไม่มีชัก)</option>
-                    </select>
+                    <label>รายละเอียดเพิ่มเติม (ช่อง N)</label>
+                    <textarea id="f_note" class="form-textarea" rows="2" placeholder="ระบุอาการเพิ่มเติม เช่น ปากเขียว อ้วก หรือยาที่ให้..."></textarea>
                 </div>
-                <div class="form-group">
-                    <label>ลักษณะอาการ / รายละเอียดเพิ่มเติม</label>
-                    <textarea id="f_symptom" class="form-textarea" rows="2" placeholder="เช่น เกร็งกระตุก ตาค้าง มีไข้ 38..."></textarea>
-                </div>
+
                 <div class="form-actions">
                     <button type="button" class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
                     <button type="submit" class="btn-submit" id="btnSubmit">บันทึกข้อมูล</button>
@@ -1413,6 +1456,3 @@
             </form>
         </div>
     </div>
-
-</body>
-</html>
