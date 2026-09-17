@@ -47,17 +47,6 @@
         /* Main Container */
         .container { max-width: 900px; margin: 0 auto; padding: 12px; }
 
-        /* Alert Callout */
-        .alert-mini {
-            background: rgba(220, 38, 38, 0.12);
-            border-left: 3px solid var(--accent-red);
-            padding: 9px 12px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            font-size: 12px;
-            line-height: 1.45;
-        }
-
         /* Scorecards 2x2 on Mobile */
         .grid-scorecards {
             display: grid;
@@ -195,22 +184,6 @@
             align-items: center;
             gap: 4px;
         }
-
-        /* Category Header */
-        .med-group-title {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 14px 0 6px 0;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .group-antiseizure { color: var(--accent-blue); }
-        .group-psych { color: var(--accent-purple); }
-        .group-kidney { color: #f97316; }
-        .group-supplement { color: var(--accent-green); }
 
         /* Med Item */
         .med-row {
@@ -359,7 +332,7 @@
             border-top: 1px solid var(--border-color);
         }
 
-        /* iOS Weather Liquid Bar Chart */
+        /* iOS Weather Liquid Bar Chart (Stacked Repeats) */
         .chart-weather-card {
             background: #0f1b33;
             border-radius: 14px;
@@ -517,6 +490,7 @@
         .form-actions { display: flex; gap: 8px; margin-top: 16px; }
         .btn-submit { flex: 1; background: var(--accent-blue); color: #0b1329; font-weight: 700; border: none; padding: 10px; border-radius: 6px; cursor: pointer; }
         .btn-cancel { flex: 1; background: #1e293b; color: var(--text-muted); font-weight: 600; border: none; padding: 10px; border-radius: 6px; cursor: pointer; }
+
     </style>
 </head>
 <body>
@@ -569,7 +543,6 @@
                     <span style="font-size:11px; color:var(--text-muted); font-weight:normal;">เลื่อนแนวนอน ➔</span>
                 </div>
                 
-                <!-- Legend ใต้หัวข้อ Heatmap -->
                 <div class="heatmap-legend">
                     <span class="legend-item"><span class="legend-color" style="background:#0284c7;"></span> 1-2 ครั้ง = ปกติ (ฟ้า)</span>
                     <span class="legend-item"><span class="legend-color" style="background:#d97706;"></span> 3-4 ครั้ง = เฝ้าระวัง (ส้ม)</span>
@@ -581,7 +554,7 @@
                 </div>
             </div>
 
-            <!-- Yearly Chart (iOS Weather Style with Stacked Repeats) -->
+            <!-- Yearly Chart -->
             <div class="section-card">
                 <div class="section-heading">
                     <span>📊 สถิติความถี่รายปี (พ.ศ.)</span>
@@ -591,10 +564,7 @@
                     </span>
                 </div>
                 <div class="chart-weather-card">
-                    <!-- ปี พ.ศ. แถวบน -->
                     <div class="chart-weather-top-labels" id="weatherTopYears"></div>
-                    
-                    <!-- ส่วนเสาและเส้นกริด -->
                     <div class="chart-weather-stage">
                         <div class="chart-weather-grid-lines">
                             <div class="grid-line"></div>
@@ -604,8 +574,6 @@
                         </div>
                         <div style="display:flex; width:100%; height:100%; justify-content:space-between; gap:6px;" id="weatherBarsArea"></div>
                     </div>
-
-                    <!-- ตัวเลขสรุปแถวล่าง -->
                     <div class="chart-weather-bottom-values" id="weatherBottomVals"></div>
                 </div>
             </div>
@@ -613,16 +581,12 @@
 
         <!-- TAB 2: Medication & Nutrition -->
         <section id="tab-care" class="tab-content">
-            <!-- Sub-tab Navigation Bar -->
             <div class="subnav-container">
                 <button class="subnav-btn active" id="btn-subtab-nutrition" onclick="switchSubTab('subtab-nutrition', this)">🥛 โภชนาการ</button>
                 <button class="subnav-btn" id="btn-subtab-meds" onclick="switchSubTab('subtab-meds', this)">💊 ยา</button>
             </div>
 
-            <!-- Sub-tab 1: โภชนาการ -->
             <div id="subtab-nutrition" class="subtab-content active">
-
-                <!-- Growth & Vitals Card (Shared) -->
                 <div class="section-card" style="background: linear-gradient(145deg, #132238, #182b46);">
                     <div class="section-heading">
                         <span style="color:#38bdf8;">📏 ข้อมูลร่างกาย & การเจริญเติบโต</span>
@@ -642,7 +606,6 @@
                     </div>
                 </div>
 
-                <!-- Nutrition Formula Card -->
                 <div class="section-card">
                     <div class="section-heading">
                         <span style="color:var(--accent-blue);">🥛 แผนโภชนาการ & ชงนม (Pan-Enteral)</span>
@@ -655,7 +618,6 @@
                     </div>
                 </div>
 
-                <!-- Timeline Card: รอบนม vs ยาฟอสเฟต 7 จุด (Shared) -->
                 <div class="section-card">
                     <div class="section-heading">
                         <span style="color:var(--accent-blue);">⏱️ ไทม์ไลน์รอบนม vs ยาฟอสเฟต (เว้นห่างอย่างน้อย 2 ชม.)</span>
@@ -665,7 +627,6 @@
                     </p>
                     <div class="timeline-container">
                         <div class="timeline-line"></div>
-                        
                         <div class="timeline-item">
                             <div class="timeline-node"></div>
                             <div class="timeline-content">
@@ -674,7 +635,6 @@
                             </div>
                         </div>
                         <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
-
                         <div class="timeline-item">
                             <div class="timeline-node med"></div>
                             <div class="timeline-content" style="border-left:2px solid var(--accent-red);">
@@ -683,7 +643,6 @@
                             </div>
                         </div>
                         <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
-
                         <div class="timeline-item">
                             <div class="timeline-node"></div>
                             <div class="timeline-content">
@@ -692,7 +651,6 @@
                             </div>
                         </div>
                         <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
-
                         <div class="timeline-item">
                             <div class="timeline-node med"></div>
                             <div class="timeline-content" style="border-left:2px solid var(--accent-red);">
@@ -701,7 +659,6 @@
                             </div>
                         </div>
                         <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
-
                         <div class="timeline-item">
                             <div class="timeline-node"></div>
                             <div class="timeline-content">
@@ -710,7 +667,6 @@
                             </div>
                         </div>
                         <div class="timeline-gap">↓ ห่าง 3 ชั่วโมง</div>
-
                         <div class="timeline-item">
                             <div class="timeline-node"></div>
                             <div class="timeline-content">
@@ -719,7 +675,6 @@
                             </div>
                         </div>
                         <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
-
                         <div class="timeline-item">
                             <div class="timeline-node med"></div>
                             <div class="timeline-content" style="border-left:2px solid var(--accent-red);">
@@ -729,13 +684,9 @@
                         </div>
                     </div>
                 </div>
-
             </div>
 
-            <!-- Sub-tab 2: ยา -->
             <div id="subtab-meds" class="subtab-content">
-
-                <!-- Growth & Vitals Card (Shared) -->
                 <div class="section-card" style="background: linear-gradient(145deg, #132238, #182b46);">
                     <div class="section-heading">
                         <span style="color:#38bdf8;">📏 ข้อมูลร่างกาย & การเจริญเติบโต</span>
@@ -755,7 +706,6 @@
                     </div>
                 </div>
 
-                <!-- Drug Allergy / Contraindication Card (Critical Red) -->
                 <div class="section-card" style="border: 1px solid #ef4444; background: rgba(239, 68, 68, 0.06);">
                     <div class="section-heading">
                         <span style="color:#ef4444; display:flex; align-items:center; gap:6px;">
@@ -767,180 +717,60 @@
                         <strong>กลุ่ม Sodium Channel Blockers:</strong> ห้ามใช้เพราะอาจกระตุ้นให้ชักรุนแรงขึ้น ได้แก่:
                     </div>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; font-size:11.5px;">
-                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">
-                            • Dilantin <span style="color:var(--text-muted); font-size:10px;">(phenytoin)</span>
-                        </div>
-                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">
-                            • Tegretol <span style="color:var(--text-muted); font-size:10px;">(carbamazepine)</span>
-                        </div>
-                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">
-                            • Banzel <span style="color:var(--text-muted); font-size:10px;">(rufinamide)</span>
-                        </div>
-                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">
-                            • Lamictal <span style="color:var(--text-muted); font-size:10px;">(lamotrigine)</span>
-                        </div>
-                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">
-                            • Cerebyx <span style="color:var(--text-muted); font-size:10px;">(fosphenytoin)</span>
-                        </div>
-                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">
-                            • Trileptal <span style="color:var(--text-muted); font-size:10px;">(oxcarbazepine)</span>
-                        </div>
+                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">• Dilantin <span style="color:var(--text-muted); font-size:10px;">(phenytoin)</span></div>
+                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">• Tegretol <span style="color:var(--text-muted); font-size:10px;">(carbamazepine)</span></div>
+                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">• Banzel <span style="color:var(--text-muted); font-size:10px;">(rufinamide)</span></div>
+                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">• Lamictal <span style="color:var(--text-muted); font-size:10px;">(lamotrigine)</span></div>
+                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">• Cerebyx <span style="color:var(--text-muted); font-size:10px;">(fosphenytoin)</span></div>
+                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">• Trileptal <span style="color:var(--text-muted); font-size:10px;">(oxcarbazepine)</span></div>
                     </div>
                     <div style="margin-top:8px; font-size:11px; color:#fca5a5;">
                         ⚠️ แจ้งแพทย์ห้องฉุกเฉิน (ER) และแพทย์ทุกท่านก่อนสั่งยากันชักกลุ่มนี้เสมอ
                     </div>
                 </div>
 
-                <!-- Timeline Card: รอบนม vs ยาฟอสเฟต 7 จุด (Shared) -->
-                <div class="section-card">
-                    <div class="section-heading">
-                        <span style="color:var(--accent-blue);">⏱️ ไทม์ไลน์รอบนม vs ยาฟอสเฟต (เว้นห่างอย่างน้อย 2 ชม.)</span>
-                    </div>
-                    <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">
-                        * เพื่อป้องกันแคลเซียมในนมจับตัวกับฟอสเฟต ต้องเว้นระยะห่างอย่างน้อย 2 ชั่วโมงเสมอ
-                    </p>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        
-                        <div class="timeline-item">
-                            <div class="timeline-node"></div>
-                            <div class="timeline-content">
-                                <strong>08:00 น.</strong>
-                                <span>🥛 นม Pan-Enteral มื้อ 1 (320 ml + น้ำมัน 5 ml)</span>
-                            </div>
-                        </div>
-                        <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
-
-                        <div class="timeline-item">
-                            <div class="timeline-node med"></div>
-                            <div class="timeline-content" style="border-left:2px solid var(--accent-red);">
-                                <strong style="color:var(--accent-red);">10:00 น.</strong>
-                                <span>💊 <strong>Acidic Phosphate</strong> มื้อ 1 (5 ซีซี + น้ำ 30 ml)</span>
-                            </div>
-                        </div>
-                        <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
-
-                        <div class="timeline-item">
-                            <div class="timeline-node"></div>
-                            <div class="timeline-content">
-                                <strong>12:00 น.</strong>
-                                <span>🥛 นม Pan-Enteral มื้อ 2 (320 ml + น้ำมัน 5 ml)</span>
-                            </div>
-                        </div>
-                        <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
-
-                        <div class="timeline-item">
-                            <div class="timeline-node med"></div>
-                            <div class="timeline-content" style="border-left:2px solid var(--accent-red);">
-                                <strong style="color:var(--accent-red);">14:00 น.</strong>
-                                <span>💊 <strong>Acidic Phosphate</strong> มื้อ 2 (5 ซีซี + น้ำ 30 ml)</span>
-                            </div>
-                        </div>
-                        <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
-
-                        <div class="timeline-item">
-                            <div class="timeline-node"></div>
-                            <div class="timeline-content">
-                                <strong>16:00 น.</strong>
-                                <span>🥛 นม Pan-Enteral มื้อ 3 (320 ml + น้ำมัน 5 ml)</span>
-                            </div>
-                        </div>
-                        <div class="timeline-gap">↓ ห่าง 3 ชั่วโมง</div>
-
-                        <div class="timeline-item">
-                            <div class="timeline-node"></div>
-                            <div class="timeline-content">
-                                <strong>19:00 น.</strong>
-                                <span>🥛 นม Pan-Enteral มื้อ 4 (320 ml + น้ำมัน 5 ml)</span>
-                            </div>
-                        </div>
-                        <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
-
-                        <div class="timeline-item">
-                            <div class="timeline-node med"></div>
-                            <div class="timeline-content" style="border-left:2px solid var(--accent-red);">
-                                <strong style="color:var(--accent-red);">21:00 น.</strong>
-                                <span>💊 <strong>Acidic Phosphate</strong> มื้อ 3 (5 ซีซี + น้ำ 30 ml)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Accordion Meds List (4 กลุ่ม พับไว้ทั้งหมด) -->
                 <div class="section-card">
                     <div class="section-heading" style="margin-bottom:12px;">
                         <span>💊 บัญชียาประจำตัว 9 ชนิด (กดเพื่อกางดู)</span>
                     </div>
 
-                    <!-- กลุ่ม 1: ยากันชัก -->
                     <details class="med-accordion">
-                        <summary class="group-antiseizure">
-                            <span>🔹 กลุ่มที่ 1: ยากันชัก (Antiseizure) [4 ชนิด]</span>
-                        </summary>
+                        <summary style="color:var(--accent-blue);"><span>🔹 กลุ่มที่ 1: ยากันชัก (Antiseizure) [4 ชนิด]</span></summary>
                         <div class="accordion-body">
-                            <div class="med-row bar-antiseizure">
-                                <strong>1. Valprocid (22mg/60ml)</strong> • 1 cc (07:00, 15:00, 23:00 น.) ทุก 8 ชม.
-                            </div>
-                            <div class="med-row bar-antiseizure">
-                                <strong>2. Frisium (5mg)</strong> • 1.5 เม็ด เช้า / 1.5 เม็ด เย็น
-                            </div>
-                            <div class="med-row bar-antiseizure">
-                                <strong>3. Topamax (25mg)</strong> • 2 เม็ด เช้า / 2.5 เม็ด เย็น <span style="color:var(--accent-amber); font-size:11px;">(ปรับเพิ่ม 27 ก.พ. 69)</span>
-                            </div>
-                            <div class="med-row bar-antiseizure">
-                                <strong>4. Fycompa (4mg)</strong> • 1 เม็ด ก่อนนอน (20:00 - 21:00 น.)
-                            </div>
+                            <div class="med-row bar-antiseizure"><strong>1. Valprocid (22mg/60ml)</strong> • 1 cc (07:00, 15:00, 23:00 น.) ทุก 8 ชม.</div>
+                            <div class="med-row bar-antiseizure"><strong>2. Frisium (5mg)</strong> • 1.5 เม็ด เช้า / 1.5 เม็ด เย็น</div>
+                            <div class="med-row bar-antiseizure"><strong>3. Topamax (25mg)</strong> • 2 เม็ด เช้า / 2.5 เม็ด เย็น</div>
+                            <div class="med-row bar-antiseizure"><strong>4. Fycompa (4mg)</strong> • 1 เม็ด ก่อนนอน (20:00 - 21:00 น.)</div>
                         </div>
                     </details>
 
-                    <!-- กลุ่ม 2: ยาจิตเวช/ยาสมาธิ -->
                     <details class="med-accordion">
-                        <summary class="group-psych">
-                            <span>🔹 กลุ่มที่ 2: ยาจิตเวช / ยาสมาธิ [1 ชนิด]</span>
-                        </summary>
+                        <summary style="color:var(--accent-purple);"><span>🔹 กลุ่มที่ 2: ยาจิตเวช / ยาสมาธิ [1 ชนิด]</span></summary>
                         <div class="accordion-body">
-                            <div class="med-row bar-psych">
-                                <strong>5. Rubifen / Methylphenidate (10mg) (ยาสมาธิ)</strong> • ¼ เม็ด (2 เวลา: เช้า, กลางวัน)
-                            </div>
+                            <div class="med-row bar-psych"><strong>5. Rubifen / Methylphenidate (10mg)</strong> • ¼ เม็ด (เช้า, กลางวัน)</div>
                         </div>
                     </details>
 
-                    <!-- กลุ่ม 3: ยาปรับสมดุลร่างกาย/ไต -->
                     <details class="med-accordion">
-                        <summary class="group-kidney">
-                            <span>🔹 กลุ่มที่ 3: ยาปรับสมดุลร่างกาย / ไต [3 ชนิด]</span>
-                        </summary>
+                        <summary style="color:#f97316;"><span>🔹 กลุ่มที่ 3: ยาปรับสมดุลร่างกาย / ไต [3 ชนิด]</span></summary>
                         <div class="accordion-body">
-                            <div class="med-row bar-kidney">
-                                <strong>6. Sodamint (300mg)</strong> • 5 เม็ด หลังอาหาร 4 มื้อ (เช้า, กลางวัน, เย็น, ก่อนนอน)
-                            </div>
-                            <div class="med-row bar-kidney" style="background:rgba(239,68,68,0.08);">
-                                <strong style="color:var(--accent-red);">7. Acidic Phosphate Solution</strong> • 5 ซีซี วันละ 3 มื้อ <span style="color:var(--accent-red); font-weight:700;">(⚠️ เว้นห่างมื้อนม 2 ชม.)</span>
-                            </div>
-                            <div class="med-row bar-kidney">
-                                <strong>8. Pot. Cit Mixture (1000 mL)</strong> • 35 ซีซี หลังอาหาร 4 มื้อ (จิบน้ำตาม)
-                            </div>
+                            <div class="med-row bar-kidney"><strong>6. Sodamint (300mg)</strong> • 5 เม็ด หลังอาหาร 4 มื้อ</div>
+                            <div class="med-row bar-kidney" style="background:rgba(239,68,68,0.08);"><strong style="color:var(--accent-red);">7. Acidic Phosphate Solution</strong> • 5 ซีซี 3 มื้อ (⚠️ เว้นมื้อนม 2 ชม.)</div>
+                            <div class="med-row bar-kidney"><strong>8. Pot. Cit Mixture (1000 mL)</strong> • 35 ซีซี หลังอาหาร 4 มื้อ</div>
                         </div>
                     </details>
 
-                    <!-- กลุ่ม 4: ธาตุอาหารเสริม -->
                     <details class="med-accordion">
-                        <summary class="group-supplement">
-                            <span>🔹 กลุ่มที่ 4: ธาตุอาหารเสริม [1 ชนิด]</span>
-                        </summary>
+                        <summary style="color:var(--accent-green);"><span>🔹 กลุ่มที่ 4: ธาตุอาหารเสริม [1 ชนิด]</span></summary>
                         <div class="accordion-body">
-                            <div class="med-row bar-supplement">
-                                <strong>9. L-Carnitine (100mg/mL)</strong> • 8 ซีซี หลังอาหาร 3 มื้อ (เช้า, กลางวัน, เย็น)
-                            </div>
+                            <div class="med-row bar-supplement"><strong>9. L-Carnitine (100mg/mL)</strong> • 8 ซีซี หลังอาหาร 3 มื้อ</div>
                         </div>
                     </details>
 
-                    <!-- SOS Notice -->
                     <div style="margin-top:12px; padding:8px 10px; background:#0b1329; border-radius:6px; border: 1px dashed var(--border-color); font-size:12px;">
-                        🔴 <strong>ยาฉุกเฉิน (SOS):</strong> Clonazepam เฉพาะตอนชักเกิน 3 ครั้ง/วัน (มีสต็อกพร้อม)
+                        🔴 <strong>ยาฉุกเฉิน (SOS):</strong> Clonazepam เฉพาะตอนชักเกิน 3 ครั้ง/วัน
                     </div>
                 </div>
-
             </div>
         </section>
 
@@ -980,7 +810,7 @@
             <form id="logForm" onsubmit="submitLog(event)">
                 <div class="form-group">
                     <label>วันที่</label>
-                    <input type="date" id="f_date" class="form-input" required>
+                    <input type="date" id="f_date" class="form-input" onchange="checkRoundForDate()" required>
                 </div>
                 
                 <!-- เวลาเริ่ม - เวลาหยุด -->
@@ -1003,10 +833,8 @@
                     <div class="form-group">
                         <label>รอบชักของวัน</label>
                         <select id="f_round" class="form-select">
+                            <!-- Options generated dynamically by JS -->
                             <option value="1">รอบ 1 (นับชัก)</option>
-                            <option value="2">รอบ 2 (ชักซ้ำ)</option>
-                            <option value="3">รอบ 3 (ชักซ้ำ)</option>
-                            <option value="4">รอบ 4 (ชักซ้ำ)</option>
                         </select>
                     </div>
                 </div>
@@ -1026,14 +854,30 @@
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
                     <div class="form-group">
                         <label>ใช้แม่เหล็ก VNS</label>
-                        <select id="f_vns" class="form-select">
+                        <select id="f_vns" class="form-select" onchange="toggleVnsResult()">
                             <option value="No">No (ไม่ได้ใช้)</option>
                             <option value="Yes">Yes (ใช้แม่เหล็ก)</option>
                         </select>
                     </div>
+                    <div class="form-group" id="group_vns_result" style="display:none;">
+                        <label>ผลหลังรูด VNS</label>
+                        <select id="f_vns_result" class="form-select">
+                            <option value="ไม่ได้ใช้">ไม่ได้ใช้</option>
+                            <option value="หยุดทันที">หยุดทันที</option>
+                            <option value="ไม่หยุด">ไม่หยุด</option>
+                            <option value="รูดไม่ทัน">รูดไม่ทัน</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
                     <div class="form-group">
                         <label>ตัวกระตุ้น / ปัจจัย</label>
                         <input type="text" id="f_trigger" class="form-input" placeholder="เช่น มีไข้, อาบน้ำ, ร้อน">
+                    </div>
+                    <div class="form-group">
+                        <label>ยาฉุกเฉิน / ที่ให้ (ช่อง M)</label>
+                        <input type="text" id="f_emergency_med" class="form-input" placeholder="เช่น Diazepam...">
                     </div>
                 </div>
 
@@ -1074,6 +918,7 @@
         const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
         let yearlyChartInstance = null;
 
+        // แปลงวันที่ ISO / ค.ศ. เป็นรูปแบบ พ.ศ. เช่น "9 ส.ค. 2569"
         function formatThaiDate(dateStr) {
             if (!dateStr) return "-";
             const parts = dateStr.trim().split('-');
@@ -1089,6 +934,7 @@
             return dateStr;
         }
 
+        
         function switchSubTab(subTabId, btn) {
             document.querySelectorAll('.subtab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.subnav-btn').forEach(el => el.classList.remove('active'));
@@ -1139,6 +985,7 @@
                 for(let h=0; h<24; h++) {
                     const cnt = pivot[h][d];
                     const cell = document.createElement('div');
+                    // Color scheme: 1-2 = Blue, 3-4 = Amber, 5+ = Red
                     cell.className = 'h-cell ' + (cnt >= 5 ? 'h-5' : cnt >= 3 ? 'h-3' : cnt >= 1 ? 'h-2' : 'h-0');
                     cell.innerText = cnt > 0 ? cnt : '';
                     cell.title = `${d} เวลา ${h}:00 น. : เกิด ${cnt} ครั้ง`;
@@ -1148,12 +995,15 @@
         }
 
         function updateScorecards() {
+            // ยอดชักสะสม (เฉพาะ category == 'ชัก' ไม่รวมนัดพบแพทย์)
             const seizureRecords = allRecords.filter(r => r.category === 'ชัก');
             document.getElementById('cardTotalSeizures').innerText = `${seizureRecords.length} ครั้ง`;
             
+            // สถิติการใช้แม่เหล็ก VNS
             const vnsCount = allRecords.filter(r => r.vns === 'Yes').length;
             document.getElementById('cardVnsCount').innerText = `${vnsCount} ครั้ง`;
 
+            // ระยะห่างชักล่าสุด + แปลงปี พ.ศ.
             if (seizureRecords.length > 0) {
                 const sorted = [...seizureRecords].sort((a,b) => new Date(b.date) - new Date(a.date));
                 const lastSeizure = new Date(sorted[0].date);
@@ -1175,11 +1025,13 @@
                 const tr = document.createElement('tr');
                 const hText = row.hour !== null ? (row.hour < 10 ? '0'+row.hour : row.hour) + ':00' : '-';
                 
+                // Badges for VNS / Fever / Doctor
                 let pills = '';
                 if(row.vns === 'Yes') pills += '<span class="pill pill-vns">⚡VNS</span> ';
                 if(row.note.includes('ไข้')) pills += '<span class="pill pill-fever">🌡️ไข้</span> ';
                 if(row.category === 'พบแพทย์ (ไม่มีชัก)') pills += '<span class="pill pill-doc">🩺พบหมอ</span> ';
 
+                // Badge รอบชักของวัน และ นับวันชัก (หมอ)
                 let roundBadge = '';
                 if (row.category === 'พบแพทย์ (ไม่มีชัก)') {
                     roundBadge = `<span class="pill pill-doc" style="margin-top:2px;">ไม่นับชัก</span>`;
@@ -1263,7 +1115,7 @@
                 yrEl.innerText = thaiYr;
                 topYears.appendChild(yrEl);
 
-                // 2. เสากลางแท่งแบ่ง 2 ท่อน (รอบแรก + ชักซ้ำแถบเข้ม)
+                // 2. เสากลางแท่งแบ่ง 2 ท่อน (รอบแรก + ชักซ้ำแถบเหลืองทอง)
                 const pillar = document.createElement('div');
                 pillar.className = 'weather-pillar';
                 pillar.innerHTML = `
@@ -1311,11 +1163,12 @@
                             const catVal = (row['ลักษณะอาการหลัก'] || row['เหตุการณ์ / หมวดหมู่'] || 'ชัก').trim();
                             const noteText = (row['รายละเอียดเพิ่มเติม'] || row['หมายเหตุ'] || row['อาการ'] || '').trim();
                             
+                            // ดึงคอลัมน์ รอบชักของวัน และ นับวันชัก (หมอ) จาก Sheet
                             const roundVal = row['รอบชักของวัน'] || row['รอบที่ชักของวัน'] || (idx + 1);
                             const docCountVal = row['นับวันชัก (หมอ)'] !== undefined ? parseInt(row['นับวันชัก (หมอ)']) : (roundVal == 1 ? 1 : 0);
 
                             newRecords.push({
-                                id: 190 + idx + 1,
+                                id: 264 + idx + 1,
                                 date: dateVal.trim(),
                                 day: row['วันในสัปดาห์'] || '',
                                 hour: isNaN(hourVal) ? null : hourVal,
@@ -1355,6 +1208,36 @@
 
         const scriptUrl = "https://script.google.com/macros/s/AKfycbxhh7XDM0rm4QsiDF0mwseXHTeWqayukVNQltgK2iiDx6bWUkMxp-FY3ftySZ1RJQFy/exec";
 
+        function toggleVnsResult() {
+            const vns = document.getElementById('f_vns').value;
+            const resultDiv = document.getElementById('group_vns_result');
+            const resultSel = document.getElementById('f_vns_result');
+            if (vns === 'Yes') {
+                resultDiv.style.display = 'block';
+                if (resultSel.value === 'ไม่ได้ใช้') resultSel.value = 'หยุดทันที';
+            } else {
+                resultDiv.style.display = 'none';
+                resultSel.value = 'ไม่ได้ใช้';
+            }
+        }
+
+        function checkRoundForDate() {
+            const dateVal = document.getElementById('f_date').value;
+            if (!dateVal) return;
+            
+            const sameDayRecords = allRecords.filter(r => r.date === dateVal && !r.category.includes('พบแพทย์'));
+            const nextRound = sameDayRecords.length + 1;
+            
+            const roundSelect = document.getElementById('f_round');
+            let optionsHTML = '';
+            const maxOptions = Math.max(4, nextRound);
+            for(let i=1; i<=maxOptions; i++) {
+                optionsHTML += `<option value="${i}">รอบ ${i} ${i===1 ? '(นับชัก)' : '(ชักซ้ำ)'}</option>`;
+            }
+            roundSelect.innerHTML = optionsHTML;
+            roundSelect.value = nextRound.toString();
+        }
+
         function openModal() {
             const now = new Date();
             document.getElementById('f_date').value = now.toISOString().split('T')[0];
@@ -1363,6 +1246,10 @@
             document.getElementById('f_time_start').value = `${hh}:${mm}`;
             document.getElementById('f_time_end').value = '';
             document.getElementById('f_duration').value = '1';
+            
+            checkRoundForDate(); // ตั้งค่ารอบอัตโนมัติ
+            toggleVnsResult();   // ตั้งค่าหน้าต่าง VNS
+            
             document.getElementById('addModal').classList.add('open');
         }
 
@@ -1377,7 +1264,7 @@
                 const s = start.split(':');
                 const e = end.split(':');
                 let diff = (parseInt(e[0]) * 60 + parseInt(e[1])) - (parseInt(s[0]) * 60 + parseInt(s[1]));
-                if (diff < 0) diff += 24 * 60;
+                if (diff < 0) diff += 24 * 60; // กรณีข้ามเที่ยงคืน
                 document.getElementById('f_duration').value = Math.max(1, diff);
             }
         }
@@ -1399,6 +1286,7 @@
             const dayName = dayNames[dObj.getDay()];
 
             const payload = {
+                secret: "MinHealthLogSecret2026_SecureKey_XyZ99",
                 date: dateVal,
                 time_start: timeStart,
                 round: roundVal,
@@ -1406,33 +1294,39 @@
                 hour: hourVal,
                 day: dayName,
                 vns: document.getElementById('f_vns').value,
-                vns_result: document.getElementById('f_vns').value === 'Yes' ? 'หยุดทันที' : 'ไม่ได้ใช้',
+                vns_result: document.getElementById('f_vns_result').value,
                 symptom_main: symptomMain,
                 duration: document.getElementById('f_duration').value || 1,
                 trigger: document.getElementById('f_trigger').value || '',
+                emergency_med: document.getElementById('f_emergency_med').value || '',
                 note: document.getElementById('f_note').value || ''
             };
 
+            // ใช้ text/plain เลี่ยงปัญหา CORS OPTIONS preflight
             fetch(scriptUrl, {
                 method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify(payload)
             })
-            .then(() => {
-                alert("บันทึกข้อมูลเข้า Google Sheets ตรงคอลัมน์เรียบร้อยแล้ว!");
-                closeModal();
-                btn.innerText = "บันทึกข้อมูล";
-                btn.disabled = false;
-                document.getElementById('logForm').reset();
-                setTimeout(fetchLiveSheet, 2000);
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert("บันทึกข้อมูลเข้า Google Sheets ตรงคอลัมน์เรียบร้อยแล้ว!");
+                    closeModal();
+                    btn.innerText = "บันทึกข้อมูล";
+                    btn.disabled = false;
+                    document.getElementById('logForm').reset();
+                    fetchLiveSheet(); // รีเฟรชดึงแถวใหม่มาแสดงทันที
+                } else {
+                    alert("เกิดข้อผิดพลาดจากฝั่งเซิร์ฟเวอร์: " + data.message);
+                    btn.innerText = "บันทึกข้อมูล";
+                    btn.disabled = false;
+                }
             })
-            .catch(() => {
-                alert("ส่งข้อมูลแล้ว (กำลังซิงค์)");
-                closeModal();
+            .catch(err => {
+                alert("เกิดข้อผิดพลาดในการเชื่อมต่อ (CORS): " + err.message);
                 btn.innerText = "บันทึกข้อมูล";
                 btn.disabled = false;
-                setTimeout(fetchLiveSheet, 2500);
             });
         }
 
