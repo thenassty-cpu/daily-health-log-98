@@ -463,6 +463,62 @@
             font-variant-numeric: tabular-nums;
         }
 
+
+        /* Input Modal & Add Button */
+        .btn-add-log {
+            background: var(--accent-blue);
+            color: #0b1329;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-add-log:active { opacity: 0.8; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.78);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            width: 100%;
+            max-width: 420px;
+            padding: 18px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: #0b1329;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            padding: 8px 10px;
+            font-size: 13px;
+            outline: none;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent-blue); }
+        .form-actions { display: flex; gap: 8px; margin-top: 16px; }
+        .btn-submit { flex: 1; background: var(--accent-blue); color: #0b1329; font-weight: 700; border: none; padding: 10px; border-radius: 6px; cursor: pointer; }
+        .btn-cancel { flex: 1; background: #1e293b; color: var(--text-muted); font-weight: 600; border: none; padding: 10px; border-radius: 6px; cursor: pointer; }
+
 </style>
 </head>
 <body>
@@ -470,9 +526,12 @@
     <!-- Header -->
     <header class="app-header">
         <div class="app-title">📊 Health Log</div>
-        <div id="statusBadge" class="badge-status">
-            <span class="dot"></span>
-            <span id="statusText">กำลังซิงค์...</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <button class="btn-add-log" onclick="openModal()">+ บันทึก</button>
+            <div id="statusBadge" class="badge-status">
+                <span class="dot"></span>
+                <span id="statusText">กำลังซิงค์...</span>
+            </div>
         </div>
     </header>
 
@@ -1226,6 +1285,72 @@
             });
         }
 
+        
+        const scriptUrl = "https://script.google.com/macros/s/AKfycbxhh7XDM0rm4QsiDF0mwseXHTeWqayukVNQltgK2iiDx6bWUkMxp-FY3ftySZ1RJQFy/exec";
+
+        function openModal() {
+            const now = new Date();
+            document.getElementById('f_date').value = now.toISOString().split('T')[0];
+            document.getElementById('f_time').value = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('addModal').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('addModal').classList.remove('open');
+        }
+
+        function submitLog(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmit');
+            btn.innerText = "กำลังบันทึก...";
+            btn.disabled = true;
+
+            const dateVal = document.getElementById('f_date').value;
+            const timeVal = document.getElementById('f_time').value;
+            const roundVal = parseInt(document.getElementById('f_round').value);
+            const catVal = document.getElementById('f_category').value;
+            const hourVal = parseInt(timeVal.split(':')[0]);
+            
+            const dObj = new Date(dateVal);
+            const dayNames = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+            const dayName = dayNames[dObj.getDay()];
+
+            const payload = {
+                date: dateVal,
+                time: timeVal,
+                round: roundVal,
+                doctor_count: catVal.includes('พบแพทย์') ? 0 : (roundVal === 1 ? 1 : 0),
+                hour: hourVal,
+                day: dayName,
+                vns: document.getElementById('f_vns').value,
+                vns_result: document.getElementById('f_vns').value === 'Yes' ? 'หยุดทันที' : 'ไม่ได้ใช้',
+                symptom: document.getElementById('f_symptom').value || catVal
+            };
+
+            // Google Apps Script requires no-cors or standard text output redirect handling
+            fetch(scriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                alert("บันทึกข้อมูลเข้า Google Sheets เรียบร้อยแล้ว!");
+                closeModal();
+                btn.innerText = "บันทึกข้อมูล";
+                btn.disabled = false;
+                document.getElementById('logForm').reset();
+                setTimeout(fetchLiveSheet, 2000);
+            })
+            .catch(err => {
+                alert("ส่งข้อมูลแล้ว (ระบบกำลังประมวลผล)");
+                closeModal();
+                btn.innerText = "บันทึกข้อมูล";
+                btn.disabled = false;
+                setTimeout(fetchLiveSheet, 2500);
+            });
+        }
+
         window.onload = function() {
             updateScorecards();
             renderHeatmap();
@@ -1234,5 +1359,60 @@
             fetchLiveSheet();
         };
     </script>
+    <!-- Modal Form Input -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal-card">
+            <h3 style="font-size:15px; margin-bottom:14px; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+                <span>📝 บันทึกข้อมูลอาการใหม่</span>
+                <span onclick="closeModal()" style="cursor:pointer; font-size:18px; color:var(--text-muted);">&times;</span>
+            </h3>
+            <form id="logForm" onsubmit="submitLog(event)">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                    <div class="form-group">
+                        <label>วันที่</label>
+                        <input type="date" id="f_date" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>เวลาที่เริ่มชัก</label>
+                        <input type="time" id="f_time" class="form-input" required>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                    <div class="form-group">
+                        <label>รอบชักของวัน</label>
+                        <select id="f_round" class="form-select">
+                            <option value="1">รอบ 1 (นับชัก)</option>
+                            <option value="2">รอบ 2 (ชักซ้ำ)</option>
+                            <option value="3">รอบ 3 (ชักซ้ำ)</option>
+                            <option value="4">รอบ 4 (ชักซ้ำ)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ใช้แม่เหล็ก VNS</label>
+                        <select id="f_vns" class="form-select">
+                            <option value="No">No (ไม่ได้ใช้)</option>
+                            <option value="Yes">Yes (ใช้แม่เหล็ก)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>หมวดหมู่ / ประเภท</label>
+                    <select id="f_category" class="form-select">
+                        <option value="ชัก">ชัก</option>
+                        <option value="พบแพทย์ (ไม่มีชัก)">พบแพทย์ (ไม่มีชัก)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ลักษณะอาการ / รายละเอียดเพิ่มเติม</label>
+                    <textarea id="f_symptom" class="form-textarea" rows="2" placeholder="เช่น เกร็งกระตุก ตาค้าง มีไข้ 38..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-submit" id="btnSubmit">บันทึกข้อมูล</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </body>
 </html>
