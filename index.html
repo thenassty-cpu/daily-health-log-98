@@ -533,7 +533,7 @@
                     <span class="dot"></span>
                     <span id="statusText">กำลังซิงค์...</span>
                 </div>
-                <div style="font-size:9.5px; color:var(--text-muted); margin-top:4px; letter-spacing:0.2px;">v1.19 - 22 ก.ย. 2569 20:03</div>
+                <div style="font-size:9.5px; color:var(--text-muted); margin-top:4px; letter-spacing:0.2px;">v1.20 - 22 ก.ย. 2569 20:08</div>
             </div>
         </div>
     </header>
@@ -1337,17 +1337,26 @@
                             const roundVal = row['รอบชักของวัน'] || row['รอบที่ชักของวัน'] || (idx + 1);
                             const docCountVal = row['นับวันชัก (หมอ)'] !== undefined ? parseInt(row['นับวันชัก (หมอ)']) : (roundVal == 1 ? 1 : 0);
 
-                            newRecords.push({
-                                id: 190 + idx + 1,
-                                date: dateVal.trim(),
-                                day: row['วันในสัปดาห์'] || '',
-                                hour: isNaN(hourVal) ? null : hourVal,
-                                vns: (vnsVal === 'Yes' || vnsVal === 'yes') ? 'Yes' : 'No',
-                                category: catVal.includes('พบแพทย์') ? 'พบแพทย์ (ไม่มีชัก)' : 'ชัก',
-                                round: roundVal,
-                                doctor_count: docCountVal,
-                                note: noteText || catVal
-                            });
+                            const isDup = baselineRecords.some(b => 
+                                b.date === dateVal.trim() && 
+                                b.hour === (isNaN(hourVal) ? null : hourVal) &&
+                                b.category === (catVal.includes('พบแพทย์') ? 'พบแพทย์ (ไม่มีชัก)' : 'ชัก') &&
+                                b.note === (noteText || catVal)
+                            );
+
+                            if (!isDup) {
+                                newRecords.push({
+                                    id: baselineRecords.length + newRecords.length + 1,
+                                    date: dateVal.trim(),
+                                    day: row['วันในสัปดาห์'] || '',
+                                    hour: isNaN(hourVal) ? null : hourVal,
+                                    vns: (vnsVal === 'Yes' || vnsVal === 'yes') ? 'Yes' : 'No',
+                                    category: catVal.includes('พบแพทย์') ? 'พบแพทย์ (ไม่มีชัก)' : 'ชัก',
+                                    round: roundVal,
+                                    doctor_count: docCountVal,
+                                    note: noteText || catVal
+                                });
+                            }
                         }
                     });
 
