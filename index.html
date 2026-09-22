@@ -533,7 +533,7 @@
                     <span class="dot"></span>
                     <span id="statusText">กำลังซิงค์...</span>
                 </div>
-                <div style="font-size:9.5px; color:var(--text-muted); margin-top:4px; letter-spacing:0.2px;">v1.16 - 22 ก.ย. 2569 17:38</div>
+                <div style="font-size:9.5px; color:var(--text-muted); margin-top:4px; letter-spacing:0.2px;">v1.17 - 22 ก.ย. 2569 19:35</div>
             </div>
         </div>
     </header>
@@ -570,7 +570,7 @@
             <!-- Heatmap Section -->
             <div class="section-card">
                 <div class="section-heading">
-                    <span>🔥 Heatmap ช่วงเวลาที่มักชัก (0-23 น.)</span>
+                    <span>🔥 Heatmap ช่วงเวลาที่มักชัก (เฉพาะจุดเริ่มต้น/Onset)</span>
                     <span style="font-size:11px; color:var(--text-muted); font-weight:normal;">เลื่อนแนวนอน ➔</span>
                 </div>
                 
@@ -1123,7 +1123,8 @@
             }
             
             allRecords.forEach(r => {
-                if(r.category === 'ชัก' && r.hour !== null && r.hour >= 0 && r.hour < 24 && r.day) {
+                // กรองเฉพาะการชักครั้งแรกของวัน (Onset) เพื่อแสดงใน Heatmap เท่านั้น
+                if(r.category === 'ชัก' && (parseInt(r.round) === 1 || parseInt(r.doctor_count) === 1) && r.hour !== null && r.hour >= 0 && r.hour < 24 && r.day) {
                     if(pivot[r.hour] && pivot[r.hour][r.day] !== undefined) {
                         pivot[r.hour][r.day]++;
                     }
@@ -1158,16 +1159,23 @@
 
         function updateScorecards() {
             // ยอดชักสะสม (เฉพาะ category == 'ชัก' ไม่รวมนัดพบแพทย์)
-            const seizureRecords = allRecords.filter(r => r.category === 'ชัก');
-            document.getElementById('cardTotalSeizures').innerText = `${seizureRecords.length} ครั้ง`;
+            const allSeizureRecords = allRecords.filter(r => r.category === 'ชัก');
+            const onsetRecords = allSeizureRecords.filter(r => parseInt(r.round) === 1 || parseInt(r.doctor_count) === 1);
+            const repeatedRecords = allSeizureRecords.length - onsetRecords.length;
+            
+            if (repeatedRecords > 0) {
+                document.getElementById('cardTotalSeizures').innerHTML = `${onsetRecords.length} <span style="color:#facc15; font-size:0.7em;">+${repeatedRecords}</span> ครั้ง`;
+            } else {
+                document.getElementById('cardTotalSeizures').innerText = `${onsetRecords.length} ครั้ง`;
+            }
             
             // สถิติการใช้แม่เหล็ก VNS
             const vnsCount = allRecords.filter(r => r.vns === 'Yes').length;
             document.getElementById('cardVnsCount').innerText = `${vnsCount} ครั้ง`;
 
             // ระยะห่างชักล่าสุด + แปลงปี พ.ศ.
-            if (seizureRecords.length > 0) {
-                const sorted = [...seizureRecords].sort((a,b) => new Date(b.date) - new Date(a.date));
+            if (allSeizureRecords.length > 0) {
+                const sorted = [...allSeizureRecords].sort((a,b) => new Date(b.date) - new Date(a.date));
                 const lastSeizure = new Date(sorted[0].date);
                 const today = new Date();
                 const diffTime = Math.abs(today - lastSeizure);
