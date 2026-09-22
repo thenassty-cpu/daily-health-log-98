@@ -37,15 +37,26 @@
             z-index: 100;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
         }
-        .app-title { font-size: 16px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+        .app-title { font-size: 16px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px; }
         .badge-status { font-size: 11px; padding: 3px 8px; border-radius: 9999px; font-weight: 600; background: #064e3b; color: #a7f3d0; display: inline-flex; align-items: center; gap: 4px; }
         .badge-status.offline { background: #451a03; color: #fde68a; }
         .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
         /* Main Container */
         .container { max-width: 900px; margin: 0 auto; padding: 12px; }
+
+        /* Alert Callout */
+        .alert-mini {
+            background: rgba(220, 38, 38, 0.12);
+            border-left: 3px solid var(--accent-red);
+            padding: 9px 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            line-height: 1.45;
+        }
 
         /* Scorecards 2x2 on Mobile */
         .grid-scorecards {
@@ -184,6 +195,22 @@
             align-items: center;
             gap: 4px;
         }
+
+        /* Category Header */
+        .med-group-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 14px 0 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .group-antiseizure { color: var(--accent-blue); }
+        .group-psych { color: var(--accent-purple); }
+        .group-kidney { color: #f97316; }
+        .group-supplement { color: var(--accent-green); }
 
         /* Med Item */
         .med-row {
@@ -332,7 +359,7 @@
             border-top: 1px solid var(--border-color);
         }
 
-        /* iOS Weather Liquid Bar Chart */
+        /* iOS Weather Liquid Bar Chart (Stacked Repeats) */
         .chart-weather-card {
             background: #0f1b33;
             border-radius: 14px;
@@ -412,6 +439,7 @@
             background: linear-gradient(180deg, rgba(56, 189, 248, 0.8) 0%, rgba(2, 132, 199, 0.45) 60%, rgba(14, 116, 144, 0.2) 100%);
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
         }
+        /* ท่อนชักซ้ำ: ชั้นสีเหลืองสว่าง (Amber/Yellow Glow) */
         .bar-seg-repeat {
             width: 100%;
             background: linear-gradient(180deg, #fde047 0%, #eab308 50%, #ca8a04 100%);
@@ -434,6 +462,7 @@
             color: #f8fafc;
             font-variant-numeric: tabular-nums;
         }
+
 
         /* Input Modal & Add Button */
         .btn-add-log {
@@ -486,29 +515,23 @@
             outline: none;
         }
         .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent-blue); }
-        .form-input:disabled { opacity: 0.8; cursor: not-allowed; }
         .form-actions { display: flex; gap: 8px; margin-top: 16px; }
-        
-        .btn-submit { flex: 1; background: var(--accent-blue); color: #0b1329; font-weight: 700; border: none; padding: 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
-        .btn-submit:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; opacity: 0.7; }
-        
+        .btn-submit { flex: 1; background: var(--accent-blue); color: #0b1329; font-weight: 700; border: none; padding: 10px; border-radius: 6px; cursor: pointer; }
         .btn-cancel { flex: 1; background: #1e293b; color: var(--text-muted); font-weight: 600; border: none; padding: 10px; border-radius: 6px; cursor: pointer; }
-    </style>
+
+</style>
 </head>
 <body>
 
     <!-- Header -->
     <header class="app-header">
         <div class="app-title">📊 Health Log</div>
-        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-                <button class="btn-add-log" onclick="openModal()">+ บันทึก</button>
-                <div id="statusBadge" class="badge-status">
-                    <span class="dot"></span>
-                    <span id="statusText">กำลังซิงค์...</span>
-                </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <button class="btn-add-log" onclick="openModal()">+ บันทึก</button>
+            <div id="statusBadge" class="badge-status">
+                <span class="dot"></span>
+                <span id="statusText">กำลังซิงค์...</span>
             </div>
-            <div id="appVersionDisplay" style="font-size: 9.5px; color: var(--text-muted); opacity: 0.75; font-weight: 500;"></div>
         </div>
     </header>
 
@@ -548,6 +571,7 @@
                     <span style="font-size:11px; color:var(--text-muted); font-weight:normal;">เลื่อนแนวนอน ➔</span>
                 </div>
                 
+                <!-- Legend ใต้หัวข้อ Heatmap -->
                 <div class="heatmap-legend">
                     <span class="legend-item"><span class="legend-color" style="background:#0284c7;"></span> 1-2 ครั้ง = ปกติ (ฟ้า)</span>
                     <span class="legend-item"><span class="legend-color" style="background:#d97706;"></span> 3-4 ครั้ง = เฝ้าระวัง (ส้ม)</span>
@@ -559,7 +583,7 @@
                 </div>
             </div>
 
-            <!-- Yearly Chart -->
+            <!-- Yearly Chart (iOS Weather Style with Stacked Repeats) -->
             <div class="section-card">
                 <div class="section-heading">
                     <span>📊 สถิติความถี่รายปี (พ.ศ.)</span>
@@ -585,13 +609,18 @@
         </section>
 
         <!-- TAB 2: Medication & Nutrition -->
+                <!-- TAB 2: Medication & Nutrition (with 2 Sub-Tabs) -->
         <section id="tab-care" class="tab-content">
+            <!-- Sub-tab Navigation Bar -->
             <div class="subnav-container">
                 <button class="subnav-btn active" id="btn-subtab-nutrition" onclick="switchSubTab('subtab-nutrition', this)">🥛 โภชนาการ</button>
                 <button class="subnav-btn" id="btn-subtab-meds" onclick="switchSubTab('subtab-meds', this)">💊 ยา</button>
             </div>
 
+            <!-- Sub-tab 1: โภชนาการ -->
             <div id="subtab-nutrition" class="subtab-content active">
+
+                <!-- Growth & Vitals Card (Shared) -->
                 <div class="section-card" style="background: linear-gradient(145deg, #132238, #182b46);">
                     <div class="section-heading">
                         <span style="color:#38bdf8;">📏 ข้อมูลร่างกาย & การเจริญเติบโต</span>
@@ -611,6 +640,8 @@
                     </div>
                 </div>
 
+
+                <!-- Nutrition Formula Card -->
                 <div class="section-card">
                     <div class="section-heading">
                         <span style="color:var(--accent-blue);">🥛 แผนโภชนาการ & ชงนม (Pan-Enteral)</span>
@@ -623,6 +654,8 @@
                     </div>
                 </div>
 
+
+                <!-- Timeline Card: รอบนม vs ยาฟอสเฟต 7 จุด (Shared) -->
                 <div class="section-card">
                     <div class="section-heading">
                         <span style="color:var(--accent-blue);">⏱️ ไทม์ไลน์รอบนม vs ยาฟอสเฟต (เว้นห่างอย่างน้อย 2 ชม.)</span>
@@ -632,6 +665,7 @@
                     </p>
                     <div class="timeline-container">
                         <div class="timeline-line"></div>
+                        
                         <div class="timeline-item">
                             <div class="timeline-node"></div>
                             <div class="timeline-content">
@@ -640,6 +674,7 @@
                             </div>
                         </div>
                         <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
+
                         <div class="timeline-item">
                             <div class="timeline-node med"></div>
                             <div class="timeline-content" style="border-left:2px solid var(--accent-red);">
@@ -648,6 +683,7 @@
                             </div>
                         </div>
                         <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
+
                         <div class="timeline-item">
                             <div class="timeline-node"></div>
                             <div class="timeline-content">
@@ -656,6 +692,7 @@
                             </div>
                         </div>
                         <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
+
                         <div class="timeline-item">
                             <div class="timeline-node med"></div>
                             <div class="timeline-content" style="border-left:2px solid var(--accent-red);">
@@ -664,6 +701,7 @@
                             </div>
                         </div>
                         <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
+
                         <div class="timeline-item">
                             <div class="timeline-node"></div>
                             <div class="timeline-content">
@@ -672,6 +710,7 @@
                             </div>
                         </div>
                         <div class="timeline-gap">↓ ห่าง 3 ชั่วโมง</div>
+
                         <div class="timeline-item">
                             <div class="timeline-node"></div>
                             <div class="timeline-content">
@@ -680,6 +719,7 @@
                             </div>
                         </div>
                         <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
+
                         <div class="timeline-item">
                             <div class="timeline-node med"></div>
                             <div class="timeline-content" style="border-left:2px solid var(--accent-red);">
@@ -689,9 +729,13 @@
                         </div>
                     </div>
                 </div>
+
             </div>
 
+            <!-- Sub-tab 2: ยา -->
             <div id="subtab-meds" class="subtab-content">
+
+                <!-- Growth & Vitals Card (Shared) -->
                 <div class="section-card" style="background: linear-gradient(145deg, #132238, #182b46);">
                     <div class="section-heading">
                         <span style="color:#38bdf8;">📏 ข้อมูลร่างกาย & การเจริญเติบโต</span>
@@ -711,6 +755,8 @@
                     </div>
                 </div>
 
+
+                <!-- Drug Allergy / Contraindication Card (Critical Red) -->
                 <div class="section-card" style="border: 1px solid #ef4444; background: rgba(239, 68, 68, 0.06);">
                     <div class="section-heading">
                         <span style="color:#ef4444; display:flex; align-items:center; gap:6px;">
@@ -722,60 +768,182 @@
                         <strong>กลุ่ม Sodium Channel Blockers:</strong> ห้ามใช้เพราะอาจกระตุ้นให้ชักรุนแรงขึ้น ได้แก่:
                     </div>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; font-size:11.5px;">
-                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">• Dilantin <span style="color:var(--text-muted); font-size:10px;">(phenytoin)</span></div>
-                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">• Tegretol <span style="color:var(--text-muted); font-size:10px;">(carbamazepine)</span></div>
-                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">• Banzel <span style="color:var(--text-muted); font-size:10px;">(rufinamide)</span></div>
-                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">• Lamictal <span style="color:var(--text-muted); font-size:10px;">(lamotrigine)</span></div>
-                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">• Cerebyx <span style="color:var(--text-muted); font-size:10px;">(fosphenytoin)</span></div>
-                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">• Trileptal <span style="color:var(--text-muted); font-size:10px;">(oxcarbazepine)</span></div>
+                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">
+                            • Dilantin <span style="color:var(--text-muted); font-size:10px;">(phenytoin)</span>
+                        </div>
+                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">
+                            • Tegretol <span style="color:var(--text-muted); font-size:10px;">(carbamazepine)</span>
+                        </div>
+                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">
+                            • Banzel <span style="color:var(--text-muted); font-size:10px;">(rufinamide)</span>
+                        </div>
+                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">
+                            • Lamictal <span style="color:var(--text-muted); font-size:10px;">(lamotrigine)</span>
+                        </div>
+                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">
+                            • Cerebyx <span style="color:var(--text-muted); font-size:10px;">(fosphenytoin)</span>
+                        </div>
+                        <div style="background:#0b1329; padding:6px 8px; border-radius:6px; border-left:3px solid #ef4444;">
+                            • Trileptal <span style="color:var(--text-muted); font-size:10px;">(oxcarbazepine)</span>
+                        </div>
                     </div>
                     <div style="margin-top:8px; font-size:11px; color:#fca5a5;">
                         ⚠️ แจ้งแพทย์ห้องฉุกเฉิน (ER) และแพทย์ทุกท่านก่อนสั่งยากันชักกลุ่มนี้เสมอ
                     </div>
                 </div>
 
+
+                <!-- Timeline Card: รอบนม vs ยาฟอสเฟต 7 จุด (Shared) -->
+                <div class="section-card">
+                    <div class="section-heading">
+                        <span style="color:var(--accent-blue);">⏱️ ไทม์ไลน์รอบนม vs ยาฟอสเฟต (เว้นห่างอย่างน้อย 2 ชม.)</span>
+                    </div>
+                    <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">
+                        * เพื่อป้องกันแคลเซียมในนมจับตัวกับฟอสเฟต ต้องเว้นระยะห่างอย่างน้อย 2 ชั่วโมงเสมอ
+                    </p>
+                    <div class="timeline-container">
+                        <div class="timeline-line"></div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-node"></div>
+                            <div class="timeline-content">
+                                <strong>08:00 น.</strong>
+                                <span>🥛 นม Pan-Enteral มื้อ 1 (320 ml + น้ำมัน 5 ml)</span>
+                            </div>
+                        </div>
+                        <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-node med"></div>
+                            <div class="timeline-content" style="border-left:2px solid var(--accent-red);">
+                                <strong style="color:var(--accent-red);">10:00 น.</strong>
+                                <span>💊 <strong>Acidic Phosphate</strong> มื้อ 1 (5 ซีซี + น้ำ 30 ml)</span>
+                            </div>
+                        </div>
+                        <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-node"></div>
+                            <div class="timeline-content">
+                                <strong>12:00 น.</strong>
+                                <span>🥛 นม Pan-Enteral มื้อ 2 (320 ml + น้ำมัน 5 ml)</span>
+                            </div>
+                        </div>
+                        <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-node med"></div>
+                            <div class="timeline-content" style="border-left:2px solid var(--accent-red);">
+                                <strong style="color:var(--accent-red);">14:00 น.</strong>
+                                <span>💊 <strong>Acidic Phosphate</strong> มื้อ 2 (5 ซีซี + น้ำ 30 ml)</span>
+                            </div>
+                        </div>
+                        <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-node"></div>
+                            <div class="timeline-content">
+                                <strong>16:00 น.</strong>
+                                <span>🥛 นม Pan-Enteral มื้อ 3 (320 ml + น้ำมัน 5 ml)</span>
+                            </div>
+                        </div>
+                        <div class="timeline-gap">↓ ห่าง 3 ชั่วโมง</div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-node"></div>
+                            <div class="timeline-content">
+                                <strong>19:00 น.</strong>
+                                <span>🥛 นม Pan-Enteral มื้อ 4 (320 ml + น้ำมัน 5 ml)</span>
+                            </div>
+                        </div>
+                        <div class="timeline-gap">↓ ห่าง 2 ชั่วโมงพอดี</div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-node med"></div>
+                            <div class="timeline-content" style="border-left:2px solid var(--accent-red);">
+                                <strong style="color:var(--accent-red);">21:00 น.</strong>
+                                <span>💊 <strong>Acidic Phosphate</strong> มื้อ 3 (5 ซีซี + น้ำ 30 ml)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Accordion Meds List (4 กลุ่ม พับไว้ทั้งหมด) -->
                 <div class="section-card">
                     <div class="section-heading" style="margin-bottom:12px;">
                         <span>💊 บัญชียาประจำตัว 9 ชนิด (กดเพื่อกางดู)</span>
                     </div>
 
+                    <!-- กลุ่ม 1: ยากันชัก -->
                     <details class="med-accordion">
-                        <summary style="color:var(--accent-blue);"><span>🔹 กลุ่มที่ 1: ยากันชัก (Antiseizure) [4 ชนิด]</span></summary>
+                        <summary class="group-antiseizure">
+                            <span>🔹 กลุ่มที่ 1: ยากันชัก (Antiseizure) [4 ชนิด]</span>
+                        </summary>
                         <div class="accordion-body">
-                            <div class="med-row bar-antiseizure"><strong>1. Valprocid (22mg/60ml)</strong> • 1 cc (07:00, 15:00, 23:00 น.) ทุก 8 ชม.</div>
-                            <div class="med-row bar-antiseizure"><strong>2. Frisium (5mg)</strong> • 1.5 เม็ด เช้า / 1.5 เม็ด เย็น</div>
-                            <div class="med-row bar-antiseizure"><strong>3. Topamax (25mg)</strong> • 2 เม็ด เช้า / 2.5 เม็ด เย็น</div>
-                            <div class="med-row bar-antiseizure"><strong>4. Fycompa (4mg)</strong> • 1 เม็ด ก่อนนอน (20:00 - 21:00 น.)</div>
+                            <div class="med-row bar-antiseizure">
+                                <strong>1. Valprocid (22mg/60ml)</strong> • 1 cc (07:00, 15:00, 23:00 น.) ทุก 8 ชม.
+                            </div>
+                            <div class="med-row bar-antiseizure">
+                                <strong>2. Frisium (5mg)</strong> • 1.5 เม็ด เช้า / 1.5 เม็ด เย็น
+                            </div>
+                            <div class="med-row bar-antiseizure">
+                                <strong>3. Topamax (25mg)</strong> • 2 เม็ด เช้า / 2.5 เม็ด เย็น <span style="color:var(--accent-amber); font-size:11px;">(ปรับเพิ่ม 27 ก.พ. 69)</span>
+                            </div>
+                            <div class="med-row bar-antiseizure">
+                                <strong>4. Fycompa (4mg)</strong> • 1 เม็ด ก่อนนอน (20:00 - 21:00 น.)
+                            </div>
                         </div>
                     </details>
 
+                    <!-- กลุ่ม 2: ยาจิตเวช/ยาสมาธิ -->
                     <details class="med-accordion">
-                        <summary style="color:var(--accent-purple);"><span>🔹 กลุ่มที่ 2: ยาจิตเวช / ยาสมาธิ [1 ชนิด]</span></summary>
+                        <summary class="group-psych">
+                            <span>🔹 กลุ่มที่ 2: ยาจิตเวช / ยาสมาธิ [1 ชนิด]</span>
+                        </summary>
                         <div class="accordion-body">
-                            <div class="med-row bar-psych"><strong>5. Rubifen / Methylphenidate (10mg)</strong> • ¼ เม็ด (เช้า, กลางวัน)</div>
+                            <div class="med-row bar-psych">
+                                <strong>5. Rubifen / Methylphenidate (10mg) (ยาสมาธิ)</strong> • ¼ เม็ด (2 เวลา: เช้า, กลางวัน)
+                            </div>
                         </div>
                     </details>
 
+                    <!-- กลุ่ม 3: ยาปรับสมดุลร่างกาย/ไต -->
                     <details class="med-accordion">
-                        <summary style="color:#f97316;"><span>🔹 กลุ่มที่ 3: ยาปรับสมดุลร่างกาย / ไต [3 ชนิด]</span></summary>
+                        <summary class="group-kidney">
+                            <span>🔹 กลุ่มที่ 3: ยาปรับสมดุลร่างกาย / ไต [3 ชนิด]</span>
+                        </summary>
                         <div class="accordion-body">
-                            <div class="med-row bar-kidney"><strong>6. Sodamint (300mg)</strong> • 5 เม็ด หลังอาหาร 4 มื้อ</div>
-                            <div class="med-row bar-kidney" style="background:rgba(239,68,68,0.08);"><strong style="color:var(--accent-red);">7. Acidic Phosphate Solution</strong> • 5 ซีซี 3 มื้อ (⚠️ เว้นมื้อนม 2 ชม.)</div>
-                            <div class="med-row bar-kidney"><strong>8. Pot. Cit Mixture (1000 mL)</strong> • 35 ซีซี หลังอาหาร 4 มื้อ</div>
+                            <div class="med-row bar-kidney">
+                                <strong>6. Sodamint (300mg)</strong> • 5 เม็ด หลังอาหาร 4 มื้อ (เช้า, กลางวัน, เย็น, ก่อนนอน)
+                            </div>
+                            <div class="med-row bar-kidney" style="background:rgba(239,68,68,0.08);">
+                                <strong style="color:var(--accent-red);">7. Acidic Phosphate Solution</strong> • 5 ซีซี วันละ 3 มื้อ <span style="color:var(--accent-red); font-weight:700;">(⚠️ เว้นห่างมื้อนม 2 ชม.)</span>
+                            </div>
+                            <div class="med-row bar-kidney">
+                                <strong>8. Pot. Cit Mixture (1000 mL)</strong> • 35 ซีซี หลังอาหาร 4 มื้อ (จิบน้ำตาม)
+                            </div>
                         </div>
                     </details>
 
+                    <!-- กลุ่ม 4: ธาตุอาหารเสริม -->
                     <details class="med-accordion">
-                        <summary style="color:var(--accent-green);"><span>🔹 กลุ่มที่ 4: ธาตุอาหารเสริม [1 ชนิด]</span></summary>
+                        <summary class="group-supplement">
+                            <span>🔹 กลุ่มที่ 4: ธาตุอาหารเสริม [1 ชนิด]</span>
+                        </summary>
                         <div class="accordion-body">
-                            <div class="med-row bar-supplement"><strong>9. L-Carnitine (100mg/mL)</strong> • 8 ซีซี หลังอาหาร 3 มื้อ</div>
+                            <div class="med-row bar-supplement">
+                                <strong>9. L-Carnitine (100mg/mL)</strong> • 8 ซีซี หลังอาหาร 3 มื้อ (เช้า, กลางวัน, เย็น)
+                            </div>
                         </div>
                     </details>
 
+                    <!-- SOS Notice -->
                     <div style="margin-top:12px; padding:8px 10px; background:#0b1329; border-radius:6px; border: 1px dashed var(--border-color); font-size:12px;">
-                        🔴 <strong>ยาฉุกเฉิน (SOS):</strong> Clonazepam เฉพาะตอนชักเกิน 3 ครั้ง/วัน
+                        🔴 <strong>ยาฉุกเฉิน (SOS):</strong> Clonazepam เฉพาะตอนชักเกิน 3 ครั้ง/วัน (มีสต็อกพร้อม)
                     </div>
                 </div>
+
             </div>
         </section>
 
@@ -805,97 +973,7 @@
 
     </main>
 
-    <!-- Modal Form Input -->
-    <div class="modal-overlay" id="addModal">
-        <div class="modal-card">
-            <h3 style="font-size:15px; margin-bottom:14px; color:#fff; display:flex; justify-content:space-between; align-items:center;">
-                <span>📝 บันทึกข้อมูลอาการใหม่</span>
-                <span onclick="closeModal()" style="cursor:pointer; font-size:18px; color:var(--text-muted);">&times;</span>
-            </h3>
-            <form id="logForm" onsubmit="submitLog(event)">
-                <div class="form-group">
-                    <label>วันที่</label>
-                    <input type="date" id="f_date" class="form-input" onchange="checkRoundForDate()" required>
-                </div>
-                
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                    <div class="form-group">
-                        <label>เวลาเริ่มชัก</label>
-                        <input type="time" id="f_time_start" class="form-input" onchange="calcDuration()" required>
-                    </div>
-                    <div class="form-group">
-                        <label>เวลาหยุดชัก</label>
-                        <input type="time" id="f_time_end" class="form-input" onchange="calcDuration()">
-                    </div>
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                    <div class="form-group">
-                        <label>ระยะเวลา (นาที)</label>
-                        <input type="number" id="f_duration" class="form-input" placeholder="คำนวณอัตโนมัติ" min="0" step="0.5">
-                    </div>
-                    <div class="form-group">
-                        <label>รอบชักของวัน</label>
-                        <input type="text" id="f_round" class="form-input" style="color: var(--accent-blue); font-weight: 700; background: rgba(56, 189, 248, 0.1);" disabled>
-                        <div style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">* เซิร์ฟเวอร์จะคำนวณรอบจริงให้อัตโนมัติ ป้องกันการซ้ำซ้อน</div>
-                    </div>
-                </div>
-
-                <!-- Dropdown ลักษณะอาการหลัก -->
-                <div class="form-group">
-                    <label>ลักษณะอาการหลัก (Dropdown)</label>
-                    <select id="f_symptom_main" class="form-select">
-                        <option value="เกร็งกระตุก">เกร็งกระตุก</option>
-                        <option value="ตาค้างนิ่ง">ตาค้างนิ่ง</option>
-                        <option value="เหม่อลอย">เหม่อลอย</option>
-                        <option value="กระตุกแขนขา">กระตุกแขนขา</option>
-                        <option value="พบแพทย์ (ไม่มีชัก)">พบแพทย์ (ไม่มีชัก)</option>
-                    </select>
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                    <div class="form-group">
-                        <label>ใช้แม่เหล็ก VNS</label>
-                        <select id="f_vns" class="form-select" onchange="toggleVnsResult()">
-                            <option value="No">No (ไม่ได้ใช้)</option>
-                            <option value="Yes">Yes (ใช้แม่เหล็ก)</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="group_vns_result" style="display:none;">
-                        <label>ผลหลังรูด VNS</label>
-                        <select id="f_vns_result" class="form-select">
-                            <option value="ไม่ได้ใช้">ไม่ได้ใช้</option>
-                            <option value="หยุดทันที">หยุดทันที</option>
-                            <option value="ไม่หยุด">ไม่หยุด</option>
-                            <option value="รูดไม่ทัน">รูดไม่ทัน</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                    <div class="form-group">
-                        <label>ตัวกระตุ้น / ปัจจัย</label>
-                        <input type="text" id="f_trigger" class="form-input" placeholder="เช่น มีไข้, อาบน้ำ, ร้อน">
-                    </div>
-                    <div class="form-group">
-                        <label>ยาฉุกเฉิน / ที่ให้ (ช่อง M)</label>
-                        <input type="text" id="f_emergency_med" class="form-input" placeholder="เช่น Diazepam...">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>รายละเอียดเพิ่มเติม (ช่อง N)</label>
-                    <textarea id="f_note" class="form-textarea" rows="2" placeholder="ระบุอาการเพิ่มเติม เช่น ปากเขียว อ้วก หรือยาที่ให้..."></textarea>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
-                    <button type="submit" class="btn-submit" id="btnSubmit">บันทึกข้อมูล</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
+    <!-- App Bottom Nav Bar -->
     <nav class="bottom-nav">
         <button class="nav-item active" onclick="switchTab('tab-overview', this)">
             <span class="nav-icon">📊</span>
@@ -912,9 +990,6 @@
     </nav>
 
     <script>
-        const APP_VERSION = "v1.10 - 17 ก.ย. 2569 18:18";
-        document.getElementById('appVersionDisplay').innerText = APP_VERSION;
-
         const baselineRecords = [{"id": 1, "date": "2019-05-03", "day": "ศุกร์", "hour": 12, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "12.00 a.m."}, {"id": 2, "date": "2019-05-07", "day": "อังคาร", "hour": 4, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "04.00 a.m. "}, {"id": 3, "date": "2019-05-07", "day": "อังคาร", "hour": 10, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "10.00a.m."}, {"id": 4, "date": "2019-05-25", "day": "เสาร์", "hour": 18, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "18.30p.m."}, {"id": 5, "date": "2019-07-11", "day": "พฤหัสบดี", "hour": 17, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "17.46 a.m."}, {"id": 6, "date": "2019-07-21", "day": "อาทิตย์", "hour": 18, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "18.30a.m."}, {"id": 7, "date": "2019-08-09", "day": "ศุกร์", "hour": 17, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "17.18a.m."}, {"id": 8, "date": "2019-08-09", "day": "ศุกร์", "hour": 23, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "23.00a.m."}, {"id": 9, "date": "2019-08-10", "day": "เสาร์", "hour": 3, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "03.00a.m."}, {"id": 10, "date": "2019-08-19", "day": "จันทร์", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "16.30a.m."}, {"id": 11, "date": "2019-08-19", "day": "จันทร์", "hour": 16, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "16.30a.m."}, {"id": 12, "date": "2019-08-30", "day": "ศุกร์", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "16.00a.m."}, {"id": 13, "date": "2019-09-21", "day": "เสาร์", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "14.25a.m."}, {"id": 14, "date": "2019-10-09", "day": "พุธ", "hour": null, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": ""}, {"id": 15, "date": "2019-10-10", "day": "พฤหัสบดี", "hour": 11, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "11.20a.m."}, {"id": 16, "date": "2019-10-25", "day": "ศุกร์", "hour": 15, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "15.35"}, {"id": 17, "date": "2019-10-27", "day": "อาทิตย์", "hour": 19, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "19.14"}, {"id": 18, "date": "2019-11-12", "day": "อังคาร", "hour": null, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": ""}, {"id": 19, "date": "2019-11-15", "day": "ศุกร์", "hour": 4, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "4.25"}, {"id": 20, "date": "2019-12-20", "day": "ศุกร์", "hour": 5, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "5"}, {"id": 21, "date": "2019-12-21", "day": "เสาร์", "hour": 10, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "10.05"}, {"id": 22, "date": "2020-01-16", "day": "พฤหัสบดี", "hour": 3, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "3.55"}, {"id": 23, "date": "2020-01-18", "day": "เสาร์", "hour": 1, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "1.05"}, {"id": 24, "date": "2020-02-23", "day": "อาทิตย์", "hour": 2, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชักกระตุกทั้งตัว ตี 2:30 น. (รอบ 1) ให้ยาแวเรี่ยมทางก้น 2:35 น. หยุด"}, {"id": 25, "date": "2020-02-23", "day": "อาทิตย์", "hour": 3, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "เริ่มชักแรงอีกครั้ง เวลา 03:21 น. (รอบ 2) ให้ยา keppra 03:45 น."}, {"id": 26, "date": "2020-03-12", "day": "พฤหัสบดี", "hour": 0, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "วันที่ 12 มีนาคม 2563 (ห่าง 28วัน)\nมินชัก \nก่อนชักมีไข้มาหาหมอเช็ดตัวกินยาลดไข้ล่าสุด เที่ยงคืน\n(-)2.55 เกร็งกระตุกทั้งตัว \n(-)วัดไข้ได้ 37.2 ถึงรพ. 3.05\n(-)3.10 ฉีดแวเรี่ยมเข้าก้น(-)3.14 หยุดชัก"}, {"id": 27, "date": "2020-05-17", "day": "อาทิตย์", "hour": 17, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "วันที่ 17 พ.ค.63  \nเริ่มชัก ตาค้างหงายหลัง เกร็ง เวลา 17.05\nรีบนำส่งโรงพยาบาล ถึงเวลา 17.13 \n17.15 ให้แวเรียมทางก้น 0.7 \nและหยุดชักเวลา 17.17\nห่างจากชักครั้งที่แล้ว 66 วัน"}, {"id": 28, "date": "2020-05-19", "day": "อังคาร", "hour": 17, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "วันที่ 19พ.ค.63  \nเริ่มชัก ตาค้างหงายหลัง เกร็ง เวลา 17.05\nรีบนำส่งโรงพยาบาล ถึงเวลา 17.13 \n17.15 ให้แวเรียมทางก้น 0.7 \nและหยุดชักเวลา 17.17\nห่างจากชักครั้งที่แล้ว 66 วัน"}, {"id": 29, "date": "2020-06-17", "day": "พุธ", "hour": null, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": ""}, {"id": 30, "date": "2020-08-19", "day": "พุธ", "hour": null, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": ""}, {"id": 31, "date": "2020-10-28", "day": "พุธ", "hour": null, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": ""}, {"id": 32, "date": "2020-12-08", "day": "อังคาร", "hour": 6, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก6.58-7.05ประมาณ5นาที เข็ดตัวแล้วหยุด เพิ่มยาเดพากิน0.9"}, {"id": 33, "date": "2020-12-26", "day": "เสาร์", "hour": 2, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบแรกเริ่ม 02:48-02:51 น. กระตุกแขนขา วัดไข้ได้ 37.2 ให้ยาลดไข้"}, {"id": 34, "date": "2020-12-26", "day": "เสาร์", "hour": 3, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เริ่มชัก 03:11-03:20 น. เกร็งสั่น ตาลอย"}, {"id": 35, "date": "2020-12-26", "day": "เสาร์", "hour": 3, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "รอบ 3 ชัก 03:43 น. ที่โรงพยาบาล ตากระพริบถี่ ๆ"}, {"id": 36, "date": "2021-05-25", "day": "อังคาร", "hour": null, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชักรอบแรก มีไข้สูง นอนโรงพยาบาล"}, {"id": 37, "date": "2021-05-25", "day": "อังคาร", "hour": null, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "ชักซ้ำรอบที่ 2"}, {"id": 38, "date": "2021-05-25", "day": "อังคาร", "hour": null, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "ชักซ้ำรอบที่ 3"}, {"id": 39, "date": "2021-05-25", "day": "อังคาร", "hour": null, "vns": "No", "category": "ชัก", "round": 4, "doctor_count": 0, "note": "ชักซ้ำรอบที่ 4"}, {"id": 40, "date": "2021-05-25", "day": "อังคาร", "hour": null, "vns": "No", "category": "ชัก", "round": 5, "doctor_count": 0, "note": "ชักซ้ำรอบที่ 5"}, {"id": 41, "date": "2021-06-25", "day": "ศุกร์", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชักรอบแรก 14:15 น. ไข้ 38.4 ตาเหลือก ปากม่วง"}, {"id": 42, "date": "2021-06-25", "day": "ศุกร์", "hour": 15, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "ครั้งที่ 2 ชักอีก 15:43-15:46 น. ให้แวเรี่ยม ไข้ 38-39"}, {"id": 43, "date": "2021-06-30", "day": "พุธ", "hour": 11, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "10.00 น.ให้นม หลังจากนั้นเวลาประมาณ 11.00 ไล่สายด้วยน้ำและลม มินอ้วกออกจมูก+ปาก ตัวรุมๆ\n\n14.00 มินหลับระหว่างให้นมมินแขนและขากระตุก 2-3 ครั้งแล้วก็หยุด วัดไข้ได้ประมาณ 36.5 และหลังจากนั้นให้นมจนเกือบหมด มินก็ลุกขึ้นมาขย้อนนมออกมาทางจมูก+ปาก หลังจากจากนั้นก็เช็ดตัว\n\n15.30 ให้ยา เทมปร้าลดไข้ 3 cc.\n\n19.00 วัดไข้ได้ 36.7 แล้วล้างแผลที่ท้องและให้นมได้ 1/3\n\n19.35 กำลังเช็ดตัว ประคองมินยืนอยู่ แล้วมินเงยหน้าตาเหลือกแล้วชักแบบส่วนลำตัวกระตุก จึงรีบ\n\n20.00 ถึงโรงบาลชักทั้งตัวมีเสียงตะโกน หมอให้ยาน่าจะแวเรียม\n**น่าจะติดเชื้อไวรัส แต่ไม่หนัก ไม่ซึมไม่มีน้ำมูก"}, {"id": 44, "date": "2021-08-06", "day": "ศุกร์", "hour": 19, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "(-)วันที่ 6 ฉีดวัคซีน\n\nชักตอน 19.18-19.22\nวัดได้ไข้ 37.3 แล้วค่อย ๆ ขึ้นเป็น 38.1\nชักแบบนิ่งไปตาค้างปากเขียวแล้วค่อยกระตุก\n\nเช็ดตัว ให้ยาลดไข้หยุดเอง\nมีอ้วกตลอด ประมาณ 5-6รอบมีแต่ยาเรื่องจากห่างมื้อนมออกปากออกจมูก\nให้ยาลดไข้ทุก 6 ชั่วโมง\n\nห่างชักล่าสุด37วัน"}, {"id": 45, "date": "2021-08-09", "day": "จันทร์", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "(-)วันที่ 9 สิงหา\nชักตอน16.28-16.35\nกำลังให้ยาลดไข้ ชัก นิ่งตาค้าง  \nแล้วค่อยกระตุกแรงขึ้น \nเช็ดตัว หยุดเอง\nอ้วกหลังหยุดประมาณ2-3รอบมีนมออกมาเยอะ \nรู้สึกตัวร้องไห้ตอน17.40\nให้ยากันชักช่วง6โมงเนื่องจาดให้ห่างตอนอ้วก\n\n"}, {"id": 46, "date": "2021-08-12", "day": "พฤหัสบดี", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 ตอน 13:59-14:01 น. ตาลอยค้าง ปากเขียว"}, {"id": 47, "date": "2021-08-12", "day": "พฤหัสบดี", "hour": 18, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 ชัก 18:37-18:39 น. กระตุกทั้งตัว ค้างเฮือก"}, {"id": 48, "date": "2021-08-12", "day": "พฤหัสบดี", "hour": 19, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "รอบ 3 ชัก 19:17-19:20 น. ตาค้างเฮือกทั้งตัว"}, {"id": 49, "date": "2021-08-18", "day": "พุธ", "hour": 12, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "แผลบวมมาก มีไข้ต่ำ ๆ ตอนเช้ามาหาหมอ\nกลับบ้านไป ทำแผลรู้สึกแผลบวมมาก ๆ  ให้ยาลดไขตอน12.30เช็ดตัว ชักตาค้าง เขียวเกร็งกระตุกทั้งตัว3นาที หยุดตอน12.38มาโรงพยาบาล หมอให้กินTopamax3เม็ด วัดไข้ได้38  รอโควิด ตอนให้ยาร้องเจ็บมากเลยงดนมเช้าวันที่19เปิดแผล สายหลุด หมอมาใส่ให้ใหม่บวมอักเสบเยอะ งดให้นมทางสาย ให้มีทางng วันที่20ทำแผลแบบใส่เจลไปที่แผล แผลดีขึ้น ตอนเย็นฝาเปิดนมหกออกมา วันที่21ทำแผล แผลดีขึ้น ให้ยาฆ่าเชื้อทางIV"}, {"id": 50, "date": "2021-09-30", "day": "พฤหัสบดี", "hour": 19, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "30 กันยายน 64\nมินไข้37.5\nชักตอน19.46\nหยุด19.48\nให้ยาลดไข้ 20.00\n\nมินนอนให้นมดูมือถือ แล้วเหมือนชักกระตุกแขนขา\n ตูนเห็นแต่ตอนเอ๋วิ่งมา ก็นิ่งค้างเลย"}, {"id": 51, "date": "2021-10-01", "day": "ศุกร์", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "1 ตุลาคม64 \nชัก16.46\nหยุดชัก16.47\nวัดไข้ได้37.4\n16.50 พร้อมยา5โมงเย็น\n16.57เช็ดตัวแล้ววัดไข้37.8\nอึไป 4รอบ"}, {"id": 52, "date": "2021-11-20", "day": "เสาร์", "hour": 18, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 18:10-18:12 น. ตาค้างกระตุก ปากเขียว"}, {"id": 53, "date": "2021-11-20", "day": "เสาร์", "hour": 18, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 18:46-18:48 น. ตาค้างกระตุกแรงมาก"}, {"id": 54, "date": "2021-11-20", "day": "เสาร์", "hour": 19, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "รอบ 3 เวลา 19:17-19:19 น. ปากเขียว 2-3 นาที"}, {"id": 55, "date": "2021-11-25", "day": "พฤหัสบดี", "hour": 19, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ขัก ประมาณ 19.10-19.12 \nชักตาค้างกระตุกทั้งตัว\nปากเขียว\nนาน1-2 นาที"}, {"id": 56, "date": "2021-12-08", "day": "พุธ", "hour": 15, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "8 ธ.ค.64\nมินชัก 15.11-15.13 \nกำลึงยืนเล่นเกาะกำแพง\nเขียว วัดไข้36.6 พอหยุดให้ยาลดไข้กับdepakineไป สักพักอ้วก"}, {"id": 57, "date": "2021-12-22", "day": "พุธ", "hour": 4, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชักแบบนิ่งค้าง4.49น.\n4.51อ้วกแหวะ\nไข้36.5"}, {"id": 58, "date": "2022-02-26", "day": "เสาร์", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชักแบบทั้งตัวตาค้าง เขียว\nเวลา 16.07-16.09 หยุดเองแล้วหลับ\nตื่นมาอ้วก 4.26 \nไข้36.5"}, {"id": 59, "date": "2022-03-02", "day": "พุธ", "hour": null, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "วันที่ 2 มี.ค. ชักครั้งที่ 1 (ช่วง 11 โมง) [เริ่ม Event]"}, {"id": 60, "date": "2022-03-02", "day": "พุธ", "hour": null, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "วันที่ 2 มี.ค. ชักครั้งที่ 2 ตอน 12:23 น."}, {"id": 61, "date": "2022-03-02", "day": "พุธ", "hour": null, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "วันที่ 2 มี.ค. ชักครั้งที่ 3 ตอน เที่ยงคืน"}, {"id": 62, "date": "2022-03-02", "day": "พุธ", "hour": null, "vns": "No", "category": "ชัก", "round": 4, "doctor_count": 0, "note": "วันที่ 2 มี.ค. ชักครั้งที่ 4 ตอน เที่ยงคืน 28"}, {"id": 63, "date": "2022-03-03", "day": "พฤหัสบดี", "hour": 4, "vns": "No", "category": "ชัก", "round": 5, "doctor_count": 0, "note": "วันที่ 3 มี.ค. ชักครั้งที่ 5 ตอน ตี 4:48 น."}, {"id": 64, "date": "2022-03-03", "day": "พฤหัสบดี", "hour": 4, "vns": "No", "category": "ชัก", "round": 6, "doctor_count": 0, "note": "วันที่ 3 มี.ค. ชักครั้งที่ 6 ตอน ตี 5:11 น."}, {"id": 65, "date": "2022-03-03", "day": "พฤหัสบดี", "hour": 4, "vns": "No", "category": "ชัก", "round": 7, "doctor_count": 0, "note": "วันที่ 3 มี.ค. ชักครั้งที่ 7 ตอน 14:18 น."}, {"id": 66, "date": "2022-03-06", "day": "อาทิตย์", "hour": null, "vns": "No", "category": "ชัก", "round": 8, "doctor_count": 0, "note": "วันที่ 6 มี.ค. ชักครั้งที่ 8 ตอน 20:03-20:05 น. ไข้ 38.5"}, {"id": 67, "date": "2022-03-26", "day": "เสาร์", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "26 มีนาคม ชัก ตอน16.12 ไม่มีไข้ 36.7แต่อุณภูมิห้อง 32 องศา"}, {"id": 68, "date": "2022-04-09", "day": "เสาร์", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 9 เม.ย. 65 ตอน 14.04-14.07\nพาไปข้างนอก อากาศร้อนมาก\nชักเขียว สักพัก อ้วก 2 รอบ"}, {"id": 69, "date": "2022-05-17", "day": "อังคาร", "hour": 6, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 17 พ.ค. 65 ตอน 6.30\nนอนอยู่แล้ว ชักมีเสียงร้อง แล้วกระตุก ไม่รู้ตัว ตาค้าง เขียว\nชักเขียว สักพัก อ้วก 2 รอบ "}, {"id": 70, "date": "2022-05-19", "day": "พฤหัสบดี", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 19 พ.ค. 65 ตอน 16.35 หยุด 16.37\nไข้37.7"}, {"id": 71, "date": "2022-05-23", "day": "จันทร์", "hour": 9, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ครั้งที่ 1 ตอน 09:05-09:07 น. กำลังล้างก้น ไข้ 37.3"}, {"id": 72, "date": "2022-05-23", "day": "จันทร์", "hour": 9, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "ครั้งที่ 2 ตอน 09:49-09:51 น. วัดไข้ 37.7"}, {"id": 73, "date": "2022-05-26", "day": "พฤหัสบดี", "hour": 4, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 26 พ.ค. 65 \nตอนตี 4.50\nไข้วัดได้39.1เช็ดตัวให้ยา ไข้ขึ้นไป39.6\n"}, {"id": 74, "date": "2022-06-01", "day": "พุธ", "hour": 13, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 31 พ.ค 65\nตอน13.16-13.18\nไข้วัดได้38.6\n"}, {"id": 75, "date": "2022-06-04", "day": "เสาร์", "hour": 11, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 4 มิ.ย 65\nตอน11.03-11.05\nไข้วัดได้ 39\nอ้วกนม \nให้นมรอบบ่าย 2 ก็อ้วกนม\nเสมหะเหนียว (ให้น้ำเกลิอแร่เป็นช่วง ๆ )\nขี้มูกนิดหน่อยตอนเช้า\n"}, {"id": 76, "date": "2022-06-26", "day": "อาทิตย์", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 26 มิ.ย 65\nตอนอาบน้ำ) 14.52-14.54\nไข้วัดได้ 36.7"}, {"id": 77, "date": "2022-06-28", "day": "อังคาร", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 28 มิ.ย 65\nตอนหาหมอ) 14.36-14.38\nไข้วัดได้ 36.2"}, {"id": 78, "date": "2022-08-20", "day": "เสาร์", "hour": null, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 ก่อนหน้านี้เลือดกำเดาไหล"}, {"id": 79, "date": "2022-08-20", "day": "เสาร์", "hour": null, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 ชักซ้ำ"}, {"id": 80, "date": "2022-08-20", "day": "เสาร์", "hour": null, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "รอบ 3 ชักซ้ำ"}, {"id": 81, "date": "2022-09-14", "day": "พุธ", "hour": null, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1"}, {"id": 82, "date": "2022-09-14", "day": "พุธ", "hour": null, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 ชักซ้ำ"}, {"id": 83, "date": "2022-09-17", "day": "เสาร์", "hour": null, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": ""}, {"id": 84, "date": "2022-10-17", "day": "จันทร์", "hour": 13, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ไปล้างก้น กำลังยืนใส่แพมเพิส ค่อย ๆ ล้มลง มีเสียงเฮือก ๆ เกร็งตาค้าง มือกำกระตุก 2 ข้าง เขียว\nอ้วก 2 รอบ\n\"ชัก 13.51-13.52 วัดไข้ 37\n\""}, {"id": 85, "date": "2022-11-07", "day": "จันทร์", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "\nชัก 16.12-16.14 "}, {"id": 86, "date": "2022-11-16", "day": "พุธ", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 16 พ.ย.65 ตอนไปซื้อของป้าพัน อากาศไม่ร้อนนะครึ้มฟ้า 14.06-14.08"}, {"id": 87, "date": "2023-01-14", "day": "เสาร์", "hour": 6, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชักรอบ 1 เวลา 06:21-06:23 น. ไข้ 37.8"}, {"id": 88, "date": "2023-01-14", "day": "เสาร์", "hour": 6, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "ชักอีกรอบ 2 เวลา 06:53-06:55 น."}, {"id": 89, "date": "2023-04-19", "day": "พุธ", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ท้องเสีย\nอ้วก\nชัก16.12หยุด16.13"}, {"id": 90, "date": "2023-05-04", "day": "พฤหัสบดี", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "อาบน้ำเล่นคึกมากดีใจมาก ชัก16.17"}, {"id": 91, "date": "2023-05-10", "day": "พุธ", "hour": 21, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 21.09 หยุด 21.10 ไข้ 37.9 มีน้ำมูกใส ๆตั้งแต่วันที่ 9ไม่มีไอ\nวันที่ 11 ปรับยา Depakine เป็น 1 1 1"}, {"id": 92, "date": "2023-05-17", "day": "พุธ", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 14.02 หยุด 14.03 เดินเล่นเยอะ พอเข้าห้องแอร์ชัก"}, {"id": 93, "date": "2023-07-08", "day": "เสาร์", "hour": 8, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 8.00 หยุด  เดินเล่นเยอะ พอเข้าห้องชัก เหมือนจะเป็นไข้"}, {"id": 94, "date": "2023-07-09", "day": "อาทิตย์", "hour": 3, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก ตี 3.30 หยุด 3.31 มีไข้ เสมหะ น้ำมูกเยอะ"}, {"id": 95, "date": "2023-07-18", "day": "อังคาร", "hour": 11, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 11.14หยุด 11.15มีไข้"}, {"id": 96, "date": "2023-07-29", "day": "เสาร์", "hour": null, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 1 นาที ตอนอาบน้ำ"}, {"id": 97, "date": "2023-08-05", "day": "เสาร์", "hour": 15, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 1 นาทีี 15.30-15.31"}, {"id": 98, "date": "2023-08-13", "day": "อาทิตย์", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 16.22-16.24"}, {"id": 99, "date": "2023-09-04", "day": "จันทร์", "hour": null, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก หลังหาหมอเสร็จ"}, {"id": 100, "date": "2023-09-17", "day": "อาทิตย์", "hour": 19, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก หลังล้างก้น 19.53-19.55 ชักตาค้างนาน เขียว"}, {"id": 101, "date": "2023-09-21", "day": "พฤหัสบดี", "hour": 11, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 11:04-11:06 น. ตาค้าง กระตุก เขียว"}, {"id": 102, "date": "2023-09-21", "day": "พฤหัสบดี", "hour": 11, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 11:48-11:51 น. เกร็งกระตุกแรง เขียว"}, {"id": 103, "date": "2023-09-22", "day": "ศุกร์", "hour": 6, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลาตี 5 กว่า นาน 2 นาที"}, {"id": 104, "date": "2023-09-22", "day": "ศุกร์", "hour": 6, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 06:31-06:33 น."}, {"id": 105, "date": "2023-09-23", "day": "เสาร์", "hour": 17, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชักรอบ 17.28 ไข้ขึ้น"}, {"id": 106, "date": "2023-09-24", "day": "อาทิตย์", "hour": 3, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 03:27 น. ประมาณ 1 นาที"}, {"id": 107, "date": "2023-09-24", "day": "อาทิตย์", "hour": 19, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 19:30 น. ไข้ขึ้น"}, {"id": 108, "date": "2023-10-21", "day": "เสาร์", "hour": 17, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 17.43-17.45  กำลังอาบน้ำ"}, {"id": 109, "date": "2023-11-18", "day": "เสาร์", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 16.44-16.45  กำลังเดินเล่นหน้าบ้าน"}, {"id": 110, "date": "2023-12-24", "day": "อาทิตย์", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 16.05-16.06  กำลังเช็ดตัวอาบน้ำเสร็จ อ้วก"}, {"id": 111, "date": "2023-12-26", "day": "อังคาร", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 16:49-16:51 น. วัดไข้ 36.5"}, {"id": 112, "date": "2023-12-26", "day": "อังคาร", "hour": 17, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 17:28-17:30 น. วัดไข้ 38.0"}, {"id": 113, "date": "2024-01-01", "day": "จันทร์", "hour": 5, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "1 ม.ค. รอบ 1 เวลา 05:46 น. [เริ่ม Event]"}, {"id": 114, "date": "2024-01-01", "day": "จันทร์", "hour": 5, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "1 ม.ค. รอบ 2 เวลา 06:40 น."}, {"id": 115, "date": "2024-01-01", "day": "จันทร์", "hour": 5, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "1 ม.ค. รอบ 3 เวลา 18:48 น."}, {"id": 116, "date": "2024-01-01", "day": "จันทร์", "hour": 5, "vns": "No", "category": "ชัก", "round": 4, "doctor_count": 0, "note": "1 ม.ค. รอบ 4 เวลา 19:36 น."}, {"id": 117, "date": "2024-01-02", "day": "อังคาร", "hour": 1, "vns": "No", "category": "ชัก", "round": 5, "doctor_count": 0, "note": "2 ม.ค. รอบ 5 เวลา 01:54 น. ไข้ 38"}, {"id": 118, "date": "2024-01-02", "day": "อังคาร", "hour": 1, "vns": "No", "category": "ชัก", "round": 6, "doctor_count": 0, "note": "2 ม.ค. รอบ 6 เวลา 15:29 น."}, {"id": 119, "date": "2024-02-10", "day": "เสาร์", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 16:49-16:51 น."}, {"id": 120, "date": "2024-02-10", "day": "เสาร์", "hour": 22, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 22:16-22:17 น."}, {"id": 121, "date": "2024-03-12", "day": "อังคาร", "hour": 13, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 1นาทีตั้งแต่ 13.26-13.27 น  ไปหาหมอ"}, {"id": 122, "date": "2024-03-25", "day": "จันทร์", "hour": 19, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 1นาทีตั้งแต่ 19.32-19.34น  ไม่มีไข้เล่นอยู่ดีๆก็ชักคว่ำหน้าเขียวกระตุกแขน 2 ข้างกำแล้วกระตุกตาค้าง"}, {"id": 123, "date": "2024-03-31", "day": "อาทิตย์", "hour": 15, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 1นาทีตั้งแต่ 15.44-15.45 น.  ไม่มีไข้เล่นอยู่กำลังปีนเล่น ชักเสียงเฮือก ทั้งตัว กระตุกตาค้าง"}, {"id": 124, "date": "2024-04-11", "day": "พฤหัสบดี", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 1นาทีตั้งแต่ 16.41-16.42น.  ไม่มีไข้ ชักแบบ มีเสียงร้อง ฮื้อๆๆ แล้วก็ตาค้าง ไม่มีกระตุก แขนขาไม่ขยับ"}, {"id": 125, "date": "2024-04-14", "day": "อาทิตย์", "hour": 19, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 1 นาทีตั้งแต่ 19.31 น. เกร็ง กระตุกเฮือก มีเสียง"}, {"id": 126, "date": "2024-04-24", "day": "พุธ", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 1 นาทีตั้งแต่ 16.08-16.10 ไม่มีไข้ 36.7"}, {"id": 127, "date": "2024-05-02", "day": "พฤหัสบดี", "hour": 19, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 1 นาทีตั้งแต่ ชัก 19.58-ชัก 19.59 ไม่มีไข้ 36.8 เกร็งกระตุกทั้งตัว"}, {"id": 128, "date": "2024-05-09", "day": "พฤหัสบดี", "hour": 10, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชักค้าง\n10.51\nหยุดชัก \n10.52"}, {"id": 129, "date": "2024-05-14", "day": "อังคาร", "hour": 20, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชักค้าง\n20.16-2.18 ค้างนิ่ง  นี่งเล่นแล้วสั่นมีเสียง "}, {"id": 130, "date": "2024-05-18", "day": "เสาร์", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชักค้าง\n16.48-16.50 เล่นอยู่ ชักหน้าคว่ำ กระตุก"}, {"id": 131, "date": "2024-05-20", "day": "จันทร์", "hour": 15, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชักค้างกระตุกมีเสียงเฮือก ๆ ตอนแรก\n15.22-15.26 ชักนาน 4 นาที หลับอยู่ ไม่มีไข้"}, {"id": 132, "date": "2024-05-25", "day": "เสาร์", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชักตาค้างนิ่ง sat ตก 47\n16.45-16.47ชักนาน 2นาที หลับอยู่ ไม่มีไข้"}, {"id": 133, "date": "2024-06-04", "day": "อังคาร", "hour": 17, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 17.03 \nหยุด 17.04\nวัดไข้ 36.1 ไม่มีไข้\nSat 100 กับ 144\nนั่ง ๆ อยู่แล้วตาเหลือกแล้วส่งเสียงฮือ ๆ แล้วชักทั้งตัว"}, {"id": 134, "date": "2024-06-11", "day": "อังคาร", "hour": 15, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 15.46\nหยุด15.47"}, {"id": 135, "date": "2024-06-20", "day": "พฤหัสบดี", "hour": 11, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 11.01\nหยุด 11.03"}, {"id": 136, "date": "2024-06-28", "day": "ศุกร์", "hour": 15, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 15.31\nหยุด15.32"}, {"id": 137, "date": "2024-07-09", "day": "อังคาร", "hour": 18, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "9 ก.ค. รอบ 1 เวลา 18:48 น. [เริ่ม Event]"}, {"id": 138, "date": "2024-07-09", "day": "อังคาร", "hour": 19, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "9 ก.ค. รอบ 2 เวลา 19:24 น."}, {"id": 139, "date": "2024-07-10", "day": "พุธ", "hour": 14, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "10 ก.ค. รอบ 3 เวลา 14:21 น."}, {"id": 140, "date": "2024-07-10", "day": "พุธ", "hour": 14, "vns": "No", "category": "ชัก", "round": 4, "doctor_count": 0, "note": "10 ก.ค. รอบ 4 เวลา 14:45 น."}, {"id": 141, "date": "2024-07-11", "day": "พฤหัสบดี", "hour": 0, "vns": "No", "category": "ชัก", "round": 5, "doctor_count": 0, "note": "ช่วง 9-11 ก.ค. ชักรอบ 5"}, {"id": 142, "date": "2024-07-11", "day": "พฤหัสบดี", "hour": 0, "vns": "No", "category": "ชัก", "round": 6, "doctor_count": 0, "note": "ช่วง 9-11 ก.ค. ชักรอบ 6"}, {"id": 143, "date": "2024-07-11", "day": "พฤหัสบดี", "hour": 0, "vns": "No", "category": "ชัก", "round": 7, "doctor_count": 0, "note": "ช่วง 9-11 ก.ค. ชักรอบ 7"}, {"id": 144, "date": "2024-07-11", "day": "พฤหัสบดี", "hour": 0, "vns": "No", "category": "ชัก", "round": 8, "doctor_count": 0, "note": "ช่วง 9-11 ก.ค. ชักรอบ 8"}, {"id": 145, "date": "2024-07-11", "day": "พฤหัสบดี", "hour": 0, "vns": "No", "category": "ชัก", "round": 9, "doctor_count": 0, "note": "ช่วง 9-11 ก.ค. ชักรอบ 9"}, {"id": 146, "date": "2024-07-11", "day": "พฤหัสบดี", "hour": 0, "vns": "No", "category": "ชัก", "round": 10, "doctor_count": 0, "note": "ช่วง 9-11 ก.ค. ชักรอบ 10"}, {"id": 147, "date": "2024-07-11", "day": "พฤหัสบดี", "hour": 0, "vns": "No", "category": "ชัก", "round": 11, "doctor_count": 0, "note": "ช่วง 9-11 ก.ค. ชักรอบ 11"}, {"id": 148, "date": "2024-07-11", "day": "พฤหัสบดี", "hour": 0, "vns": "No", "category": "ชัก", "round": 12, "doctor_count": 0, "note": "ช่วง 9-11 ก.ค. ชักรอบ 12"}, {"id": 149, "date": "2024-07-11", "day": "พฤหัสบดี", "hour": 0, "vns": "No", "category": "ชัก", "round": 13, "doctor_count": 0, "note": "ช่วง 9-11 ก.ค. ชักรอบ 13"}, {"id": 150, "date": "2024-08-01", "day": "พฤหัสบดี", "hour": 15, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 15:47-15:48 น."}, {"id": 151, "date": "2024-08-01", "day": "พฤหัสบดี", "hour": 15, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 16:10 น."}, {"id": 152, "date": "2024-08-01", "day": "พฤหัสบดี", "hour": 15, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "รอบ 3 เวลา 16:28 น."}, {"id": 153, "date": "2024-08-01", "day": "พฤหัสบดี", "hour": 15, "vns": "No", "category": "ชัก", "round": 4, "doctor_count": 0, "note": "รอบ 4 เวลา 16:46 น."}, {"id": 154, "date": "2024-08-01", "day": "พฤหัสบดี", "hour": 15, "vns": "No", "category": "ชัก", "round": 5, "doctor_count": 0, "note": "รอบ 5 เวลา 17:27 น."}, {"id": 155, "date": "2024-08-01", "day": "พฤหัสบดี", "hour": 15, "vns": "No", "category": "ชัก", "round": 6, "doctor_count": 0, "note": "รอบ 6 เวลา 19:55 น."}, {"id": 156, "date": "2024-08-07", "day": "พุธ", "hour": 4, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "7 ส.ค. รอบ 1 เวลา 04:15 น. [เริ่ม Event]"}, {"id": 157, "date": "2024-08-07", "day": "พุธ", "hour": 4, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "7 ส.ค. รอบ 2 เวลา 10:52 น."}, {"id": 158, "date": "2024-08-08", "day": "พฤหัสบดี", "hour": 3, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "8 ส.ค. รอบ 3 เวลา 03:32 น."}, {"id": 159, "date": "2024-08-08", "day": "พฤหัสบดี", "hour": 3, "vns": "No", "category": "ชัก", "round": 4, "doctor_count": 0, "note": "8 ส.ค. รอบ 4 เวลา 11:46 น."}, {"id": 160, "date": "2024-08-09", "day": "ศุกร์", "hour": 5, "vns": "No", "category": "ชัก", "round": 5, "doctor_count": 0, "note": "9 ส.ค. รอบ 5 เวลา 05:37 น."}, {"id": 161, "date": "2024-08-13", "day": "อังคาร", "hour": 7, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 07:03 น. ไข้หวัดใหญ่ A"}, {"id": 162, "date": "2024-08-13", "day": "อังคาร", "hour": 7, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "ชักซ้ำรอบ 2"}, {"id": 163, "date": "2024-08-13", "day": "อังคาร", "hour": 7, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "ชักซ้ำรอบ 3"}, {"id": 164, "date": "2024-08-13", "day": "อังคาร", "hour": 7, "vns": "No", "category": "ชัก", "round": 4, "doctor_count": 0, "note": "ชักซ้ำรอบ 4"}, {"id": 165, "date": "2024-08-13", "day": "อังคาร", "hour": 7, "vns": "No", "category": "ชัก", "round": 5, "doctor_count": 0, "note": "ชักซ้ำรอบ 5"}, {"id": 166, "date": "2024-09-10", "day": "อังคาร", "hour": 12, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 12.48 ชัก 2 นาที ระหว่างรอหาหมอ\nไม่มีไข้ น่าจะเพราะนอนน้อยหรืออากาศร้อน"}, {"id": 167, "date": "2024-09-24", "day": "อังคาร", "hour": 17, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก17.16 หยุด17.17 ไข้ 36.3\nกินนมเสร็จกำลังนอน ชักเริ่มจากแขน แล้วไปทั้งตัว"}, {"id": 168, "date": "2024-09-25", "day": "พุธ", "hour": 4, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก04.52หยุดไข้ 4.54\nมีไม่สบายไข้ 38"}, {"id": 169, "date": "2024-10-03", "day": "พฤหัสบดี", "hour": 1, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 00:40 น."}, {"id": 170, "date": "2024-10-03", "day": "พฤหัสบดี", "hour": 1, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 01:04 น."}, {"id": 171, "date": "2024-10-03", "day": "พฤหัสบดี", "hour": 1, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "รอบ 3 เวลา 01:23 น."}, {"id": 172, "date": "2024-10-16", "day": "พุธ", "hour": 20, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก20.02 น้ำลายไหลชักค้างประมาณ1นาที ยังไม่มีไข้แต้มีเสมหะเขียว มินชัก 21.51-21.52 ชัก 3.47-3.48"}, {"id": 173, "date": "2024-10-17", "day": "พฤหัสบดี", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชัก 14.31-14.32 ชัก 15.19-15.20 ไข้ 38ให้ยา Conazeamครึ่งเม็ด"}, {"id": 174, "date": "2024-10-24", "day": "พฤหัสบดี", "hour": 19, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชัก 19.48-ประมาณ 1 นาที ไข้ 37.8"}, {"id": 175, "date": "2024-11-03", "day": "อาทิตย์", "hour": 6, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชัก 6.15-6.16 ชักค้าง ล้างก้นเพิ่งเสร็จ"}, {"id": 176, "date": "2024-11-10", "day": "อาทิตย์", "hour": 8, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชัก 8.03 ชักค้าง เล่นอยู่แล้วชัก มีเสียงเฮือก ๆ ชักรอบ 2 10.38 น - 10:39 นไม่มีไข้แต่หัวใจเต้น 160 ซักรอบ 3 ตอนเวลา 11:47 น - 11:48 น."}, {"id": 177, "date": "2024-11-16", "day": "เสาร์", "hour": 21, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 21:02 น."}, {"id": 178, "date": "2024-11-16", "day": "เสาร์", "hour": 21, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 21:32 น."}, {"id": 179, "date": "2024-11-22", "day": "ศุกร์", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชัก ชัก14.42 หยุด14.43 เมื่อวานไปโรงพยาบาล/ส่งโทรศัพท์ให้เปลี่ยนเพลงแล้วชักเลย"}, {"id": 180, "date": "2024-12-01", "day": "อาทิตย์", "hour": 15, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 15:10 น."}, {"id": 181, "date": "2024-12-01", "day": "อาทิตย์", "hour": 15, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 18:38 น."}, {"id": 182, "date": "2024-12-09", "day": "จันทร์", "hour": 11, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 11.46 หยุด 11.48 ไม่มีไข้ นอนคลุมผ้าเล่นแล้วชักแบบมีอาการเกร็ง ส่งเสียง"}, {"id": 183, "date": "2024-12-15", "day": "อาทิตย์", "hour": 18, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 18.07-18.08 ล้างก้นแล้วชัก"}, {"id": 184, "date": "2024-12-18", "day": "พุธ", "hour": 9, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 9.28\nหยุด 9.29"}, {"id": 185, "date": "2024-12-25", "day": "พุธ", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก14.58\nหยุด14.59 อยู่ในเครื่องหัดเดิน"}, {"id": 186, "date": "2024-12-30", "day": "จันทร์", "hour": 20, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 20.21\nหยุด20.22 ชักค้าง"}, {"id": 187, "date": "2025-01-05", "day": "อาทิตย์", "hour": 17, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 17.15 หยุด17.17 ชักตาค้าง ไม่มีไข้"}, {"id": 188, "date": "2025-01-07", "day": "อังคาร", "hour": 21, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 21.39หยุด21.40 ชักตาค้าง เกร็ง ไม่มีไข้"}, {"id": 189, "date": "2025-01-10", "day": "ศุกร์", "hour": 19, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 19:11 น."}, {"id": 190, "date": "2025-01-10", "day": "ศุกร์", "hour": 19, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 23:15 น."}, {"id": 191, "date": "2025-01-16", "day": "พฤหัสบดี", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชัก 14.32-14.33 ชักแบบ ส่งเสียง เกร็งกระตุกช่วงแรกแล้วก็ค้าง"}, {"id": 192, "date": "2025-01-18", "day": "เสาร์", "hour": 22, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชัก 22.04-ชักแบบ ส่งเสียง เกร็งกระตุก"}, {"id": 193, "date": "2025-01-23", "day": "พฤหัสบดี", "hour": 19, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชักชัก 19.10 หยุด 19.12"}, {"id": 194, "date": "2025-01-24", "day": "ศุกร์", "hour": 10, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชักชัก 10.56"}, {"id": 195, "date": "2025-01-26", "day": "อาทิตย์", "hour": 7, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "26 ม.ค. รอบ 1 เวลา 07:42 น. [เริ่ม Event]"}, {"id": 196, "date": "2025-01-26", "day": "อาทิตย์", "hour": 7, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "26 ม.ค. รอบ 2 เวลา 08:06 น."}, {"id": 197, "date": "2025-01-27", "day": "จันทร์", "hour": 12, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "27 ม.ค. รอบ 3 เวลา 22:07 น."}, {"id": 198, "date": "2025-01-27", "day": "จันทร์", "hour": 12, "vns": "No", "category": "ชัก", "round": 4, "doctor_count": 0, "note": "27 ม.ค. รอบ 4 เวลา 22:28 น."}, {"id": 199, "date": "2025-01-28", "day": "อังคาร", "hour": 2, "vns": "No", "category": "ชัก", "round": 5, "doctor_count": 0, "note": "28 ม.ค. รอบ 5 เวลา 02:08 น."}, {"id": 200, "date": "2025-01-28", "day": "อังคาร", "hour": 2, "vns": "No", "category": "ชัก", "round": 6, "doctor_count": 0, "note": "28 ม.ค. รอบ 6 เวลา 05:07 น."}, {"id": 201, "date": "2025-02-12", "day": "พุธ", "hour": 17, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 17:12 น."}, {"id": 202, "date": "2025-02-12", "day": "พุธ", "hour": 17, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 17:41 น."}, {"id": 203, "date": "2025-02-12", "day": "พุธ", "hour": 17, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "รอบ 3 เวลา 19:41 น."}, {"id": 204, "date": "2025-02-12", "day": "พุธ", "hour": 17, "vns": "No", "category": "ชัก", "round": 4, "doctor_count": 0, "note": "รอบ 4 เวลา 20:01 น."}, {"id": 205, "date": "2025-02-23", "day": "อาทิตย์", "hour": 15, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ไม่มีไข้ ยืนเล่นอยู่แล้วชักแป๊บเดียว 15.26-15.27"}, {"id": 206, "date": "2025-03-02", "day": "อาทิตย์", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 16.03-16.04 กำลังออกจากลิฟท์แล้วค่ะ"}, {"id": 207, "date": "2025-03-04", "day": "อังคาร", "hour": 13, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชัก 13.43-13.44อยู่โรงพยาบาล"}, {"id": 208, "date": "2025-03-15", "day": "เสาร์", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชัก 14.02-14.03 นอนอยู่แล้วชัก อึเหลว 3 รอบSYS :126\nDIA:91\nPLUS:139  ไม่มีไข้ 36.4°c  O2 :100  / PRbmp :136"}, {"id": 209, "date": "2025-05-08", "day": "พฤหัสบดี", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชัก 14.40-14.41 หาหมอแล้วชัก"}, {"id": 210, "date": "2025-05-13", "day": "อังคาร", "hour": 21, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชัก 21.11-21.11  "}, {"id": 211, "date": "2025-05-23", "day": "ศุกร์", "hour": 0, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "0.40-0.41 มินชัก ไข้ 37.8"}, {"id": 212, "date": "2025-05-29", "day": "พฤหัสบดี", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 14:03 น."}, {"id": 213, "date": "2025-05-29", "day": "พฤหัสบดี", "hour": 14, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 16:26 น."}, {"id": 214, "date": "2025-06-18", "day": "พุธ", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 16.45 หยุด 16.46 ไข้ 36.7 Sat 97 108"}, {"id": 215, "date": "2025-06-25", "day": "พุธ", "hour": 12, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก12.36\nหยุด12.37 อยู่ในรถยนต์ร้อน"}, {"id": 216, "date": "2025-07-01", "day": "อังคาร", "hour": 15, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 15.22 หยุด 15.23\nไข้ 36"}, {"id": 217, "date": "2025-07-04", "day": "ศุกร์", "hour": 15, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชัก 15.27-15.28 ไม่มีไข้ 36.2 เดินไปข้างนอก"}, {"id": 218, "date": "2025-07-08", "day": "อังคาร", "hour": 15, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก15.29\nหยุด15.30\nไข้ 36.0"}, {"id": 219, "date": "2025-07-10", "day": "พฤหัสบดี", "hour": 18, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 18:04 น."}, {"id": 220, "date": "2025-07-10", "day": "พฤหัสบดี", "hour": 18, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 21:27 น."}, {"id": 221, "date": "2025-07-13", "day": "อาทิตย์", "hour": 6, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 06:27 น."}, {"id": 222, "date": "2025-07-13", "day": "อาทิตย์", "hour": 6, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 15:03 น."}, {"id": 223, "date": "2025-07-14", "day": "จันทร์", "hour": 7, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก7.35\nหยุด15.30\nไข้ 36.0"}, {"id": 224, "date": "2025-07-16", "day": "พุธ", "hour": 9, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 9.48"}, {"id": 225, "date": "2025-07-18", "day": "ศุกร์", "hour": 6, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 6.55"}, {"id": 226, "date": "2025-07-19", "day": "เสาร์", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 14.33"}, {"id": 227, "date": "2025-07-23", "day": "พุธ", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก16.47\nหยุด16.48"}, {"id": 228, "date": "2025-07-30", "day": "พุธ", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 16.31\nหยุด 16.32"}, {"id": 229, "date": "2025-07-31", "day": "พฤหัสบดี", "hour": 11, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชักตอน 11.49  ตอนนั่งเล่นอยู่"}, {"id": 230, "date": "2025-08-01", "day": "ศุกร์", "hour": 10, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 10.51\nหยุด 10.52"}, {"id": 231, "date": "2025-08-05", "day": "อังคาร", "hour": 17, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก17.07\nหยุด17.08\n"}, {"id": 232, "date": "2025-08-06", "day": "พุธ", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 14.31\nหยุด 14.32"}, {"id": 233, "date": "2025-08-12", "day": "อังคาร", "hour": 16, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 16.14 ถึง 16.15 ชักค้างไม่มีเสียง"}, {"id": 234, "date": "2025-08-27", "day": "พุธ", "hour": 21, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 21.35ถึง 21.36 ชักค้างไม่มีเสียง sat ตก หลังชักก็ฟื้นตัวเร็ว "}, {"id": 235, "date": "2025-09-01", "day": "จันทร์", "hour": 19, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 19.45 นั่งที่เก้าอี้แล้ว หลับไปเลย  อ้วกออกจมูก"}, {"id": 236, "date": "2025-09-03", "day": "พุธ", "hour": null, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": ""}, {"id": 237, "date": "2025-09-10", "day": "พุธ", "hour": 10, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 10:42 น."}, {"id": 238, "date": "2025-09-10", "day": "พุธ", "hour": 10, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 13:18 น."}, {"id": 239, "date": "2025-09-10", "day": "พุธ", "hour": 10, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "รอบ 3 เวลา 19:15 น."}, {"id": 240, "date": "2025-09-11", "day": "พฤหัสบดี", "hour": 14, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 14.31"}, {"id": 241, "date": "2025-09-16", "day": "อังคาร", "hour": 5, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "16 ก.ย. รอบ 1 เวลา 05:57 น. [เริ่ม Event]"}, {"id": 242, "date": "2025-09-16", "day": "อังคาร", "hour": 5, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "16 ก.ย. รอบ 2 เวลา 18:04 น."}, {"id": 243, "date": "2025-09-17", "day": "พุธ", "hour": 3, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "17 ก.ย. รอบ 3 เวลา 03:21 น."}, {"id": 244, "date": "2025-09-17", "day": "พุธ", "hour": 3, "vns": "No", "category": "ชัก", "round": 4, "doctor_count": 0, "note": "17 ก.ย. รอบ 4 เวลา 06:37 น."}, {"id": 245, "date": "2025-09-30", "day": "อังคาร", "hour": 10, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 10:51 น."}, {"id": 246, "date": "2025-09-30", "day": "อังคาร", "hour": 10, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 11:08 น."}, {"id": 247, "date": "2025-09-30", "day": "อังคาร", "hour": 10, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "รอบ 3 เวลา 12:10 น."}, {"id": 248, "date": "2025-10-18", "day": "เสาร์", "hour": 18, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "18.14 เหมือนชักแป๊บหนึ่งหลับอยู่ตาค้างนิ่ง ๆไป"}, {"id": 249, "date": "2025-11-02", "day": "อาทิตย์", "hour": 21, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มินชัก 21.33 -21.34 \n1 นาที \nชัก ตาค้าง มีเสียง เฮือก ๆ เกร็งกระตุก ไข้ 37.9 อ้วกนม เพิ่งกินนมหมดไป \n 22.00ให้ยาลดไข้"}, {"id": 250, "date": "2025-11-23", "day": "อาทิตย์", "hour": 18, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "รอบ 1 เวลา 15:50 น."}, {"id": 251, "date": "2025-11-23", "day": "อาทิตย์", "hour": 18, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "รอบ 2 เวลา 18:58 น."}, {"id": 252, "date": "2025-11-23", "day": "อาทิตย์", "hour": 18, "vns": "No", "category": "ชัก", "round": 3, "doctor_count": 0, "note": "รอบ 3 เวลา 23:54 น."}, {"id": 253, "date": "2025-11-24", "day": "จันทร์", "hour": 6, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "เวลา 6.34 ชักประมาณ 1 นาที ชักค้างตาค้างหันไปทางขวา แล้วก็นิ่ง"}, {"id": 254, "date": "2025-12-19", "day": "ศุกร์", "hour": 5, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก ตี 5.14 ตะโกน เห้อ เห้อ 2 รอบที่ได้ยินนแล้วก็ชักค้าง"}, {"id": 255, "date": "2025-12-25", "day": "พฤหัสบดี", "hour": 8, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มีไข้ 38.3 มีอาการสั่น ๆ ก่อน แล้วชัก8.56\nหยุด8.59 เกร็งดระตุกทั้งตัว กัดฟัน"}, {"date": "2026-01-27", "day": "อังคาร", "hour": 19, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มีไข้ 38 ชัก 19:26-19:27 น.", "id": 256}, {"date": "2026-02-09", "day": "จันทร์", "hour": 7, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "มีไข้ ชัก 07:36 น.", "id": 257}, {"date": "2026-02-25", "day": "พุธ", "hour": 20, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 20:35-20:36 น. ชักเกร็งแล้วนิ่ง", "id": 258}, {"date": "2026-02-26", "day": "พฤหัสบดี", "hour": 10, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 10:19-10:20 น. หลับอยู่", "id": 259}, {"date": "2026-03-22", "day": "อาทิตย์", "hour": 7, "vns": "Yes", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 07:05 น. ยืนเล่นน้ำ รูด VNS ไม่ทัน", "id": 260}, {"date": "2026-05-26", "day": "อังคาร", "hour": 2, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชักรอบ 1 เวลาตี 02:44 น. มีไข้", "id": 261}, {"date": "2026-05-26", "day": "อังคาร", "hour": 17, "vns": "No", "category": "ชัก", "round": 2, "doctor_count": 0, "note": "ชักรอบ 2 เวลา 17:16-17:17 น. เริ่มมีไข้", "id": 262}, {"date": "2026-05-31", "day": "อาทิตย์", "hour": 18, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 18:41 น. มีไข้ มีน้ำมูก", "id": 263}, {"date": "2026-06-30", "day": "อังคาร", "hour": 19, "vns": "No", "category": "ชัก", "round": 1, "doctor_count": 1, "note": "ชัก 19:42-19:43 น. หลับอยู่ชักเกร็งกระตุก", "id": 264}];
         let allRecords = [...baselineRecords];
         const liveCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSzlUiEB12iL49Sfbvv9xE6MokobjpDBUISq8bnQ9GbpOGcXY-Qm1I9pJ9W9BLiz4sHNDfA4NAet-O2/pub?output=csv";
@@ -922,6 +997,7 @@
         const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
         let yearlyChartInstance = null;
 
+        // แปลงวันที่ ISO / ค.ศ. เป็นรูปแบบ พ.ศ. เช่น "9 ส.ค. 2569"
         function formatThaiDate(dateStr) {
             if (!dateStr) return "-";
             const parts = dateStr.trim().split('-');
@@ -937,6 +1013,7 @@
             return dateStr;
         }
 
+        
         function switchSubTab(subTabId, btn) {
             document.querySelectorAll('.subtab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.subnav-btn').forEach(el => el.classList.remove('active'));
@@ -963,9 +1040,7 @@
             }
             
             allRecords.forEach(r => {
-                // กรองเอาเฉพาะ "รอบแรก" (นับชัก = 1 หรือ round = 1) เพื่อดูแนวโน้มเวลาเริ่มต้นที่แท้จริง
-                const isPrimary = (parseInt(r.doctor_count) === 1 || parseInt(r.round) === 1);
-                if(r.category === 'ชัก' && isPrimary && r.hour !== null && r.hour >= 0 && r.hour < 24 && r.day) {
+                if(r.category === 'ชัก' && r.hour !== null && r.hour >= 0 && r.hour < 24 && r.day) {
                     if(pivot[r.hour] && pivot[r.hour][r.day] !== undefined) {
                         pivot[r.hour][r.day]++;
                     }
@@ -989,6 +1064,7 @@
                 for(let h=0; h<24; h++) {
                     const cnt = pivot[h][d];
                     const cell = document.createElement('div');
+                    // Color scheme: 1-2 = Blue, 3-4 = Amber, 5+ = Red
                     cell.className = 'h-cell ' + (cnt >= 5 ? 'h-5' : cnt >= 3 ? 'h-3' : cnt >= 1 ? 'h-2' : 'h-0');
                     cell.innerText = cnt > 0 ? cnt : '';
                     cell.title = `${d} เวลา ${h}:00 น. : เกิด ${cnt} ครั้ง`;
@@ -998,30 +1074,23 @@
         }
 
         function updateScorecards() {
+            // ยอดชักสะสม (เฉพาะ category == 'ชัก' ไม่รวมนัดพบแพทย์)
             const seizureRecords = allRecords.filter(r => r.category === 'ชัก');
-            const primaryRecords = seizureRecords.filter(r => parseInt(r.doctor_count) === 1 || parseInt(r.round) === 1);
-            const repeatCount = seizureRecords.length - primaryRecords.length;
+            document.getElementById('cardTotalSeizures').innerText = `${seizureRecords.length} ครั้ง`;
             
-            // แสดงประวัติชักสะสม (รอบแรก + ชักซ้ำ)
-            if (repeatCount > 0) {
-                document.getElementById('cardTotalSeizures').innerHTML = `${primaryRecords.length} <span style="font-size:14px; color:var(--accent-amber);">+${repeatCount}</span> <span style="font-size:12px; font-weight:normal; color:#94a3b8;">ครั้ง</span>`;
-            } else {
-                document.getElementById('cardTotalSeizures').innerText = `${primaryRecords.length} ครั้ง`;
-            }
-            
-            const vnsCount = allRecords.filter(r => r.vns && r.vns.toLowerCase() === 'yes').length;
+            // สถิติการใช้แม่เหล็ก VNS
+            const vnsCount = allRecords.filter(r => r.vns === 'Yes').length;
             document.getElementById('cardVnsCount').innerText = `${vnsCount} ครั้ง`;
 
+            // ระยะห่างชักล่าสุด + แปลงปี พ.ศ.
             if (seizureRecords.length > 0) {
-                const sortedPrimary = [...primaryRecords].sort((a,b) => new Date(b.date) - new Date(a.date));
-                if(sortedPrimary.length > 0) {
-                    const lastSeizure = new Date(sortedPrimary[0].date);
-                    const today = new Date();
-                    const diffTime = Math.abs(today - lastSeizure);
-                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                    document.getElementById('cardSeizureFree').innerText = `${diffDays} วัน`;
-                    document.getElementById('cardLastDate').innerText = `ล่าสุด: ${formatThaiDate(sortedPrimary[0].date)}`;
-                }
+                const sorted = [...seizureRecords].sort((a,b) => new Date(b.date) - new Date(a.date));
+                const lastSeizure = new Date(sorted[0].date);
+                const today = new Date();
+                const diffTime = Math.abs(today - lastSeizure);
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                document.getElementById('cardSeizureFree').innerText = `${diffDays} วัน`;
+                document.getElementById('cardLastDate').innerText = `ล่าสุด: ${formatThaiDate(sorted[0].date)}`;
             }
             document.getElementById('rowCountBadge').innerText = `${allRecords.length} แถว`;
         }
@@ -1035,11 +1104,13 @@
                 const tr = document.createElement('tr');
                 const hText = row.hour !== null ? (row.hour < 10 ? '0'+row.hour : row.hour) + ':00' : '-';
                 
+                // Badges for VNS / Fever / Doctor
                 let pills = '';
                 if(row.vns === 'Yes') pills += '<span class="pill pill-vns">⚡VNS</span> ';
                 if(row.note.includes('ไข้')) pills += '<span class="pill pill-fever">🌡️ไข้</span> ';
                 if(row.category === 'พบแพทย์ (ไม่มีชัก)') pills += '<span class="pill pill-doc">🩺พบหมอ</span> ';
 
+                // Badge รอบชักของวัน และ นับวันชัก (หมอ)
                 let roundBadge = '';
                 if (row.category === 'พบแพทย์ (ไม่มีชัก)') {
                     roundBadge = `<span class="pill pill-doc" style="margin-top:2px;">ไม่นับชัก</span>`;
@@ -1073,7 +1144,7 @@
                 r.date.includes(q) || 
                 formatThaiDate(r.date).toLowerCase().includes(q) ||
                 r.day.toLowerCase().includes(q) ||
-                (r.vns && r.vns.toLowerCase().includes(q))
+                r.vns.toLowerCase().includes(q)
             );
             renderTable(filtered);
         }
@@ -1117,11 +1188,13 @@
                 const repeatHeightPx = stat.total > 0 ? Math.round((stat.repeat / stat.total) * totalHeightPx) : 0;
                 const primaryHeightPx = totalHeightPx - repeatHeightPx;
 
+                // 1. หัวแถวบน (ปี พ.ศ.)
                 const yrEl = document.createElement('div');
                 yrEl.className = 'weather-year-label';
                 yrEl.innerText = thaiYr;
                 topYears.appendChild(yrEl);
 
+                // 2. เสากลางแท่งแบ่ง 2 ท่อน (รอบแรก + ชักซ้ำแถบเข้ม)
                 const pillar = document.createElement('div');
                 pillar.className = 'weather-pillar';
                 pillar.innerHTML = `
@@ -1132,6 +1205,7 @@
                 `;
                 barsArea.appendChild(pillar);
 
+                // 3. ยอดจำนวนครั้งแถวล่าง (แสดงแบบ 9+2 หรือตัวเลขเดี่ยว)
                 const valEl = document.createElement('div');
                 valEl.className = 'weather-val-label';
                 if (stat.repeat > 0) {
@@ -1145,7 +1219,6 @@
 
         function fetchLiveSheet() {
             if (!liveCsvUrl) return;
-            
             Papa.parse(liveCsvUrl, {
                 download: true,
                 header: true,
@@ -1169,6 +1242,7 @@
                             const catVal = (row['ลักษณะอาการหลัก'] || row['เหตุการณ์ / หมวดหมู่'] || 'ชัก').trim();
                             const noteText = (row['รายละเอียดเพิ่มเติม'] || row['หมายเหตุ'] || row['อาการ'] || '').trim();
                             
+                            // ดึงคอลัมน์ รอบชักของวัน และ นับวันชัก (หมอ) จาก Sheet
                             const roundVal = row['รอบชักของวัน'] || row['รอบที่ชักของวัน'] || (idx + 1);
                             const docCountVal = row['นับวันชัก (หมอ)'] !== undefined ? parseInt(row['นับวันชัก (หมอ)']) : (roundVal == 1 ? 1 : 0);
 
@@ -1177,7 +1251,7 @@
                                 date: dateVal.trim(),
                                 day: row['วันในสัปดาห์'] || '',
                                 hour: isNaN(hourVal) ? null : hourVal,
-                                vns: (vnsVal.toLowerCase() === 'yes' || vnsVal === 'Yes' || vnsVal.includes('ใช่')) ? 'Yes' : 'No',
+                                vns: (vnsVal === 'Yes' || vnsVal === 'yes') ? 'Yes' : 'No',
                                 category: catVal.includes('พบแพทย์') ? 'พบแพทย์ (ไม่มีชัก)' : 'ชัก',
                                 round: roundVal,
                                 doctor_count: docCountVal,
@@ -1211,28 +1285,8 @@
             });
         }
 
+        
         const scriptUrl = "https://script.google.com/macros/s/AKfycbxhh7XDM0rm4QsiDF0mwseXHTeWqayukVNQltgK2iiDx6bWUkMxp-FY3ftySZ1RJQFy/exec";
-
-        function toggleVnsResult() {
-            const vns = document.getElementById('f_vns').value;
-            const resultDiv = document.getElementById('group_vns_result');
-            const resultSel = document.getElementById('f_vns_result');
-            if (vns === 'Yes') {
-                resultDiv.style.display = 'block';
-                if (resultSel.value === 'ไม่ได้ใช้') resultSel.value = 'หยุดทันที';
-            } else {
-                resultDiv.style.display = 'none';
-                resultSel.value = 'ไม่ได้ใช้';
-            }
-        }
-
-        function checkRoundForDate() {
-            const dateVal = document.getElementById('f_date').value;
-            if (!dateVal) return;
-            const sameDayRecords = allRecords.filter(r => r.date === dateVal && !r.category.includes('พบแพทย์'));
-            const nextRound = sameDayRecords.length + 1;
-            document.getElementById('f_round').value = `ประมาณรอบที่ ${nextRound} (Auto)`;
-        }
 
         function openModal() {
             const now = new Date();
@@ -1242,22 +1296,11 @@
             document.getElementById('f_time_start').value = `${hh}:${mm}`;
             document.getElementById('f_time_end').value = '';
             document.getElementById('f_duration').value = '1';
-            
-            checkRoundForDate(); 
-            toggleVnsResult();
-            
-            const btn = document.getElementById('btnSubmit');
-            btn.innerText = "บันทึกข้อมูล";
-            btn.disabled = false;
-            
             document.getElementById('addModal').classList.add('open');
         }
 
         function closeModal() {
             document.getElementById('addModal').classList.remove('open');
-            const btn = document.getElementById('btnSubmit');
-            btn.innerText = "บันทึกข้อมูล";
-            btn.disabled = false;
         }
 
         function calcDuration() {
@@ -1275,11 +1318,12 @@
         function submitLog(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSubmit');
-            btn.disabled = true; 
-            btn.innerText = "กำลังส่งข้อมูล...";
+            btn.innerText = "กำลังบันทึก...";
+            btn.disabled = true;
 
             const dateVal = document.getElementById('f_date').value;
             const timeStart = document.getElementById('f_time_start').value;
+            const roundVal = parseInt(document.getElementById('f_round').value);
             const symptomMain = document.getElementById('f_symptom_main').value;
             const hourVal = parseInt(timeStart.split(':')[0]);
             
@@ -1288,35 +1332,40 @@
             const dayName = dayNames[dObj.getDay()];
 
             const payload = {
-                secret: "MinHealthLogSecret2026_SecureKey_XyZ99",
                 date: dateVal,
                 time_start: timeStart,
+                round: roundVal,
+                doctor_count: symptomMain.includes('พบแพทย์') ? 0 : (roundVal === 1 ? 1 : 0),
                 hour: hourVal,
                 day: dayName,
                 vns: document.getElementById('f_vns').value,
-                vns_result: document.getElementById('f_vns_result').value,
+                vns_result: document.getElementById('f_vns').value === 'Yes' ? 'หยุดทันที' : 'ไม่ได้ใช้',
                 symptom_main: symptomMain,
                 duration: document.getElementById('f_duration').value || 1,
                 trigger: document.getElementById('f_trigger').value || '',
-                emergency_med: document.getElementById('f_emergency_med').value || '',
                 note: document.getElementById('f_note').value || ''
             };
 
             fetch(scriptUrl, {
                 method: 'POST',
                 mode: 'no-cors',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             })
             .then(() => {
-                alert("ส่งข้อมูลเรียบร้อย ระบบกำลังบันทึกอยู่เบื้องหลัง (อาจใช้เวลาสักครู่กว่าจะเห็นในหน้านี้เนื่องจากข้อจำกัดของ Google Sheets) ไม่ต้องกดบันทึกซ้ำ");
-                document.getElementById('logForm').reset();
+                alert("บันทึกข้อมูลเข้า Google Sheets ตรงคอลัมน์เรียบร้อยแล้ว!");
                 closeModal();
+                btn.innerText = "บันทึกข้อมูล";
+                btn.disabled = false;
+                document.getElementById('logForm').reset();
+                setTimeout(fetchLiveSheet, 2000);
             })
-            .catch(err => {
-                alert("ส่งข้อมูลเรียบร้อย ระบบกำลังบันทึกอยู่เบื้องหลัง (อาจใช้เวลาสักครู่กว่าจะเห็นในหน้านี้เนื่องจากข้อจำกัดของ Google Sheets) ไม่ต้องกดบันทึกซ้ำ");
-                document.getElementById('logForm').reset();
+            .catch(() => {
+                alert("ส่งข้อมูลแล้ว (กำลังซิงค์)");
                 closeModal();
+                btn.innerText = "บันทึกข้อมูล";
+                btn.disabled = false;
+                setTimeout(fetchLiveSheet, 2500);
             });
         }
 
@@ -1326,11 +1375,84 @@
             renderChart();
             renderTable(allRecords);
             fetchLiveSheet();
-
-            setInterval(() => {
-                fetchLiveSheet();
-            }, 300000);
         };
     </script>
-</body>
-</html>
+    <!-- Modal Form Input (ครบทุกช่องตาม Sheet A-N) -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal-card">
+            <h3 style="font-size:15px; margin-bottom:14px; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+                <span>📝 บันทึกข้อมูลอาการใหม่</span>
+                <span onclick="closeModal()" style="cursor:pointer; font-size:18px; color:var(--text-muted);">&times;</span>
+            </h3>
+            <form id="logForm" onsubmit="submitLog(event)">
+                <div class="form-group">
+                    <label>วันที่</label>
+                    <input type="date" id="f_date" class="form-input" required>
+                </div>
+                
+                <!-- เวลาเริ่ม - เวลาหยุด -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                    <div class="form-group">
+                        <label>เวลาเริ่มชัก</label>
+                        <input type="time" id="f_time_start" class="form-input" onchange="calcDuration()" required>
+                    </div>
+                    <div class="form-group">
+                        <label>เวลาหยุดชัก</label>
+                        <input type="time" id="f_time_end" class="form-input" onchange="calcDuration()">
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                    <div class="form-group">
+                        <label>ระยะเวลา (นาที)</label>
+                        <input type="number" id="f_duration" class="form-input" placeholder="คำนวณอัตโนมัติ" min="0" step="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label>รอบชักของวัน</label>
+                        <select id="f_round" class="form-select">
+                            <option value="1">รอบ 1 (นับชัก)</option>
+                            <option value="2">รอบ 2 (ชักซ้ำ)</option>
+                            <option value="3">รอบ 3 (ชักซ้ำ)</option>
+                            <option value="4">รอบ 4 (ชักซ้ำ)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Dropdown ลักษณะอาการหลัก (ตรงกับ Sheet ช่อง J) -->
+                <div class="form-group">
+                    <label>ลักษณะอาการหลัก (Dropdown)</label>
+                    <select id="f_symptom_main" class="form-select">
+                        <option value="เกร็งกระตุก">เกร็งกระตุก</option>
+                        <option value="ตาค้างนิ่ง">ตาค้างนิ่ง</option>
+                        <option value="เหม่อลอย">เหม่อลอย</option>
+                        <option value="กระตุกแขนขา">กระตุกแขนขา</option>
+                        <option value="พบแพทย์ (ไม่มีชัก)">พบแพทย์ (ไม่มีชัก)</option>
+                    </select>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                    <div class="form-group">
+                        <label>ใช้แม่เหล็ก VNS</label>
+                        <select id="f_vns" class="form-select">
+                            <option value="No">No (ไม่ได้ใช้)</option>
+                            <option value="Yes">Yes (ใช้แม่เหล็ก)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ตัวกระตุ้น / ปัจจัย</label>
+                        <input type="text" id="f_trigger" class="form-input" placeholder="เช่น มีไข้, อาบน้ำ, ร้อน">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>รายละเอียดเพิ่มเติม (ช่อง N)</label>
+                    <textarea id="f_note" class="form-textarea" rows="2" placeholder="ระบุอาการเพิ่มเติม เช่น ปากเขียว อ้วก หรือยาที่ให้..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">ยกเลิก</button>
+                    <button type="submit" class="btn-submit" id="btnSubmit">บันทึกข้อมูล</button>
+                </div>
+            </form>
+        </div>
+    </div>
