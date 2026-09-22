@@ -533,7 +533,7 @@
                     <span class="dot"></span>
                     <span id="statusText">กำลังซิงค์...</span>
                 </div>
-                <div style="font-size:9.5px; color:var(--text-muted); margin-top:4px; letter-spacing:0.2px;">v1.12 - 22 ก.ย. 2569 16:25</div>
+                <div style="font-size:9.5px; color:var(--text-muted); margin-top:4px; letter-spacing:0.2px;">v1.16 - 22 ก.ย. 2569 17:38</div>
             </div>
         </div>
     </header>
@@ -618,6 +618,7 @@
                 <button class="subnav-btn active" id="btn-subtab-nutrition" onclick="switchSubTab('subtab-nutrition', this)">🥛 โภชนาการ</button>
                 <button class="subnav-btn" id="btn-subtab-meds" onclick="switchSubTab('subtab-meds', this)">💊 ยา</button>
                 <button class="subnav-btn" id="btn-subtab-stock" onclick="switchSubTab('subtab-stock', this)">📦 สต็อก</button>
+                <button class="subnav-btn" id="btn-subtab-appt" onclick="switchSubTab('subtab-appt', this)">📅 นัดหมาย</button>
             </div>
 
             <!-- Sub-tab 1: โภชนาการ -->
@@ -930,6 +931,101 @@
                             <span style="color:#facc15; font-weight:600;" id="stockRitalinEmpty">คาดว่าจะหมด: -</span>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Sub-tab 4: นัดหมาย (Appointments) -->
+            <div id="subtab-appt" class="subtab-content">
+                <div class="section-card" style="background: linear-gradient(145deg, #132238, #182b46);">
+                    <div class="section-heading">
+                        <span style="color:#facc15;">📅 ตารางนัดหมายแพทย์</span>
+                        <span style="font-size:11px; color:var(--text-muted);">เรียงตามวันที่</span>
+                    </div>
+
+                    <!-- Appt 1: Neuro -->
+                    <div style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #6366f1; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                            <div>
+                                <strong style="font-size:14px; color:#fff;">🩺 ศัลยศาสตร์ประสาท</strong>
+                                <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">นพ.บรรพต สิทธินามสุวรรณ</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:13.5px; font-weight:bold; color:#818cf8;">พ. 11 พ.ย. 69</div>
+                                <div style="font-size:11px; color:var(--text-muted);">ตรวจ 09:08 น.</div>
+                            </div>
+                        </div>
+                        <div style="background:var(--bg-card); padding:8px 10px; border-radius:6px; font-size:12px; color:var(--text-main); line-height:1.5;">
+                            📍 <strong>สถานที่:</strong> ตึกผู้ป่วยนอก ชั้น 3<br>
+                            🕒 <strong>ยื่นบัตร:</strong> 08:38 น. (ผู้ป่วยเปลรถนั่ง ลงทะเบียนก่อน 11:00 น.)
+                        </div>
+                    </div>
+
+                    <!-- Appt 2: Nephro -->
+                    <div style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #ec4899; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                            <div>
+                                <strong style="font-size:14px; color:#fff;">🩺 กุมารเวชศาสตร์ (โรคไต)</strong>
+                                <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">แพทย์ NEPHRO</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:13.5px; font-weight:bold; color:#f472b6;">พฤ. 26 พ.ย. 69</div>
+                                <div style="font-size:11px; color:var(--text-muted);">ตรวจ 14:10 น.</div>
+                            </div>
+                        </div>
+                        <div style="background:var(--bg-card); padding:8px 10px; border-radius:6px; font-size:12px; color:var(--text-main); line-height:1.5;">
+                            📍 <strong>สถานที่:</strong> ยื่นใบนัด ตึกเจ้าฟ้า ชั้น 1 ห้องเวชระเบียน<br>
+                            🕒 <strong>ยื่นบัตร:</strong> 10:00 น.
+                            <div style="margin-top:6px; padding-top:6px; border-top:1px dashed #334155; color:#facc15; font-weight:500;">
+                                ⚠️ <strong>สิ่งที่ต้องทำ:</strong> เจาะเลือด & เก็บปัสสาวะแรกของวัน (1st void - Urine Na)<br>
+                                ✅ <strong>การเตรียมตัว:</strong> ไม่ต้องงดน้ำและอาหาร (อ้างอิงจากเครื่องหมายติ๊กในใบแล็บครับ)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appt 3: GI -->
+                    <div style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #10b981; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                            <div>
+                                <strong style="font-size:14px; color:#fff;">🩺 กุมารฯ (ระบบทางเดินอาหาร)</strong>
+                                <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">นพ.ธีร กิจมาตรสุวรรณ</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:13.5px; font-weight:bold; color:#34d399;">พ. 16 ธ.ค. 69</div>
+                                <div style="font-size:11px; color:var(--text-muted);">ตรวจ 09:00 น.</div>
+                            </div>
+                        </div>
+                        <div style="background:var(--bg-card); padding:8px 10px; border-radius:6px; font-size:12px; color:var(--text-main); line-height:1.5;">
+                            📍 <strong>สถานที่:</strong> ยื่นใบนัด ตึกเจ้าฟ้า ชั้น 1 ห้องเวชระเบียน<br>
+                            🕒 <strong>ยื่นบัตร:</strong> 08:30 น.
+                            <div style="margin-top:6px; padding-top:6px; border-top:1px dashed #334155; color:#6ee7b7; font-weight:500;">
+                                ⚠️ <strong>สิ่งที่ต้องทำ:</strong> วัดความดัน (BP), เปลี่ยนสายยาง (PEG), No Lab
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appt 4: Psych -->
+                    <div style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #f59e0b; border-radius:8px; padding:12px; margin-bottom:8px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                            <div>
+                                <strong style="font-size:14px; color:#fff;">🩺 กุมารเวชศาสตร์ (จิตเวชเด็ก)</strong>
+                                <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">อ.วริศ มโนมัยวงศ์</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:13.5px; font-weight:bold; color:#fbbf24;">อ. 22 ธ.ค. 69</div>
+                                <div style="font-size:11px; color:var(--text-muted);">ตรวจ 10:30 น.</div>
+                            </div>
+                        </div>
+                        <div style="background:var(--bg-card); padding:8px 10px; border-radius:6px; font-size:12px; color:var(--text-main); line-height:1.5;">
+                            📍 <strong>สถานที่:</strong> ลงทะเบียน ตึกอนันทมหิดล ชั้น 8<br>
+                            🕒 <strong>ยื่นบัตร:</strong> 10:20 น.
+                            <div style="margin-top:6px; padding-top:6px; border-top:1px dashed #334155; color:#38bdf8;">
+                                💡 <strong>อัปเดต:</strong> สต็อกยา Ritalin ปัจจุบันจะเพียงพอถึงวันนัดหมาย
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
                 </div>
             </div>
         </section>
