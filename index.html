@@ -1466,7 +1466,7 @@
             }
         }
 
-        function submitLog(e) {
+function submitLog(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSubmit');
             btn.innerText = "กำลังบันทึก...";
@@ -1474,7 +1474,6 @@
 
             const dateVal = document.getElementById('f_date').value;
             const timeStart = document.getElementById('f_time_start').value;
-            const roundVal = parseInt(document.getElementById('f_round').value);
             const symptomMain = document.getElementById('f_symptom_main').value;
             const hourVal = parseInt(timeStart.split(':')[0]);
             
@@ -1482,11 +1481,11 @@
             const dayNames = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
             const dayName = dayNames[dObj.getDay()];
 
+            // จัดเตรียมข้อมูลให้ตรงกับที่ Apps Script รอรับ
             const payload = {
+                secret: "MinHealthLogSecret2026_SecureKey_XyZ99", // 🔑 ส่ง Token ให้ตรงกัน
                 date: dateVal,
                 time_start: timeStart,
-                round: roundVal,
-                doctor_count: symptomMain.includes('พบแพทย์') ? 0 : (roundVal === 1 ? 1 : 0),
                 hour: hourVal,
                 day: dayName,
                 vns: document.getElementById('f_vns').value,
@@ -1494,29 +1493,31 @@
                 symptom_main: symptomMain,
                 duration: document.getElementById('f_duration').value || 1,
                 trigger: document.getElementById('f_trigger').value || '',
+                emergency_med: "", // 💊 เพิ่มฟิลด์ยาฉุกเฉินให้ตรงกับ Col M ที่ Apps Script เขียนรับไว้
                 note: document.getElementById('f_note').value || ''
             };
 
             fetch(scriptUrl, {
                 method: 'POST',
                 mode: 'no-cors',
+                // ⚠️ สำคัญมาก: ต้องใช้ text/plain เพื่อไม่ให้เบราว์เซอร์บล็อกการส่งข้อมูลข้ามโดเมน
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify(payload)
             })
             .then(() => {
-                alert("บันทึกข้อมูลเข้า Google Sheets ตรงคอลัมน์เรียบร้อยแล้ว!");
+                alert("ส่งข้อมูลเข้า Google Sheets เรียบร้อยแล้ว!\n(ระบบจะจัดลำดับรอบชักให้อัตโนมัติ)");
                 closeModal();
                 btn.innerText = "บันทึกข้อมูล";
                 btn.disabled = false;
                 document.getElementById('logForm').reset();
-                setTimeout(fetchLiveSheet, 2000);
+                // รอให้ Apps Script เรียงข้อมูลเสร็จ แล้วค่อยดึงข้อมูลใหม่มาแสดง
+                setTimeout(fetchLiveSheet, 2500); 
             })
-            .catch(() => {
-                alert("ส่งข้อมูลแล้ว (กำลังซิงค์)");
+            .catch((err) => {
+                alert("เกิดข้อผิดพลาดในการส่งข้อมูล: " + err);
                 closeModal();
                 btn.innerText = "บันทึกข้อมูล";
                 btn.disabled = false;
-                setTimeout(fetchLiveSheet, 2500);
             });
         }
 
