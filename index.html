@@ -950,12 +950,12 @@
                         <div style="display:flex; gap:10px; margin-bottom:12px;">
                             <div style="flex:1; background:var(--bg-card); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
                                 <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">นมคงเหลือ</div>
-                                <div style="font-size:22px; font-weight:800; color:#34d399; line-height:1;" id="milk-current-stock">5,000</div>
+                                <div style="font-size:22px; font-weight:800; color:#34d399; line-height:1;" id="stockPanCount">5,000</div>
                                 <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">กรัม</div>
                             </div>
                             <div style="flex:1; background:var(--bg-card); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
                                 <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">ใช้ได้อีก</div>
-                                <div style="font-size:22px; font-weight:800; color:var(--accent-blue); line-height:1;" id="milk-days-left">19</div>
+                                <div style="font-size:22px; font-weight:800; color:var(--accent-blue); line-height:1;" id="stockPanDays">19</div>
                                 <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">วัน</div>
                             </div>
                         </div>
@@ -963,7 +963,7 @@
                         <!-- Progress Bar (Game HP Style) -->
                         <div style="position: relative; width: 100%; height: 26px; background: #070c1a; border: 2px solid #1e293b; border-radius: 6px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), 0 0 5px rgba(0,0,0,0.5); overflow: hidden; margin-bottom: 8px;">
                             <!-- Glowing liquid bar -->
-                            <div id="milk-progress-bar" style="height: 100%; width: 100%; background: linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%); transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.4);"></div>
+                            <div id="stockPanBar" style="height: 100%; width: 100%; background: linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%); transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.4);"></div>
                             
                             <!-- Glass gloss overlay -->
                             <div style="position: absolute; top: 0; left: 0; right: 0; height: 35%; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%); pointer-events: none;"></div>
@@ -972,14 +972,14 @@
                             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(90deg, transparent, transparent calc(10% - 1px), rgba(0,0,0,0.6) calc(10% - 1px), rgba(0,0,0,0.6) 10%); pointer-events: none;"></div>
                             
                             <!-- Text overlay (HP text) -->
-                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 0.5px; z-index: 2;" id="milk-progress-text">
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 0.5px; z-index: 2;" id="stockPanText">
                                 5,000 / 5,000 กรัม
                             </div>
                         </div>
                         
                         <div style="display:flex; justify-content:space-between; font-size:11.5px;">
                             <span style="color:var(--text-muted);">ยอดยกมา: 5,000 กรัม (เริ่มนับ: 5 ต.ค. 69)</span>
-                            <span style="color:#facc15; font-weight:600;" id="milk-empty-date">คาดว่าจะหมด: 24 ต.ค. 69</span>
+                            <span style="color:#facc15; font-weight:600;" id="stockPanEmpty">คาดว่าจะหมด: 24 ต.ค. 69</span>
                         </div>
                     </div>
                     
@@ -1441,54 +1441,91 @@
         const scriptUrl = "https://script.google.com/macros/s/AKfycbxhh7XDM0rm4QsiDF0mwseXHTeWqayukVNQltgK2iiDx6bWUkMxp-FY3ftySZ1RJQFy/exec";
 
         function renderStock() {
-            // วันที่เริ่มนับสต็อกล่าสุด
-            const baselineDateStr = "2026-09-22"; 
-            const baselineStock = 110; // จำนวนเม็ดยาเริ่มต้น
-            const dailyUsage = 1; // ใช้วันละ 1 เม็ด (เช้า 0.5, กลางวัน 0.5)
-            
             const today = new Date();
             today.setHours(0,0,0,0);
-            const baselineDate = new Date(baselineDateStr);
-            baselineDate.setHours(0,0,0,0);
+
+            // ==========================================
+            // 1. คำนวณสต็อก Ritalin (อ้างอิง: 22 ก.ย. 69)
+            // ==========================================
+            const ritalinBaselineDate = new Date("2026-09-22");
+            ritalinBaselineDate.setHours(0,0,0,0);
+            const ritalinBaselineStock = 110;
+            const ritalinDailyUsage = 1;
             
-            // คำนวณวันที่ผ่านไป
-            const diffTime = today - baselineDate;
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            let ritalinDiffDays = Math.floor((today - ritalinBaselineDate) / (1000 * 60 * 60 * 24));
+            if (ritalinDiffDays < 0) ritalinDiffDays = 0;
             
-            // หักลบยอด
-            let currentStock = baselineStock - (diffDays * dailyUsage);
-            if (currentStock < 0) currentStock = 0;
+            let currentRitalin = ritalinBaselineStock - (ritalinDiffDays * ritalinDailyUsage);
+            if (currentRitalin < 0) currentRitalin = 0;
             
-            const daysLeft = Math.floor(currentStock / dailyUsage);
+            const ritalinDaysLeft = Math.floor(currentRitalin / ritalinDailyUsage);
+            const ritalinEmptyDate = new Date(today);
+            ritalinEmptyDate.setDate(ritalinEmptyDate.getDate() + ritalinDaysLeft);
+            const ritalinPct = Math.max(0, Math.min(100, (currentRitalin / ritalinBaselineStock) * 100));
             
-            // หาวันที่หมดอายุ
-            const emptyDate = new Date(today);
-            emptyDate.setDate(emptyDate.getDate() + daysLeft);
+            // ส่งค่าไปแสดงที่หน้าจอ (Ritalin)
+            const elRitCount = document.getElementById('stockRitalinCount');
+            const elRitDays = document.getElementById('stockRitalinDays');
+            const elRitBar = document.getElementById('stockRitalinBar');
+            const elRitEmpty = document.getElementById('stockRitalinEmpty');
+            const elRitText = document.getElementById('stockRitalinText');
             
-            const pct = Math.max(0, Math.min(100, (currentStock / baselineStock) * 100));
-            
-            const elCount = document.getElementById('stockRitalinCount');
-            const elDays = document.getElementById('stockRitalinDays');
-            const elBar = document.getElementById('stockRitalinBar');
-            const elEmpty = document.getElementById('stockRitalinEmpty');
-            const elText = document.getElementById('stockRitalinText');
-            
-            if (elCount) elCount.innerText = currentStock;
-            if (elDays) elDays.innerText = daysLeft;
-            if (elText) elText.innerText = currentStock + ' / ' + baselineStock + ' เม็ด';
-            if (elBar) {
-                elBar.style.width = pct + '%';
-                if (pct < 20) {
-                    elBar.style.background = 'linear-gradient(180deg, #f87171 0%, #ef4444 50%, #b91c1c 100%)';
-                    if (elCount) elCount.style.color = '#f87171';
-                } else if (pct < 50) {
-                    elBar.style.background = 'linear-gradient(180deg, #fcd34d 0%, #f59e0b 50%, #b45309 100%)';
-                    if (elCount) elCount.style.color = '#fbbf24';
+            if (elRitCount) elRitCount.innerText = currentRitalin.toLocaleString();
+            if (elRitDays) elRitDays.innerText = ritalinDaysLeft;
+            if (elRitText) elRitText.innerText = currentRitalin.toLocaleString() + ' / ' + ritalinBaselineStock.toLocaleString() + ' เม็ด';
+            if (elRitBar) {
+                elRitBar.style.width = ritalinPct + '%';
+                if (ritalinPct < 20) {
+                    elRitBar.style.background = 'linear-gradient(180deg, #f87171 0%, #ef4444 50%, #b91c1c 100%)';
+                    if (elRitCount) elRitCount.style.color = '#f87171';
+                } else if (ritalinPct < 50) {
+                    elRitBar.style.background = 'linear-gradient(180deg, #fcd34d 0%, #f59e0b 50%, #b45309 100%)';
+                    if (elRitCount) elRitCount.style.color = '#fbbf24';
                 }
             }
-            if (elEmpty) {
-                elEmpty.innerText = 'คาดว่าจะหมด: ' + formatThaiDate(emptyDate.toISOString().split('T')[0]);
+            if (elRitEmpty) elRitEmpty.innerText = 'คาดว่าจะหมด: ' + formatThaiDate(ritalinEmptyDate.toISOString().split('T')[0]);
+
+
+            // ==========================================
+            // 2. คำนวณสต็อก Pan-Enteral (อ้างอิง: 5 ต.ค. 69)
+            // ==========================================
+            const panBaselineDate = new Date("2026-10-05");
+            panBaselineDate.setHours(0,0,0,0);
+            const panBaselineStock = 5000;
+            const panDailyUsage = 256; 
+            
+            let panDiffDays = Math.floor((today - panBaselineDate) / (1000 * 60 * 60 * 24));
+            if (panDiffDays < 0) panDiffDays = 0;
+            
+            let currentPan = panBaselineStock - (panDiffDays * panDailyUsage);
+            if (currentPan < 0) currentPan = 0;
+            
+            const panDaysLeft = Math.floor(currentPan / panDailyUsage);
+            const panEmptyDate = new Date(today);
+            panEmptyDate.setDate(panEmptyDate.getDate() + panDaysLeft);
+            const panPct = Math.max(0, Math.min(100, (currentPan / panBaselineStock) * 100));
+
+            // ส่งค่าไปแสดงที่หน้าจอ (Pan-Enteral)
+            const elPanCount = document.getElementById('stockPanCount');
+            const elPanDays = document.getElementById('stockPanDays');
+            const elPanBar = document.getElementById('stockPanBar');
+            const elPanEmpty = document.getElementById('stockPanEmpty');
+            const elPanText = document.getElementById('stockPanText');
+            
+            if (elPanCount) elPanCount.innerText = currentPan.toLocaleString();
+            if (elPanDays) elPanDays.innerText = panDaysLeft;
+            if (elPanText) elPanText.innerText = currentPan.toLocaleString() + ' / ' + panBaselineStock.toLocaleString() + ' กรัม';
+            if (elPanBar) {
+                elPanBar.style.width = panPct + '%';
+                if (panPct < 20) {
+                    elPanBar.style.background = 'linear-gradient(180deg, #f87171 0%, #ef4444 50%, #b91c1c 100%)';
+                    if (elPanCount) elPanCount.style.color = '#f87171';
+                } else if (panPct < 50) {
+                    elPanBar.style.background = 'linear-gradient(180deg, #fcd34d 0%, #f59e0b 50%, #b45309 100%)';
+                    if (elPanCount) elPanCount.style.color = '#fbbf24';
+                }
             }
+            if (elPanEmpty) elPanEmpty.innerText = 'คาดว่าจะหมด: ' + formatThaiDate(panEmptyDate.toISOString().split('T')[0]);
         }
 
         function openModal() {
