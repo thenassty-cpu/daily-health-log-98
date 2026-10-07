@@ -7,46 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome สำหรับไอคอนคมชัด -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    /* Share Action Bar */
-    .share-container {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: -10px 0 24px 0;
-    }
-
-    .btn-share {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-    }
-
-    .btn-share:hover {
-      transform: translateY(-2px);
-      opacity: 0.9;
-    }
-
-    /* LINE Brand Button */
-    .btn-line {
-      background-color: #06c755;
-      color: #ffffff;
-    }
-
-    /* Copy Link Button */
-    .btn-copy {
-      background-color: var(--card-bg);
-      border-color: var(--border);
-      color: var(--text);
-    }
     :root {
       --bg: #0f172a;
       --card-bg: #1e293b;
@@ -80,10 +43,9 @@
       max-width: 900px;
     }
 
-    /* Header */
     header {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
     }
 
     header h1 {
@@ -100,21 +62,72 @@
       font-size: 0.95rem;
     }
 
-    /* Summary Cards */
+    /* Actions */
+    .share-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .btn-share {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn-share:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+
+    .btn-line {
+      background-color: #06c755;
+      color: #ffffff;
+    }
+
+    .btn-copy {
+      background-color: var(--card-bg);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    /* Interactive Summary Grid */
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
     }
 
     .summary-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 14px;
+      padding: 14px 10px;
       text-align: center;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .summary-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+    }
+
+    .summary-card.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+      background: #243248;
     }
 
     .summary-card .number {
@@ -128,39 +141,36 @@
       color: var(--text-muted);
     }
 
-    /* Filter Buttons */
-    .filter-bar {
+    /* Reset / Show All Button Bar */
+    .control-bar {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 20px;
-      justify-content: center;
+      justify-content: flex-end;
+      margin-bottom: 18px;
     }
 
-    .filter-btn {
-      background: var(--card-bg);
+    .btn-show-all {
+      background: transparent;
       border: 1px solid var(--border);
       color: var(--text-muted);
       padding: 6px 14px;
       border-radius: 20px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       cursor: pointer;
       transition: all 0.2s ease;
     }
 
-    .filter-btn:hover, .filter-btn.active {
-      background: var(--primary);
-      color: #0f172a;
-      font-weight: 600;
+    .btn-show-all:hover, .btn-show-all.active {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--primary);
       border-color: var(--primary);
+      font-weight: 500;
     }
 
-    /* Timeline Container */
+    /* Timeline Cards */
     .timeline {
       display: flex;
       flex-direction: column;
       gap: 14px;
-      position: relative;
     }
 
     .event-card {
@@ -169,14 +179,56 @@
       border-radius: 14px;
       padding: 16px 18px;
       display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.2s ease, border-color 0.2s ease, opacity 0.3s ease;
+    }
+
+    .event-card-header {
+      display: flex;
       align-items: center;
       gap: 16px;
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      width: 100%;
     }
 
     .event-card:hover {
       transform: translateY(-2px);
       border-color: #475569;
+    }
+
+    /* Status Styles */
+    .event-card.past {
+      opacity: 0.45;
+      background: rgba(30, 41, 59, 0.6);
+    }
+
+    .event-card.past .title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .event-card.today {
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+    }
+
+    .status-tag {
+      font-size: 0.72rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 8px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status-past {
+      background: #334155;
+      color: #94a3b8;
+    }
+
+    .status-today {
+      background: #0284c7;
+      color: #ffffff;
     }
 
     .icon-box {
@@ -210,22 +262,96 @@
     }
 
     .note {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
+      line-height: 1.4;
     }
 
-    /* Colors per category */
+    /* Camp Details */
+    .camp-expand-btn {
+      align-self: flex-start;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      margin-top: 4px;
+    }
+
+    .camp-expand-btn:hover {
+      background: rgba(16, 185, 129, 0.2);
+    }
+
+    .camp-details-box {
+      display: none;
+      background: #131d2e;
+      border: 1px dashed rgba(16, 185, 129, 0.3);
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 6px;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+    }
+
+    .camp-details-box.open {
+      display: block;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .camp-info-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .meta-tag {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px 12px;
+      margin-top: 10px;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .cat-exam .date-badge { background: rgba(245, 158, 11, 0.15); color: var(--exam); }
     .cat-activity .date-badge { background: rgba(16, 185, 129, 0.15); color: var(--activity); }
     .cat-term .date-badge { background: rgba(99, 102, 241, 0.15); color: var(--term); }
     .cat-special .date-badge { background: rgba(236, 72, 153, 0.15); color: var(--special); }
 
     @media (max-width: 600px) {
-      .event-card {
+      .event-card-header {
         align-items: flex-start;
       }
       .icon-box {
         margin-top: 4px;
+      }
+      .checklist-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -237,198 +363,304 @@
       <h1>📅 ปฏิทินงาน & กิจกรรม ปีการศึกษา 2569</h1>
       <p>กำหนดการวัดผล เข้าค่าย และกิจกรรมสำคัญ (ก.ย. - ธ.ค. 2569)</p>
     </header>
-<!-- Share Actions -->
+
+    <!-- Share Actions -->
     <div class="share-container">
-      <button class="btn-share btn-line" onclick="">
+      <button class="btn-share btn-line" onclick="shareToLine()">
         💬 แชร์เข้า LINE
       </button>
       <button class="btn-share btn-copy" id="copyBtn" onclick="copyDashboardUrl()">
         🔗 คัดลอกลิงก์
       </button>
     </div>
-    <!-- Summary Stats -->
+
+    <!-- Clickable Summary Cards -->
     <section class="summary-grid">
-      <div class="summary-card">
-        <div class="number" style="color: var(--exam);">5</div>
+      <div class="summary-card" onclick="filterByCategory('cat-exam', this)">
+        <div class="number" style="color: var(--exam);">6</div>
         <div class="label">การสอบ / ประเมิน</div>
       </div>
-      <div class="summary-card">
+      <div class="summary-card" onclick="filterByCategory('cat-activity', this)">
         <div class="number" style="color: var(--activity);">2</div>
         <div class="label">ค่ายลูกเสือ</div>
       </div>
-      <div class="summary-card">
+      <div class="summary-card" onclick="filterByCategory('cat-term', this)">
         <div class="number" style="color: var(--term);">1</div>
         <div class="label">เปิดภาคเรียนที่ 2</div>
       </div>
-      <div class="summary-card">
-        <div class="number" style="color: var(--special);">1</div>
-        <div class="label">กิจกรรมพิเศษ</div>
+      <div class="summary-card" onclick="filterByCategory('cat-special', this)">
+        <div class="number" style="color: var(--special);">2</div>
+        <div class="label">นัดหมาย / พิเศษ</div>
       </div>
     </section>
 
-    <!-- Filters -->
-    <div class="filter-bar">
-      <button class="filter-btn active" onclick="filterEvents('all')">ทั้งหมด</button>
-      <button class="filter-btn" onclick="filterEvents('cat-exam')">📝 การสอบ</button>
-      <button class="filter-btn" onclick="filterEvents('cat-activity')">⛺ ค่ายกิจกรรม</button>
-      <button class="filter-btn" onclick="filterEvents('cat-term')">🎒 ภาคเรียน</button>
-      <button class="filter-btn" onclick="filterEvents('cat-special')">💛 วันสำคัญ</button>
+    <!-- Reset / Show All Button -->
+    <div class="control-bar">
+      <button class="btn-show-all active" id="btnShowAll" onclick="resetFilter()">
+        🔄 แสดงทั้งหมด (11 รายการ)
+      </button>
     </div>
 
     <!-- Timeline Event Cards -->
     <main class="timeline" id="eventList">
-
-      <!-- 1 -->
-      <article class="event-card cat-exam">
-        <div class="icon-box">📝</div>
-        <div class="details">
-          <span class="date-badge">10 ก.ย. 69</span>
-          <div class="title">สอบ Top Test วิชาภาษาไทยและสังคมศึกษาฯ</div>
-          <div class="note">การประเมินความรู้ระดับชั้น</div>
+      <article class="event-card cat-exam" data-start="2026-09-10" data-end="2026-09-10">
+        <div class="event-card-header">
+          <div class="icon-box">📝</div>
+          <div class="details">
+            <span class="date-badge">10 ก.ย. 69</span>
+            <div class="title">สอบ Top Test วิชาภาษาไทยและสังคมศึกษาฯ</div>
+            <div class="note">การประเมินความรู้ระดับชั้น</div>
+          </div>
         </div>
       </article>
 
-      <!-- 2 -->
-      <article class="event-card cat-exam">
-        <div class="icon-box">✍️</div>
-        <div class="details">
-          <span class="date-badge">14 - 16 ก.ย. 69</span>
-          <div class="title">สอบครั้งที่ 2</div>
-          <div class="note">การสอบเก็บคะแนนกลางภาค/ตามหน่วย</div>
+      <article class="event-card cat-exam" data-start="2026-09-14" data-end="2026-09-16">
+        <div class="event-card-header">
+          <div class="icon-box">✍️</div>
+          <div class="details">
+            <span class="date-badge">14 - 16 ก.ย. 69</span>
+            <div class="title">สอบครั้งที่ 2</div>
+            <div class="note">การสอบเก็บคะแนนกลางภาค/ตามหน่วย</div>
+          </div>
         </div>
       </article>
 
-      <!-- 3 -->
-      <article class="event-card cat-exam">
-        <div class="icon-box">🔄</div>
-        <div class="details">
-          <span class="date-badge">24 - 25 ก.ย. 69</span>
-          <div class="title">สอบซ่อมครั้งที่ 2</div>
-          <div class="note">สำหรับนักเรียนที่ต้องปรับปรุงคะแนน</div>
+      <!-- รายการสอบว่ายน้ำ ป.6 ที่เพิ่มเข้ามาใหม่ -->
+      <article class="event-card cat-exam" data-start="2026-09-24" data-end="2026-09-24">
+        <div class="event-card-header">
+          <div class="icon-box">🏊</div>
+          <div class="details">
+            <span class="date-badge">24 ก.ย. 69</span>
+            <div class="title">สอบว่ายน้ำ (นักเรียนชั้น ป.6)</div>
+            <div class="note">ให้นักเรียนเตรียมชุดว่ายน้ำ แว่นตา ผ้าเช็ดตัว และถุงพลาสติกใส่ชุดเปียกมาด้วย</div>
+          </div>
         </div>
       </article>
 
-      <!-- 4 -->
-      <article class="event-card cat-exam">
-        <div class="icon-box">🏁</div>
-        <div class="details">
-          <span class="date-badge">29 - 30 ก.ย. 69</span>
-          <div class="title">สอบปลายภาคเรียนที่ 1/2569</div>
-          <div class="note">ประเมินผลการเรียนรู้ปลายภาค</div>
+      <article class="event-card cat-exam" data-start="2026-09-24" data-end="2026-09-25">
+        <div class="event-card-header">
+          <div class="icon-box">🔄</div>
+          <div class="details">
+            <span class="date-badge">24 - 25 ก.ย. 69</span>
+            <div class="title">สอบซ่อมครั้งที่ 2</div>
+            <div class="note">สำหรับนักเรียนที่ต้องปรับปรุงคะแนน</div>
+          </div>
         </div>
       </article>
 
-      <!-- 5 -->
-      <article class="event-card cat-exam">
-        <div class="icon-box">📑</div>
-        <div class="details">
-          <span class="date-badge">2 ต.ค. 69</span>
-          <div class="title">สอบซ่อมปลายภาคเรียนที่ 1/2569</div>
-          <div class="note">สรุปผลการเรียนและแก้คะแนนตกค้าง</div>
+      <article class="event-card cat-exam" data-start="2026-09-29" data-end="2026-09-30">
+        <div class="event-card-header">
+          <div class="icon-box">🏁</div>
+          <div class="details">
+            <span class="date-badge">29 - 30 ก.ย. 69</span>
+            <div class="title">สอบปลายภาคเรียนที่ 1/2569</div>
+            <div class="note">ประเมินผลการเรียนรู้ปลายภาค</div>
+          </div>
         </div>
       </article>
 
-      <!-- 6 -->
-      <article class="event-card cat-activity">
-        <div class="icon-box">⛺</div>
-        <div class="details">
-          <span class="date-badge">6 - 7 ต.ค. 69</span>
-          <div class="title">เข้าค่ายลูกเสือ-เนตรนารี (ป.1 - ป.3)</div>
-          <div class="note">✨ สิ้นสุดกิจกรรมแล้วนักเรียนหยุดปิดภาคเรียน</div>
+      <article class="event-card cat-exam" data-start="2026-10-02" data-end="2026-10-02">
+        <div class="event-card-header">
+          <div class="icon-box">📑</div>
+          <div class="details">
+            <span class="date-badge">2 ต.ค. 69</span>
+            <div class="title">สอบซ่อมปลายภาคเรียนที่ 1/2569</div>
+            <div class="note">สรุปผลการเรียนและแก้คะแนนตกค้าง</div>
+          </div>
         </div>
       </article>
 
-      <!-- 7 -->
-      <article class="event-card cat-activity">
-        <div class="icon-box">🏕️</div>
-        <div class="details">
-          <span class="date-badge">28 - 30 ต.ค. 69</span>
-          <div class="title">เข้าค่ายลูกเสือ-เนตรนารี (ป.4 - ป.6)</div>
-          <div class="note">จัดขึ้นช่วงปิดภาคเรียน</div>
+      <article class="event-card cat-activity" data-start="2026-10-06" data-end="2026-10-07">
+        <div class="event-card-header">
+          <div class="icon-box">⛺</div>
+          <div class="details">
+            <span class="date-badge">6 - 7 ต.ค. 69</span>
+            <div class="title">เข้าค่ายลูกเสือ-เนตรนารี (ป.1 - ป.3)</div>
+            <div class="note">✨ สิ้นสุดกิจกรรมแล้วนักเรียนหยุดปิดภาคเรียน</div>
+          </div>
         </div>
       </article>
 
-      <!-- 8 -->
-      <article class="event-card cat-term">
-        <div class="icon-box">🎒</div>
-        <div class="details">
-          <span class="date-badge">2 พ.ย. 69</span>
-          <div class="title">เปิดเรียนภาคเรียนที่ 2/2569</div>
-          <div class="note">เริ่มต้นการเรียนการสอนเทอมใหม่</div>
+      <!-- นัดหมายทันตกรรม ศิริราช (ด่วน พรุ่งนี้) -->
+      <article class="event-card cat-special" data-start="2026-10-08" data-end="2026-10-08" style="border-left: 4px solid #06b6d4; box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);">
+        <div class="event-card-header">
+          <div class="icon-box" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee; font-size: 1.5rem;">🦷</div>
+          <div class="details">
+            <span class="date-badge" style="background: rgba(6, 182, 212, 0.25); color: #22d3ee; font-weight: 600;">8 ต.ค. 69 (09:30 น.)</span>
+            <div class="title" style="color: #38bdf8;">🚨 นัดทันตกรรม รพ.ศิริราช (น้องมิน)</div>
+            <div class="note" style="line-height: 1.6; margin-top: 4px;">
+              📍 <strong>คลินิกทันตกรรม(เช้า) ตึกผู้ป่วยนอก ชั้น 6</strong> (ทพญ.สายศุภี วรรณประเสริฐ)<br>
+              🕒 <strong>ยื่นใบนัดก่อน 09:00 น. ที่ช่อง 2</strong> (ตรวจ 09:30 น.)<br>
+              📋 HN: 53871841 (7 ปี) | บัตรทอง รพ.อื่น (Refer Code: 07535)<br>
+              ⚠️ มาก่อนเวลานัด 30 นาที | เลื่อนนัด: 02-419-7415-7 (13:30-15:30 น.)
+            </div>
+          </div>
         </div>
       </article>
 
-      <!-- 9 -->
-      <article class="event-card cat-special">
-        <div class="icon-box">💛</div>
-        <div class="details">
-          <span class="date-badge">26 ธ.ค. 69</span>
-          <div class="title">จัดงานวันพ่อแห่งชาติ</div>
-          <div class="note">กิจกรรมพิเศษและความสัมพันธ์ในครอบครัว</div>
+      <!-- ค่าย ป.4 - ป.6 พร้อม Font Awesome Icons -->
+      <article class="event-card cat-activity" data-start="2026-10-28" data-end="2026-10-30">
+        <div class="event-card-header">
+          <div class="icon-box">🏕️</div>
+          <div class="details">
+            <span class="date-badge">28 - 30 ต.ค. 69</span>
+            <div class="title">เข้าค่ายลูกเสือ - เนตรนารีสามัญ (ป.4 - ป.6)</div>
+            <div class="note">ระยะเวลา 3 วัน 2 คืน (ค่ายชั่วคราวโรงเรียนเปี่ยมสุวรรณวิทยา)</div>
+            <button class="camp-expand-btn" onclick="toggleCampDetails(this)">
+              📋 ดูรายละเอียด & เช็กลิสต์ของที่ต้องเตรียม
+            </button>
+          </div>
+        </div>
+
+        <div class="camp-details-box" id="campBox">
+          <div class="camp-info-meta">
+            <span class="meta-tag">💰 <strong>ค่าใช้จ่าย:</strong> 350 บาท</span>
+            <span class="meta-tag">👔 <strong>การแต่งกายวันไป:</strong> แต่งชุดลูกเสือ-เนตรนารีสามัญ ให้เรียบร้อย</span>
+          </div>
+          <strong style="color: #38bdf8; display: block; margin-top: 15px; margin-bottom: 10px;">🎒 รายการสิ่งของที่ต้องนำมาเข้าค่าย (11 รายการ):</strong>
+            <div class="checklist-grid">
+              <div class="checklist-item"><img src="IconSchoolCampMind_01_Casual_Clothes.svg" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; transform: translateY(-2px);"> ชุดลำลอง 3 ชุด</div>
+              <div class="checklist-item"><img src="IconSchoolCampMind_05_PE_Uniform_Yellow.svg" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; transform: translateY(-2px);"> ชุดพละ 1 ชุด (สีเหลือง)</div>
+              <div class="checklist-item"><img src="IconSchoolCampMind_09_Towel.svg" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; transform: translateY(-2px);"> ผ้าถุง / ผ้าเช็ดตัว</div>
+              <div class="checklist-item"><img src="IconSchoolCampMind_02_Underwear.svg" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; transform: translateY(-2px);"> ชุดชั้นใน 3 - 4 ตัว</div>
+              <div class="checklist-item"><img src="IconSchoolCampMind_06_Toiletries.svg" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; transform: translateY(-2px);"> แปรงสีฟัน ยาสีฟัน ขันน้ำ สบู่ แป้ง 1 ชุด</div>
+              <div class="checklist-item"><img src="IconSchoolCampMind_10_FlipFlops.svg" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; transform: translateY(-2px);"> รองเท้าแตะสำหรับอาบน้ำ 1 คู่</div>
+              <div class="checklist-item"><img src="IconSchoolCampMind_03_Sneakers.svg" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; transform: translateY(-2px);"> รองเท้าพละ (สำหรับเนตรนารี)</div>
+              <div class="checklist-item"><img src="IconSchoolCampMind_07_Hangers.svg" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; transform: translateY(-2px);"> ไม้แขวนเสื้อ 2 - 3 อัน</div>
+              <div class="checklist-item"><img src="IconSchoolCampMind_11_Rope_Knot.svg" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; transform: translateY(-2px);"> เชือกสำหรับเรียนเงื่อน 1 เส้น</div>
+              <div class="checklist-item"><img src="IconSchoolCampMind_04_Stationery.svg" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; transform: translateY(-2px);"> ดินสอ ปากกา ยางลบ</div>
+              <div class="checklist-item" style="color: #f59e0b;"><img src="IconSchoolCampMind_08_Medicine.svg" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle; transform: translateY(-2px);"> ยารักษาโรค (สำหรับผู้มีโรคประจำตัว)</div>
+            </div>
+          </div>
+        </article>
+
+      <article class="event-card cat-term" data-start="2026-11-02" data-end="2026-11-02">
+        <div class="event-card-header">
+          <div class="icon-box">🎒</div>
+          <div class="details">
+            <span class="date-badge">2 พ.ย. 69</span>
+            <div class="title">เปิดเรียนภาคเรียนที่ 2/2569</div>
+            <div class="note">เริ่มต้นการเรียนการสอนเทอมใหม่</div>
+          </div>
         </div>
       </article>
 
+      <article class="event-card cat-special" data-start="2026-12-26" data-end="2026-12-26">
+        <div class="event-card-header">
+          <div class="icon-box">💛</div>
+          <div class="details">
+            <span class="date-badge">26 ธ.ค. 69</span>
+            <div class="title">จัดงานวันพ่อแห่งชาติ</div>
+            <div class="note">กิจกรรมพิเศษและความสัมพันธ์ในครอบครัว</div>
+          </div>
+        </div>
+      </article>
     </main>
+
+    <!-- Footer ท้ายหน้า -->
+    <footer style="text-align: center; margin-top: 36px; padding-top: 18px; border-top: 1px solid #334155;">
+      <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.75rem; color: #94a3b8; background: rgba(255, 255, 255, 0.05); border: 1px solid #334155; padding: 4px 14px; border-radius: 999px;">
+        <span style="width: 7px; height: 7px; background-color: #10b981; border-radius: 50%; display: inline-block;"></span>
+        <span>Version 1.5 - อัปเดตไอคอนจัดกระเป๋า (24 ก.ย. 2569)</span>
+      </div>
+    </footer>
   </div>
 
   <script>
-    function shareToLine() {
-  const pageUrl = window.location.href;
-  const message = `📅 เช็กกำหนดการสอบ & ปฏิทินกิจกรรมโรงเรียน 2569:\n${pageUrl}`;
-  
-  // ตรวจสอบว่าเป็นมือถือ/แท็บเล็ตหรือไม่
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    function checkEventStatus() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const todayStr = `${year}-${month}-${day}`;
 
-  if (isMobile) {
-    // บนมือถือ: เปิดเข้าแอป LINE ไปเลือกห้องแชตได้ทันที
-    window.location.href = `https://line.me/R/msg/text/?${encodeURIComponent(message)}`;
-  } else {
-    // บนคอม PC: คัดลอกข้อความพร้อมลิงก์ลงคลิปบอร์ด เพื่อให้ไปกด Ctrl+V วางใน LINE PC ได้เลย
-    navigator.clipboard.writeText(message).then(() => {
-      const lineBtn = document.querySelector('.btn-line');
-      const originalText = lineBtn.innerHTML;
-      
-      lineBtn.innerHTML = '✅ ก๊อปปี้แล้ว! วางใน LINE ได้เลย';
-      
-      setTimeout(() => {
-        lineBtn.innerHTML = originalText;
-      }, 2500);
-    }).catch(() => {
-      alert("กรุณาคัดลอกลิงก์เพื่อนำไปวางใน LINE PC ครับ");
-    });
-  }
-}
+      document.querySelectorAll('.event-card').forEach(card => {
+        const startDate = card.getAttribute('data-start');
+        const endDate = card.getAttribute('data-end');
+        if (!endDate) return;
 
-    function copyDashboardUrl() {
-      navigator.clipboard.writeText(window.location.href).then(() => {
-        const copyBtn = document.getElementById('copyBtn');
-        const originalText = copyBtn.innerHTML;
-        
-        copyBtn.innerHTML = '✅ คัดลอกแล้ว!';
-        copyBtn.style.borderColor = '#10b981';
-        
-        setTimeout(() => {
-          copyBtn.innerHTML = originalText;
-          copyBtn.style.borderColor = 'var(--border)';
-        }, 2000);
+        const badge = card.querySelector('.date-badge');
+
+        if (todayStr > endDate) {
+          card.classList.add('past');
+          badge.insertAdjacentHTML('beforeend', '<span class="status-tag status-past">✓ เสร็จสิ้น</span>');
+        } else if (todayStr >= startDate && todayStr <= endDate) {
+          card.classList.add('today');
+          badge.insertAdjacentHTML('beforeend', '<span class="status-tag status-today">📌 วันนี้</span>');
+        }
       });
     }
-    function filterEvents(category) {
-      // Toggle active button class
-      const buttons = document.querySelectorAll('.filter-btn');
-      buttons.forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
 
-      // Filter cards
+    function toggleCampDetails(btn) {
+      const box = document.getElementById('campBox');
+      box.classList.toggle('open');
+      if (box.classList.contains('open')) {
+        btn.innerHTML = '🔼 ปิดรายละเอียด';
+      } else {
+        btn.innerHTML = '📋 ดูรายละเอียด & เช็กลิสต์ของที่ต้องเตรียม';
+      }
+    }
+
+    function filterByCategory(category, cardElem) {
+      document.querySelectorAll('.summary-card').forEach(c => c.classList.remove('active'));
+      document.getElementById('btnShowAll').classList.remove('active');
+      cardElem.classList.add('active');
+
       const cards = document.querySelectorAll('.event-card');
       cards.forEach(card => {
-        if (category === 'all' || card.classList.contains(category)) {
+        if (card.classList.contains(category)) {
           card.style.display = 'flex';
         } else {
           card.style.display = 'none';
         }
       });
     }
+
+    function resetFilter() {
+      document.querySelectorAll('.summary-card').forEach(c => c.classList.remove('active'));
+      document.getElementById('btnShowAll').classList.add('active');
+
+      const cards = document.querySelectorAll('.event-card');
+      cards.forEach(card => {
+        card.style.display = 'flex';
+      });
+    }
+
+    function shareToLine() {
+      const pageUrl = window.location.href;
+      const message = `📅 เช็กกำหนดการสอบ & ปฏิทินกิจกรรมโรงเรียน 2569:\n${pageUrl}`;
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        window.location.href = `https://line.me/R/msg/text/?${encodeURIComponent(message)}`;
+      } else {
+        navigator.clipboard.writeText(message).then(() => {
+          const lineBtn = document.querySelector('.btn-line');
+          const originalText = lineBtn.innerHTML;
+          lineBtn.innerHTML = '✅ ก๊อปปี้แล้ว! วางใน LINE ได้เลย';
+          setTimeout(() => {
+            lineBtn.innerHTML = originalText;
+          }, 2500);
+        }).catch(() => {
+          alert("กรุณาคัดลอกลิงก์เพื่อนำไปวางใน LINE PC ครับ");
+        });
+      }
+    }
+
+    function copyDashboardUrl() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const copyBtn = document.getElementById('copyBtn');
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = '✅ คัดลอกแล้ว!';
+        copyBtn.style.borderColor = '#10b981';
+        setTimeout(() => {
+          copyBtn.innerHTML = originalText;
+          copyBtn.style.borderColor = 'var(--border)';
+        }, 2000);
+      });
+    }
+
+    checkEventStatus();
   </script>
 </body>
 </html>
