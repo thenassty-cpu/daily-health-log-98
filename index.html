@@ -1668,250 +1668,338 @@
 
             let html = '';
 
-            items.forEach(rawItem => {
-                // ดึงค่าอย่างยืดหยุ่น รองรับทั้ง Header ในชีต Stock_Log และชื่อตัวแปร Object
-                const name = rawItem['ชื่อรายการ (Item_Name)'] || rawItem.name || rawItem.ชื่อยา || rawItem.รายการ || 'ไม่ระบุชื่อ';
-                const category = String(rawItem.Category || rawItem.category || rawItem.หมวดหมู่ || rawItem.ประเภท || '');
-                const rawHome = rawItem['ยอดที่นับได้จริง (Physical_Stock)'] ?? rawItem.stock_home ?? rawItem.สต็อกที่บ้าน ?? rawItem.จำนวนที่บ้าน ?? rawItem.ยอดยกมา ?? 0;
-                const rawRefill = rawItem['ยาจากใบต่อยา (Pending_Refill)'] ?? rawItem.stock_refill ?? rawItem.ใบต่อยา ?? rawItem.ยาจากใบต่อยา ?? 0;
-                const rawDaily = rawItem.Daily_Usage ?? rawItem.daily_usage ?? rawItem.ใช้ต่อวัน ?? rawItem.อัตราใช้ต่อวัน ?? 0;
+            // ฟังก์ชันจัดกลุ่มยาตามแผนกแพทย์ / ประเภท
+            function getItemCategoryGroup(rawItem) {
+                const name = (rawItem['ชื่อรายการ (Item_Name)'] || rawItem.name || rawItem.ชื่อยา || rawItem.รายการ || '').toLowerCase();
+                const cat = String(rawItem.Category || rawItem.category || rawItem.หมวดหมู่ || rawItem.ประเภท || '').toLowerCase();
+                const daily = rawItem.Daily_Usage ?? rawItem.daily_usage ?? 0;
 
-                let stockHome = isNaN(parseFloat(rawHome)) ? 0 : parseFloat(rawHome);
-                let stockRefill = isNaN(parseFloat(rawRefill)) ? 0 : parseFloat(rawRefill);
-                let dailyUsage = isNaN(parseFloat(rawDaily)) ? 0 : parseFloat(rawDaily);
-
-                // หากค่าในชีตยังว่างอยู่ ให้ดึงจากฐานข้อมูลเริ่มต้นเพื่อไม่ให้หน้าเว็บแสดง 0
-                if (stockHome === 0 && (!rawHome || rawHome === "")) {
-                    const matchedDefault = defaultStockData.find(d => name.toLowerCase().includes(d.name.toLowerCase().slice(0, 5)));
-                    if (matchedDefault) {
-                        stockHome = matchedDefault.stock_home;
-                        if (!stockRefill) stockRefill = matchedDefault.stock_refill;
-                        if (!dailyUsage) dailyUsage = matchedDefault.daily_usage;
-                    }
+                // 1. ยาฉุกเฉิน
+                if (cat.includes("ฉุกเฉิน") || name.includes("clonazepam") || name.includes("sos")) {
+                    return 'sos';
                 }
-
-                // กำหนดหน่วยอัตโนมัติตามชนิดยา
-                let unit = rawItem.Unit || rawItem.unit || rawItem.หน่วย;
-                if (!unit) {
-                    if (name.includes('Pan-Enteral') || category.includes('นม') || name.includes('นม')) unit = 'กรัม';
-                    else if (name.includes('Sol') || name.includes('ml') || name.includes('Mixture') || name.includes('น้ำมัน') || name.includes('Carnitine')) unit = 'ml';
-                    else unit = 'เม็ด';
+                // 2. หมอไต (NEPHRO / ไต / Sodamint / Phosphate / Pot. Cit)
+                if (cat.includes("ไต") || cat.includes("nephro") || name.includes("sodamint") || name.includes("phosphate") || name.includes("pot. cit") || name.includes("potassium")) {
+                    return 'nephro';
                 }
-
-                const startDateStr = rawItem['วันที่นับสต๊อก (Count_Date)'] || rawItem.start_date || rawItem.วันที่เริ่มนับ || rawItem.วันเริ่มนับ || '';
-                const apptDateStr = rawItem['วันนัดพบแพทย์ (Next_Appointment)'] || rawItem.appt_date || rawItem.วันนัดหมาย || '';
-                const note = rawItem.Note || rawItem.note || rawItem.หมายเหตุ || '';
-
-                const isEmergency = category.includes("ฉุกเฉิน") || name.toLowerCase().includes("clonazepam") || dailyUsage === 0;
-
-                // ==========================================
-                // 1. ยาฉุกเฉิน (Clonazepam): แสดงเฉพาะตัวเลขคงเหลือจริง ไม่คิดวันหมด
-                // ==========================================
-                if (isEmergency) {
-                    html += `
-                    <div class="stock-card" style="border-left: 4px solid #ef4444;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                            <strong style="font-size:14.5px; color:#fff; display:flex; align-items:center; gap:6px;">
-                                <span style="display:inline-block; width:10px; height:10px; background:#ef4444; border-radius:50%;"></span>
-                                ${name}
-                            </strong>
-                            <span class="pill" style="background:rgba(239,68,68,0.2); color:#f87171; border:1px solid rgba(239,68,68,0.4);">
-                                🔴 ยาฉุกเฉิน (SOS)
-                            </span>
-                        </div>
-                        <div style="display:flex; gap:10px; margin-bottom:8px;">
-                            <div style="flex:1; background:var(--bg-card); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
-                                <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">จำนวนยาคงเหลือจริงในมือ</div>
-                                <div style="font-size:26px; font-weight:800; color:#f87171; line-height:1.1;">${stockHome.toLocaleString()}</div>
-                                <div style="font-size:10.5px; color:var(--text-muted); margin-top:2px;">${unit}</div>
-                            </div>
-                        </div>
-                        <div style="background:#070c1a; padding:8px 10px; border-radius:6px; font-size:11.5px; color:var(--text-muted); line-height:1.4; border-left:2px solid #ef4444;">
-                            ℹ️ <strong>วิธีใช้:</strong> ${note || 'ทาน 1/4 เม็ด เฉพาะเมื่อชัก 3 ครั้งติดกัน (ไม่หักลดอัตโนมัติรายวัน)'}
-                        </div>
-                    </div>`;
-                    return;
+                // 3. นมและน้ำมัน (Pan-Enteral / น้ำมัน / ซื้อเอง)
+                if (name.includes("pan-enteral") || name.includes("นม") || name.includes("น้ำมัน") || cat.includes("ซื้อเอง") || cat.includes("อาหาร")) {
+                    return 'nutrition';
                 }
+                // 4. หมอนิวโร (ประสาทวิทยา / Valprocid / Frisium / Topamax / Fycompa / Carnitine / Ritalin)
+                return 'neuro';
+            }
 
-                // คำนวณวันตั้งแต่วันเริ่มนับ อย่างปลอดภัย
-                let startDate = today;
-                if (startDateStr) {
-                    let d = new Date(startDateStr);
-                    if (!isNaN(d.getTime())) startDate = d;
+            const groupConfigs = {
+                neuro: {
+                    title: '🧠 แผนกประสาทวิทยา (หมอนิวโร)',
+                    desc: 'ยากันชัก • ยาสมาธิ • วิตามินระบบประสาท (อิงวันนัดหมอนิวโร)',
+                    color: '#c084fc',
+                    border: '#a855f7',
+                    bg: 'rgba(168, 85, 247, 0.12)',
+                    tagBg: 'rgba(168, 85, 247, 0.2)'
+                },
+                nephro: {
+                    title: '🩺 ปรับสมดุลร่างกาย & ไต (หมอไต / Nephro)',
+                    desc: 'ปรับสมดุลกรดด่างและเกลือแร่ (อิงวันนัดหมอไต)',
+                    color: '#22d3ee',
+                    border: '#06b6d4',
+                    bg: 'rgba(6, 182, 212, 0.12)',
+                    tagBg: 'rgba(6, 182, 212, 0.2)'
+                },
+                nutrition: {
+                    title: '🥛 นม & น้ำมัน (อาหารทางการแพทย์ / ซื้อเอง)',
+                    desc: 'คำนวณวันหมดอายุตามรอบการบริโภค • ซื้อเติมเองไม่ต้องอิงวันนัดแพทย์',
+                    color: '#fbbf24',
+                    border: '#f59e0b',
+                    bg: 'rgba(245, 158, 11, 0.12)',
+                    tagBg: 'rgba(245, 158, 11, 0.2)'
+                },
+                sos: {
+                    title: '🚨 ยาฉุกเฉิน (SOS Emergency)',
+                    desc: 'ทานเมื่อมีอาการชักต่อเนื่องตามเกณฑ์แพทย์สั่ง (แสดงยอดคงเหลือจริง)',
+                    color: '#f87171',
+                    border: '#ef4444',
+                    bg: 'rgba(239, 68, 68, 0.12)',
+                    tagBg: 'rgba(239, 68, 68, 0.2)'
                 }
-                startDate.setHours(0,0,0,0);
-                let diffDays = Math.max(0, Math.floor((today - startDate) / (1000 * 60 * 60 * 24)));
-                
-                let currentHome = Math.max(0, stockHome - (diffDays * dailyUsage));
-                let homeDaysLeft = dailyUsage > 0 ? Math.floor(currentHome / dailyUsage) : 0;
-                let refillDays = dailyUsage > 0 ? Math.floor(stockRefill / dailyUsage) : 0;
-                let totalDaysLeft = homeDaysLeft + refillDays;
+            };
 
-                let emptyDateDisplay = "-";
-                if (isFinite(totalDaysLeft) && totalDaysLeft > 0) {
-                    let emptyDate = new Date(today);
-                    emptyDate.setDate(emptyDate.getDate() + totalDaysLeft);
-                    if (!isNaN(emptyDate.getTime())) {
-                        try {
-                            emptyDateDisplay = formatThaiDate(emptyDate.toISOString().split('T')[0]);
-                        } catch(e) {
-                            emptyDateDisplay = "-";
+            const grouped = {
+                neuro: [],
+                nephro: [],
+                nutrition: [],
+                sos: []
+            };
+
+            items.forEach(item => {
+                const grpKey = getItemCategoryGroup(item);
+                if (grouped[grpKey]) grouped[grpKey].push(item);
+                else grouped.neuro.push(item);
+            });
+
+            // ลำดับการแสดงผลของกลุ่ม
+            const renderOrder = ['neuro', 'nephro', 'nutrition', 'sos'];
+
+            renderOrder.forEach(grpKey => {
+                const groupItems = grouped[grpKey];
+                if (!groupItems || groupItems.length === 0) return;
+
+                const cfg = groupConfigs[grpKey];
+
+                // หัวข้อแบนเนอร์ประจำกลุ่ม
+                html += `
+                <div style="margin: 22px 0 12px 0; padding: 10px 14px; background: ${cfg.bg}; border-left: 4px solid ${cfg.border}; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                    <div>
+                        <strong style="color: ${cfg.color}; font-size: 14.5px; display: flex; align-items: center; gap: 6px;">
+                            ${cfg.title}
+                        </strong>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">${cfg.desc}</div>
+                    </div>
+                    <span style="font-size: 11px; font-weight: 700; color: ${cfg.color}; background: rgba(0,0,0,0.35); padding: 3px 9px; border-radius: 12px; border: 1px solid ${cfg.border};">
+                        ${groupItems.length} รายการ
+                    </span>
+                </div>`;
+
+                groupItems.forEach(rawItem => {
+                    const name = rawItem['ชื่อรายการ (Item_Name)'] || rawItem.name || rawItem.ชื่อยา || rawItem.รายการ || 'ไม่ระบุชื่อ';
+                    const category = String(rawItem.Category || rawItem.category || rawItem.หมวดหมู่ || rawItem.ประเภท || '');
+                    const rawHome = rawItem['ยอดที่นับได้จริง (Physical_Stock)'] ?? rawItem.stock_home ?? rawItem.สต็อกที่บ้าน ?? rawItem.จำนวนที่บ้าน ?? rawItem.ยอดยกมา ?? 0;
+                    const rawRefill = rawItem['ยาจากใบต่อยา (Pending_Refill)'] ?? rawItem.stock_refill ?? rawItem.ใบต่อยา ?? rawItem.ยาจากใบต่อยา ?? 0;
+                    const rawDaily = rawItem.Daily_Usage ?? rawItem.daily_usage ?? rawItem.ใช้ต่อวัน ?? rawItem.อัตราใช้ต่อวัน ?? 0;
+
+                    let stockHome = isNaN(parseFloat(rawHome)) ? 0 : parseFloat(rawHome);
+                    let stockRefill = isNaN(parseFloat(rawRefill)) ? 0 : parseFloat(rawRefill);
+                    let dailyUsage = isNaN(parseFloat(rawDaily)) ? 0 : parseFloat(rawDaily);
+
+                    // หากค่าในชีตยังว่างอยู่ ให้ดึงจากฐานข้อมูลเริ่มต้น
+                    if (stockHome === 0 && (!rawHome || rawHome === "")) {
+                        const matchedDefault = defaultStockData.find(d => name.toLowerCase().includes(d.name.toLowerCase().slice(0, 5)));
+                        if (matchedDefault) {
+                            stockHome = matchedDefault.stock_home;
+                            if (!stockRefill) stockRefill = matchedDefault.stock_refill;
+                            if (!dailyUsage) dailyUsage = matchedDefault.daily_usage;
                         }
                     }
-                }
 
-                // ==========================================
-                // 2. ยาซื้อเอง / อาหาร (ไม่มีวันนัดหมอ เช่น Pan-Enteral)
-                // ==========================================
-                if (!apptDateStr) {
-                    const pct = stockHome > 0 ? Math.max(0, Math.min(100, (currentHome / stockHome) * 100)) : 0;
-                    let barColor = 'linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%)';
-                    let countColor = '#34d399';
+                    // กำหนดหน่วยอัตโนมัติตามชนิดยา
+                    let unit = rawItem.Unit || rawItem.unit || rawItem.หน่วย;
+                    if (!unit) {
+                        if (name.includes('Pan-Enteral') || category.includes('นม') || name.includes('นม')) unit = 'กรัม';
+                        else if (name.includes('Sol') || name.includes('ml') || name.includes('Mixture') || name.includes('น้ำมัน') || name.includes('Carnitine')) unit = 'ml';
+                        else unit = 'เม็ด';
+                    }
+
+                    const startDateStr = rawItem['วันที่นับสต๊อก (Count_Date)'] || rawItem.start_date || rawItem.วันที่เริ่มนับ || rawItem.วันเริ่มนับ || '';
+                    const apptDateStr = rawItem['วันนัดพบแพทย์ (Next_Appointment)'] || rawItem.appt_date || rawItem.วันนัดหมาย || '';
+                    const note = rawItem.Note || rawItem.note || rawItem.หมายเหตุ || '';
+
+                    // ==========================================
+                    // 1. การ์ดยาฉุกเฉิน (SOS)
+                    // ==========================================
+                    if (grpKey === 'sos') {
+                        html += `
+                        <div class="stock-card" style="border-left: 4px solid #ef4444;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                <strong style="font-size:14.5px; color:#fff; display:flex; align-items:center; gap:6px;">
+                                    <span style="display:inline-block; width:10px; height:10px; background:#ef4444; border-radius:50%;"></span>
+                                    ${name}
+                                </strong>
+                                <span class="pill" style="background:rgba(239,68,68,0.2); color:#f87171; border:1px solid rgba(239,68,68,0.4);">
+                                    🔴 ยาฉุกเฉิน (SOS)
+                                </span>
+                            </div>
+                            <div style="display:flex; gap:10px; margin-bottom:8px;">
+                                <div style="flex:1; background:var(--bg-card); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                                    <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">จำนวนยาคงเหลือจริงในมือ</div>
+                                    <div style="font-size:26px; font-weight:800; color:#f87171; line-height:1.1;">${stockHome.toLocaleString()}</div>
+                                    <div style="font-size:10.5px; color:var(--text-muted); margin-top:2px;">${unit}</div>
+                                </div>
+                            </div>
+                            <div style="background:#070c1a; padding:8px 10px; border-radius:6px; font-size:11.5px; color:var(--text-muted); line-height:1.4; border-left:2px solid #ef4444;">
+                                ℹ️ <strong>วิธีใช้:</strong> ${note || 'ทาน 1/4 เม็ด เฉพาะเมื่อชัก 3 ครั้งติดกัน (ไม่หักลดอัตโนมัติรายวัน)'}
+                            </div>
+                        </div>`;
+                        return;
+                    }
+
+                    // คำนวณวันตั้งแต่วันเริ่มนับ
+                    let startDate = today;
+                    if (startDateStr) {
+                        let d = new Date(startDateStr);
+                        if (!isNaN(d.getTime())) startDate = d;
+                    }
+                    startDate.setHours(0,0,0,0);
+                    let diffDays = Math.max(0, Math.floor((today - startDate) / (1000 * 60 * 60 * 24)));
+                    
+                    let currentHome = Math.max(0, stockHome - (diffDays * dailyUsage));
+                    let homeDaysLeft = dailyUsage > 0 ? Math.floor(currentHome / dailyUsage) : 0;
+                    let refillDays = dailyUsage > 0 ? Math.floor(stockRefill / dailyUsage) : 0;
+                    let totalDaysLeft = homeDaysLeft + refillDays;
+
+                    let emptyDateDisplay = "-";
+                    if (isFinite(totalDaysLeft) && totalDaysLeft > 0) {
+                        let emptyDate = new Date(today);
+                        emptyDate.setDate(emptyDate.getDate() + totalDaysLeft);
+                        if (!isNaN(emptyDate.getTime())) {
+                            try {
+                                emptyDateDisplay = formatThaiDate(emptyDate.toISOString().split('T')[0]);
+                            } catch(e) {
+                                emptyDateDisplay = "-";
+                            }
+                        }
+                    }
+
+                    // ==========================================
+                    // 2. การ์ดอาหารทางการแพทย์ / ซื้อเอง (นม Pan-Enteral & น้ำมัน)
+                    // ==========================================
+                    if (grpKey === 'nutrition' || !apptDateStr) {
+                        const pct = stockHome > 0 ? Math.max(0, Math.min(100, (currentHome / stockHome) * 100)) : 0;
+                        let barColor = 'linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%)';
+                        let countColor = '#34d399';
+                        if (homeDaysLeft < 7) {
+                            barColor = 'linear-gradient(180deg, #f87171 0%, #ef4444 50%, #b91c1c 100%)';
+                            countColor = '#f87171';
+                        } else if (homeDaysLeft < 14) {
+                            barColor = 'linear-gradient(180deg, #fcd34d 0%, #f59e0b 50%, #b45309 100%)';
+                            countColor = '#fbbf24';
+                        }
+
+                        html += `
+                        <div class="stock-card" style="border-left: 4px solid ${cfg.border};">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                <strong style="font-size:14px; color:#fff; display:flex; align-items:center; gap:6px;">
+                                    <span style="display:inline-block; width:10px; height:10px; background:${cfg.color}; border-radius:50%;"></span>
+                                    ${name}
+                                </strong>
+                                <span class="pill" style="background:${cfg.bg}; color:${cfg.color}; border:1px solid ${cfg.border};">
+                                    ใช้ ${dailyUsage.toLocaleString()} ${unit}/วัน
+                                </span>
+                            </div>
+                            
+                            <div style="display:flex; gap:10px; margin-bottom:12px;">
+                                <div style="flex:1; background:var(--bg-card); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                                    <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">คงเหลือที่บ้าน</div>
+                                    <div style="font-size:22px; font-weight:800; color:${countColor}; line-height:1;">${currentHome.toLocaleString()}</div>
+                                    <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">${unit}</div>
+                                </div>
+                                <div style="flex:1; background:var(--bg-card); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                                    <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">ใช้ได้อีก</div>
+                                    <div style="font-size:22px; font-weight:800; color:var(--accent-blue); line-height:1;">${homeDaysLeft}</div>
+                                    <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">วัน</div>
+                                </div>
+                            </div>
+
+                            <!-- 🎮 หลอดพลังเดี่ยวแบบเกม -->
+                            <div class="stock-stacked-bar-container">
+                                <div style="height:100%; width:${pct}%; background:${barColor}; transition:width 1s cubic-bezier(0.4,0,0.2,1); box-shadow:inset 0 2px 2px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.4);"></div>
+                                <div class="stock-bar-text">
+                                    ${currentHome.toLocaleString()} / ${stockHome.toLocaleString()} ${unit} (${homeDaysLeft} วัน)
+                                </div>
+                            </div>
+                            
+                            <div style="display:flex; justify-content:space-between; font-size:11.5px;">
+                                <span style="color:var(--text-muted);">ยอดยกมา: ${stockHome.toLocaleString()} ${unit} (${formatThaiDate(startDateStr)})</span>
+                                <span style="color:#facc15; font-weight:600;">คาดว่าจะหมด: ${emptyDateDisplay}</span>
+                            </div>
+                        </div>`;
+                        return;
+                    }
+
+                    // ==========================================
+                    // 3. การ์ดยาแพทย์นิวโร และ ยาแพทย์โรคไต (มีวันนัดพบแพทย์)
+                    // ==========================================
+                    let daysToAppt = 30;
+                    if (apptDateStr) {
+                        let d = new Date(apptDateStr);
+                        if (!isNaN(d.getTime())) {
+                            d.setHours(0,0,0,0);
+                            daysToAppt = Math.max(1, Math.floor((d - today) / (1000 * 60 * 60 * 24)));
+                        }
+                    }
+
+                    let homePct = isFinite(daysToAppt) && daysToAppt > 0 ? Math.min(100, Math.max(0, (homeDaysLeft / daysToAppt) * 100)) : 0;
+                    let refillPct = isFinite(daysToAppt) && daysToAppt > 0 ? Math.min(100 - homePct, Math.max(0, (refillDays / daysToAppt) * 100)) : 0;
+
+                    let homeBarColor = 'linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%)';
+                    let homeCountColor = '#34d399';
                     if (homeDaysLeft < 7) {
-                        barColor = 'linear-gradient(180deg, #f87171 0%, #ef4444 50%, #b91c1c 100%)';
-                        countColor = '#f87171';
+                        homeBarColor = 'linear-gradient(180deg, #f87171 0%, #ef4444 50%, #b91c1c 100%)';
+                        homeCountColor = '#f87171';
                     } else if (homeDaysLeft < 14) {
-                        barColor = 'linear-gradient(180deg, #fcd34d 0%, #f59e0b 50%, #b45309 100%)';
-                        countColor = '#fbbf24';
+                        homeBarColor = 'linear-gradient(180deg, #fcd34d 0%, #f59e0b 50%, #b45309 100%)';
+                        homeCountColor = '#fbbf24';
+                    }
+
+                    let statusBadge = '';
+                    if (homeDaysLeft >= daysToAppt) {
+                        statusBadge = `<span class="pill" style="background:rgba(52,211,153,0.18); color:#34d399; border:1px solid rgba(52,211,153,0.35);">✅ ยาพอถึงวันนัด</span>`;
+                    } else if (totalDaysLeft >= daysToAppt) {
+                        statusBadge = `<span class="pill" style="background:rgba(56,189,248,0.18); color:#38bdf8; border:1px solid rgba(56,189,248,0.35);">⚠️ พอเมื่อใช้ใบต่อยา</span>`;
+                    } else {
+                        const missingDays = daysToAppt - totalDaysLeft;
+                        statusBadge = `<span class="pill" style="background:rgba(239,68,68,0.18); color:#f87171; border:1px solid rgba(239,68,68,0.35);">🚨 ขาดอีก ${missingDays} วัน</span>`;
                     }
 
                     html += `
-                    <div class="stock-card">
+                    <div class="stock-card" style="border-left: 4px solid ${cfg.border};">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                             <strong style="font-size:14px; color:#fff; display:flex; align-items:center; gap:6px;">
-                                <span style="display:inline-block; width:10px; height:10px; background:#fbbf24; border-radius:50%;"></span>
+                                <span style="display:inline-block; width:10px; height:10px; background:${cfg.color}; border-radius:50%;"></span>
                                 ${name}
                             </strong>
-                            <span class="pill" style="background:rgba(251,191,36,0.2); color:#fbbf24; border:1px solid rgba(251,191,36,0.4);">
-                                ใช้ ${dailyUsage.toLocaleString()} ${unit}/วัน
-                            </span>
+                            <div style="display:flex; gap:6px; align-items:center;">
+                                <span class="pill" style="background:${cfg.bg}; color:${cfg.color}; border:1px solid ${cfg.border};">
+                                    ทาน ${dailyUsage} ${unit}/วัน
+                                </span>
+                                ${statusBadge}
+                            </div>
                         </div>
                         
-                        <div style="display:flex; gap:10px; margin-bottom:12px;">
-                            <div style="flex:1; background:var(--bg-card); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
-                                <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">คงเหลือที่บ้าน</div>
-                                <div style="font-size:22px; font-weight:800; color:${countColor}; line-height:1;">${currentHome.toLocaleString()}</div>
-                                <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">${unit}</div>
+                        <!-- Scorecards 3 ช่อง: ยาที่บ้าน / ใบต่อยา / นัดแพทย์ -->
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1.1fr; gap:8px; margin-bottom:12px;">
+                            <div style="background:var(--bg-card); padding:8px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size:10.5px; color:var(--text-muted); margin-bottom:2px;">🏠 ยาที่บ้าน</div>
+                                <div style="font-size:18px; font-weight:800; color:${homeCountColor}; line-height:1.1;">${currentHome.toLocaleString()}</div>
+                                <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">${unit} (${homeDaysLeft} วัน)</div>
                             </div>
-                            <div style="flex:1; background:var(--bg-card); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
-                                <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">ใช้ได้อีก</div>
-                                <div style="font-size:22px; font-weight:800; color:var(--accent-blue); line-height:1;">${homeDaysLeft}</div>
-                                <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">วัน</div>
+
+                            <div style="background:var(--bg-card); padding:8px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size:10.5px; color:#38bdf8; margin-bottom:2px;">📄 ใบต่อยา</div>
+                                <div style="font-size:18px; font-weight:800; color:#38bdf8; line-height:1.1;">${stockRefill.toLocaleString()}</div>
+                                <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">${unit} (${refillDays} วัน)</div>
+                            </div>
+
+                            <div style="background:var(--bg-card); padding:8px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size:10.5px; color:#facc15; margin-bottom:2px;">📅 นัดแพทย์</div>
+                                <div style="font-size:18px; font-weight:800; color:#facc15; line-height:1.1;">${daysToAppt}</div>
+                                <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">วัน (${formatThaiDate(apptDateStr)})</div>
                             </div>
                         </div>
 
-                        <!-- Progress Bar (แบบเดี่ยว ไม่มีวันนัดหมอ) -->
+                        <!-- 🎮 เกจพลังซ้อนแบบเกม (Stacked Progress Bar) -->
                         <div class="stock-stacked-bar-container">
-                            <div style="height:100%; width:${pct}%; background:${barColor}; transition:width 1s cubic-bezier(0.4,0,0.2,1); box-shadow:inset 0 2px 2px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.4);"></div>
+                            <!-- หลอดทึบ = ยาที่บ้าน -->
+                            <div class="stock-bar-home" style="width: ${homePct}%; background: ${homeBarColor};"></div>
+                            
+                            <!-- หลอดลายขวาง = ยาจากใบต่อยา -->
+                            ${refillPct > 0 ? `<div class="stock-bar-refill" style="width: ${refillPct}%;"></div>` : ''}
+
+                            <!-- เส้นชัยวันนัดพบแพทย์ 100% -->
+                            <div class="stock-target-line"></div>
+
+                            <!-- ข้อความแสดงบนหลอด -->
                             <div class="stock-bar-text">
-                                ${currentHome.toLocaleString()} / ${stockHome.toLocaleString()} ${unit} (${homeDaysLeft} วัน)
+                                ที่บ้าน ${homeDaysLeft} วัน (${Math.round(homePct)}%) ${refillDays > 0 ? '+ ใบต่อยา ' + refillDays + ' วัน' : ''} / เป้าหมายนัด ${daysToAppt} วัน
                             </div>
                         </div>
                         
                         <div style="display:flex; justify-content:space-between; font-size:11.5px;">
-                            <span style="color:var(--text-muted);">ยอดยกมา: ${stockHome.toLocaleString()} ${unit} (${formatThaiDate(startDateStr)})</span>
+                            <span style="color:var(--text-muted);">ยอดยกมา: ${stockHome.toLocaleString()} ${unit} (เริ่ม: ${formatThaiDate(startDateStr)})</span>
                             <span style="color:#facc15; font-weight:600;">คาดว่าจะหมด: ${emptyDateDisplay}</span>
                         </div>
                     </div>`;
-                    return;
-                }
-
-                // ==========================================
-                // 3. ยา รพ. มีวันนัดแพทย์: เกจพลังซ้อน (Stacked Progress Bar)
-                // ==========================================
-                let daysToAppt = 30; // ค่าเริ่มต้นเผื่อไม่มีวันนัด
-                if (apptDateStr) {
-                    let d = new Date(apptDateStr);
-                    if (!isNaN(d.getTime())) {
-                        d.setHours(0,0,0,0);
-                        daysToAppt = Math.max(1, Math.floor((d - today) / (1000 * 60 * 60 * 24)));
-                    }
-                }
-
-                // คำนวณความกว้างหลอดซ้อนเทียบกับ daysToAppt (สเกล Max 100%)
-                let homePct = isFinite(daysToAppt) && daysToAppt > 0 ? Math.min(100, Math.max(0, (homeDaysLeft / daysToAppt) * 100)) : 0;
-                let refillPct = isFinite(daysToAppt) && daysToAppt > 0 ? Math.min(100 - homePct, Math.max(0, (refillDays / daysToAppt) * 100)) : 0;
-
-                // กำหนดสีหลอดทึบตามเงื่อนไข (< 7 วันเป็นสีแดง)
-                let homeBarColor = 'linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%)';
-                let homeCountColor = '#34d399';
-                if (homeDaysLeft < 7) {
-                    homeBarColor = 'linear-gradient(180deg, #f87171 0%, #ef4444 50%, #b91c1c 100%)';
-                    homeCountColor = '#f87171';
-                } else if (homeDaysLeft < 14) {
-                    homeBarColor = 'linear-gradient(180deg, #fcd34d 0%, #f59e0b 50%, #b45309 100%)';
-                    homeCountColor = '#fbbf24';
-                }
-
-                // ป้ายสถานะเทียบกับวันนัดหมอ
-                let statusBadge = '';
-                if (homeDaysLeft >= daysToAppt) {
-                    statusBadge = `<span class="pill" style="background:rgba(52,211,153,0.18); color:#34d399; border:1px solid rgba(52,211,153,0.35);">✅ ยาที่บ้านพอถึงวันนัด</span>`;
-                } else if (totalDaysLeft >= daysToAppt) {
-                    statusBadge = `<span class="pill" style="background:rgba(56,189,248,0.18); color:#38bdf8; border:1px solid rgba(56,189,248,0.35);">⚠️ พอเมื่อใช้ใบต่อยา</span>`;
-                } else {
-                    const missingDays = daysToAppt - totalDaysLeft;
-                    statusBadge = `<span class="pill" style="background:rgba(239,68,68,0.18); color:#f87171; border:1px solid rgba(239,68,68,0.35);">🚨 ขาดอีก ${missingDays} วัน</span>`;
-                }
-
-                html += `
-                <div class="stock-card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <strong style="font-size:14px; color:#fff; display:flex; align-items:center; gap:6px;">
-                            <span style="display:inline-block; width:10px; height:10px; background:#a855f7; border-radius:50%;"></span>
-                            ${name}
-                        </strong>
-                        <div style="display:flex; gap:6px; align-items:center;">
-                            <span class="pill" style="background:rgba(192,132,252,0.15); color:var(--accent-purple); border:1px solid rgba(192,132,252,0.3);">
-                                ทาน ${dailyUsage} ${unit}/วัน
-                            </span>
-                            ${statusBadge}
-                        </div>
-                    </div>
-                    
-                    <!-- Scorecards 3 ช่อง: ยาที่บ้าน / ใบต่อยา / นัดแพทย์ -->
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1.1fr; gap:8px; margin-bottom:12px;">
-                        <div style="background:var(--bg-card); padding:8px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
-                            <div style="font-size:10.5px; color:var(--text-muted); margin-bottom:2px;">🏠 ยาที่บ้าน</div>
-                            <div style="font-size:18px; font-weight:800; color:${homeCountColor}; line-height:1.1;">${currentHome.toLocaleString()}</div>
-                            <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">${unit} (${homeDaysLeft} วัน)</div>
-                        </div>
-
-                        <div style="background:var(--bg-card); padding:8px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
-                            <div style="font-size:10.5px; color:#38bdf8; margin-bottom:2px;">📄 ใบต่อยา</div>
-                            <div style="font-size:18px; font-weight:800; color:#38bdf8; line-height:1.1;">${stockRefill.toLocaleString()}</div>
-                            <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">${unit} (${refillDays} วัน)</div>
-                        </div>
-
-                        <div style="background:var(--bg-card); padding:8px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
-                            <div style="font-size:10.5px; color:#facc15; margin-bottom:2px;">📅 นัดแพทย์</div>
-                            <div style="font-size:18px; font-weight:800; color:#facc15; line-height:1.1;">${daysToAppt}</div>
-                            <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">วัน (${formatThaiDate(apptDateStr)})</div>
-                        </div>
-                    </div>
-
-                    <!-- 🎮 เกจพลังซ้อน (Stacked Progress Bar) -->
-                    <div class="stock-stacked-bar-container">
-                        <!-- หลอดทึบ = ยาที่บ้าน -->
-                        <div class="stock-bar-home" style="width: ${homePct}%; background: ${homeBarColor};"></div>
-                        
-                        <!-- หลอดลายขวาง = ยาจากใบต่อยา -->
-                        ${refillPct > 0 ? `<div class="stock-bar-refill" style="width: ${refillPct}%;"></div>` : ''}
-
-                        <!-- เส้นชัยวันนัดพบแพทย์ 100% -->
-                        <div class="stock-target-line"></div>
-
-                        <!-- ข้อความแสดงบนหลอด -->
-                        <div class="stock-bar-text">
-                            ที่บ้าน ${homeDaysLeft} วัน (${Math.round(homePct)}%) ${refillDays > 0 ? '+ ใบต่อยา ' + refillDays + ' วัน' : ''} / เป้าหมายนัด ${daysToAppt} วัน
-                        </div>
-                    </div>
-                    
-                    <div style="display:flex; justify-content:space-between; font-size:11.5px;">
-                        <span style="color:var(--text-muted);">ยอดยกมา: ${stockHome.toLocaleString()} ${unit} (เริ่ม: ${formatThaiDate(startDateStr)})</span>
-                        <span style="color:#facc15; font-weight:600;">คาดว่าจะหมด: ${emptyDateDisplay}</span>
-                    </div>
-                </div>`;
+                });
             });
 
             container.innerHTML = html;
