@@ -1641,16 +1641,38 @@
             let html = '';
 
             items.forEach(rawItem => {
-                // ดึงค่าอย่างยืดหยุ่น รองรับทั้งภาษาอังกฤษและไทย
-                const name = rawItem.name || rawItem.ชื่อยา || rawItem.รายการ || 'ไม่ระบุชื่อ';
-                const category = String(rawItem.category || rawItem.หมวดหมู่ || rawItem.ประเภท || '');
-                const stockHome = parseFloat(rawItem.stock_home || rawItem.สต็อกที่บ้าน || rawItem.จำนวนที่บ้าน || rawItem.ยอดยกมา || 0);
-                const stockRefill = parseFloat(rawItem.stock_refill || rawItem.ใบต่อยา || rawItem.ยาจากใบต่อยา || 0);
-                const dailyUsage = parseFloat(rawItem.daily_usage || rawItem.ใช้ต่อวัน || rawItem.อัตราใช้ต่อวัน || 0);
-                const unit = rawItem.unit || rawItem.หน่วย || 'หน่วย';
-                const startDateStr = rawItem.start_date || rawItem.วันที่เริ่มนับ || rawItem.วันเริ่มนับ || '';
-                const apptDateStr = rawItem.appt_date || rawItem.วันนัดหมาย || rawItem.วันนัดพบแพทย์ || '';
-                const note = rawItem.note || rawItem.หมายเหตุ || '';
+                // ดึงค่าอย่างยืดหยุ่น รองรับทั้ง Header ในชีต Stock_Log และชื่อตัวแปร Object
+                const name = rawItem['ชื่อรายการ (Item_Name)'] || rawItem.name || rawItem.ชื่อยา || rawItem.รายการ || 'ไม่ระบุชื่อ';
+                const category = String(rawItem.Category || rawItem.category || rawItem.หมวดหมู่ || rawItem.ประเภท || '');
+                const rawHome = rawItem['ยอดที่นับได้จริง (Physical_Stock)'] ?? rawItem.stock_home ?? rawItem.สต็อกที่บ้าน ?? rawItem.จำนวนที่บ้าน ?? rawItem.ยอดยกมา ?? 0;
+                const rawRefill = rawItem['ยาจากใบต่อยา (Pending_Refill)'] ?? rawItem.stock_refill ?? rawItem.ใบต่อยา ?? rawItem.ยาจากใบต่อยา ?? 0;
+                const rawDaily = rawItem.Daily_Usage ?? rawItem.daily_usage ?? rawItem.ใช้ต่อวัน ?? rawItem.อัตราใช้ต่อวัน ?? 0;
+
+                let stockHome = isNaN(parseFloat(rawHome)) ? 0 : parseFloat(rawHome);
+                let stockRefill = isNaN(parseFloat(rawRefill)) ? 0 : parseFloat(rawRefill);
+                let dailyUsage = isNaN(parseFloat(rawDaily)) ? 0 : parseFloat(rawDaily);
+
+                // หากค่าในชีตยังว่างอยู่ ให้ดึงจากฐานข้อมูลเริ่มต้นเพื่อไม่ให้หน้าเว็บแสดง 0
+                if (stockHome === 0 && (!rawHome || rawHome === "")) {
+                    const matchedDefault = defaultStockData.find(d => name.toLowerCase().includes(d.name.toLowerCase().slice(0, 5)));
+                    if (matchedDefault) {
+                        stockHome = matchedDefault.stock_home;
+                        if (!stockRefill) stockRefill = matchedDefault.stock_refill;
+                        if (!dailyUsage) dailyUsage = matchedDefault.daily_usage;
+                    }
+                }
+
+                // กำหนดหน่วยอัตโนมัติตามชนิดยา
+                let unit = rawItem.Unit || rawItem.unit || rawItem.หน่วย;
+                if (!unit) {
+                    if (name.includes('Pan-Enteral') || category.includes('นม') || name.includes('นม')) unit = 'กรัม';
+                    else if (name.includes('Sol') || name.includes('ml') || name.includes('Mixture') || name.includes('น้ำมัน') || name.includes('Carnitine')) unit = 'ml';
+                    else unit = 'เม็ด';
+                }
+
+                const startDateStr = rawItem['วันที่นับสต๊อก (Count_Date)'] || rawItem.start_date || rawItem.วันที่เริ่มนับ || rawItem.วันเริ่มนับ || '';
+                const apptDateStr = rawItem['วันนัดพบแพทย์ (Next_Appointment)'] || rawItem.appt_date || rawItem.วันนัดหมาย || '';
+                const note = rawItem.Note || rawItem.note || rawItem.หมายเหตุ || '';
 
                 const isEmergency = category.includes("ฉุกเฉิน") || name.toLowerCase().includes("clonazepam") || dailyUsage === 0;
 
