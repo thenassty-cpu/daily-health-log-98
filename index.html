@@ -936,7 +936,9 @@
                     <!-- ========================================== -->
                     <!-- Pan-Enteral Stock Card -->
                     <!-- ========================================== -->
-                    <div style="background:#0b1329; border:1px solid var(--border-color); border-radius:10px; padding:12px; position:relative; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                    <!-- Pan-Enteral Stock Card -->
+                    <!-- ========================================== -->
+                    <div style="background:#0b1329; border:1px solid var(--border-color); border-radius:10px; padding:12px; position:relative; box-shadow: 0 4px 12px rgba(0,0,0,0.2); margin-bottom: 16px;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                             <strong style="font-size:14px; color:#fff; display:flex; align-items:center; gap:6px;">
                                 <span style="display:inline-block; width:10px; height:10px; background:#fbbf24; border-radius:50%;"></span>
@@ -980,6 +982,56 @@
                         <div style="display:flex; justify-content:space-between; font-size:11.5px;">
                             <span style="color:var(--text-muted);">ยอดยกมา: 5,000 กรัม (เริ่มนับ: 5 ต.ค. 69)</span>
                             <span style="color:#facc15; font-weight:600;" id="stockPanEmpty">คาดว่าจะหมด: 24 ต.ค. 69</span>
+                        </div>
+                    </div>
+
+                    <!-- ========================================== -->
+                    <!-- L-Carnitine Stock Card -->
+                    <!-- ========================================== -->
+                    <div style="background:#0b1329; border:1px solid var(--border-color); border-radius:10px; padding:12px; position:relative; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <strong style="font-size:14px; color:#fff; display:flex; align-items:center; gap:6px;">
+                                <span style="display:inline-block; width:10px; height:10px; background:#38bdf8; border-radius:50%;"></span>
+                                L-Carnitine Sol. (240ml x 10 ขวด)
+                            </strong>
+                            <span class="pill" style="background:rgba(56,189,248,0.2); color:#38bdf8; border:1px solid rgba(56,189,248,0.4);">
+                                ทาน 24 ml/วัน (8ml x 3)
+                            </span>
+                        </div>
+                        
+                        <div style="display:flex; gap:10px; margin-bottom:12px;">
+                            <div style="flex:1; background:var(--bg-card); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">ยาน้ำคงเหลือ</div>
+                                <div style="font-size:22px; font-weight:800; color:#34d399; line-height:1;" id="stockCarnitineCount">2,400</div>
+                                <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">ซีซี (ml)</div>
+                            </div>
+                            <div style="flex:1; background:var(--bg-card); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">ใช้ได้อีก</div>
+                                <div style="font-size:22px; font-weight:800; color:var(--accent-blue); line-height:1;" id="stockCarnitineDays">100</div>
+                                <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">วัน</div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar (Game HP Style) -->
+                        <div style="position: relative; width: 100%; height: 26px; background: #070c1a; border: 2px solid #1e293b; border-radius: 6px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), 0 0 5px rgba(0,0,0,0.5); overflow: hidden; margin-bottom: 8px;">
+                            <!-- Glowing liquid bar -->
+                            <div id="stockCarnitineBar" style="height: 100%; width: 100%; background: linear-gradient(180deg, #38bdf8 0%, #0284c7 50%, #0369a1 100%); transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 0 2px 2px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.4);"></div>
+                            
+                            <!-- Glass gloss overlay -->
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 35%; background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%); pointer-events: none;"></div>
+
+                            <!-- Segmentation marks (10 chunks for 10 bottles) -->
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(90deg, transparent, transparent calc(10% - 1px), rgba(0,0,0,0.6) calc(10% - 1px), rgba(0,0,0,0.6) 10%); pointer-events: none;"></div>
+                            
+                            <!-- Text overlay (HP text) -->
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 0 2px 4px rgba(0,0,0,0.8); letter-spacing: 0.5px; z-index: 2;" id="stockCarnitineText">
+                                2,400 / 2,400 ซีซี
+                            </div>
+                        </div>
+                        
+                        <div style="display:flex; justify-content:space-between; font-size:11.5px;">
+                            <span style="color:var(--text-muted);">ยอดยกมา: 2,400 ซีซี (เริ่มนับ: 8 ต.ค. 69)</span>
+                            <span style="color:#facc15; font-weight:600;" id="stockCarnitineEmpty">คาดว่าจะหมด: 16 ม.ค. 70</span>
                         </div>
                     </div>
                     
@@ -1566,6 +1618,49 @@
                 }
             }
             if (elPanEmpty) elPanEmpty.innerText = 'คาดว่าจะหมด: ' + formatThaiDate(panEmptyDate.toISOString().split('T')[0]);
+
+
+            // ==========================================
+            // 3. คำนวณสต็อก L-Carnitine (อ้างอิง: 8 ต.ค. 69)
+            // ==========================================
+            const carnitineBaselineDate = new Date("2026-10-08");
+            carnitineBaselineDate.setHours(0,0,0,0);
+            const carnitineBaselineStock = 2400; // 240 mL x 10 ขวด
+            const carnitineDailyUsage = 24; // 8 mL x 3 มื้อ = 24 ซีซี/วัน
+            
+            let carnitineDiffDays = Math.floor((today - carnitineBaselineDate) / (1000 * 60 * 60 * 24));
+            if (carnitineDiffDays < 0) carnitineDiffDays = 0;
+            
+            let currentCarnitine = carnitineBaselineStock - (carnitineDiffDays * carnitineDailyUsage);
+            if (currentCarnitine < 0) currentCarnitine = 0;
+            
+            const carnitineDaysLeft = Math.floor(currentCarnitine / carnitineDailyUsage);
+            const carnitineEmptyDate = new Date(today);
+            carnitineEmptyDate.setDate(carnitineEmptyDate.getDate() + carnitineDaysLeft);
+            const carnitinePct = Math.max(0, Math.min(100, (currentCarnitine / carnitineBaselineStock) * 100));
+            const carnitineBottlesLeft = (currentCarnitine / 240).toFixed(1);
+
+            // ส่งค่าไปแสดงที่หน้าจอ (L-Carnitine)
+            const elCarCount = document.getElementById('stockCarnitineCount');
+            const elCarDays = document.getElementById('stockCarnitineDays');
+            const elCarBar = document.getElementById('stockCarnitineBar');
+            const elCarEmpty = document.getElementById('stockCarnitineEmpty');
+            const elCarText = document.getElementById('stockCarnitineText');
+            
+            if (elCarCount) elCarCount.innerText = currentCarnitine.toLocaleString();
+            if (elCarDays) elCarDays.innerHTML = `${carnitineDaysLeft} <span style="font-size:12px; color:var(--text-muted); font-weight:500;">(~${carnitineBottlesLeft} ขวด)</span>`;
+            if (elCarText) elCarText.innerText = currentCarnitine.toLocaleString() + ' / ' + carnitineBaselineStock.toLocaleString() + ' ซีซี';
+            if (elCarBar) {
+                elCarBar.style.width = carnitinePct + '%';
+                if (carnitinePct < 20) {
+                    elCarBar.style.background = 'linear-gradient(180deg, #f87171 0%, #ef4444 50%, #b91c1c 100%)';
+                    if (elCarCount) elCarCount.style.color = '#f87171';
+                } else if (carnitinePct < 50) {
+                    elCarBar.style.background = 'linear-gradient(180deg, #fcd34d 0%, #f59e0b 50%, #b45309 100%)';
+                    if (elCarCount) elCarCount.style.color = '#fbbf24';
+                }
+            }
+            if (elCarEmpty) elCarEmpty.innerText = 'คาดว่าจะหมด: ' + formatThaiDate(carnitineEmptyDate.toISOString().split('T')[0]);
         }
 
         function openModal() {
