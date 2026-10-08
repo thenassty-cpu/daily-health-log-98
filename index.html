@@ -1595,12 +1595,12 @@
                 .then(res => res.json())
                 .then(res => {
                     if (res && res.status === "success" && Array.isArray(res.data) && res.data.length > 0) {
+                        renderStock(res.data);
                         try {
                             localStorage.setItem('min_stock_cache', JSON.stringify(res.data));
                         } catch(e) {}
-                        renderStock(res.data);
                         if (btnSync && isManual) {
-                            btnSync.innerHTML = '<span>✅</span> ซิงค์แล้ว';
+                            btnSync.innerHTML = '<span>✅</span> ซิงค์สำเร็จ';
                             setTimeout(() => { btnSync.innerHTML = '<span>🔄</span> ซิงค์ชีต'; }, 2000);
                         }
                     } else {
@@ -1608,13 +1608,17 @@
                     }
                 })
                 .catch(err => {
-                    console.warn("Stock API offline or not ready, fallback to cache/default:", err);
+                    console.warn("Stock API error, fallback to cache/default:", err);
                     let cached = null;
                     try {
                         const raw = localStorage.getItem('min_stock_cache');
                         if (raw) cached = JSON.parse(raw);
                     } catch(e) {}
-                    renderStock(cached || defaultStockData);
+                    try {
+                        renderStock(cached || defaultStockData);
+                    } catch(e) {
+                        renderStock(defaultStockData);
+                    }
                     if (btnSync && isManual) {
                         btnSync.innerHTML = '<span>⚠️</span> ใช้แคชในเครื่อง';
                         setTimeout(() => { btnSync.innerHTML = '<span>🔄</span> ซิงค์ชีต'; }, 2500);
@@ -1705,8 +1709,12 @@
                     return;
                 }
 
-                // คำนวณวันตั้งแต่วันเริ่มนับ
-                let startDate = startDateStr ? new Date(startDateStr) : new Date(today);
+                // คำนวณวันตั้งแต่วันเริ่มนับ อย่างปลอดภัย
+                let startDate = today;
+                if (startDateStr) {
+                    let d = new Date(startDateStr);
+                    if (!isNaN(d.getTime())) startDate = d;
+                }
                 startDate.setHours(0,0,0,0);
                 let diffDays = Math.max(0, Math.floor((today - startDate) / (1000 * 60 * 60 * 24)));
                 
@@ -1715,8 +1723,18 @@
                 let refillDays = dailyUsage > 0 ? Math.floor(stockRefill / dailyUsage) : 0;
                 let totalDaysLeft = homeDaysLeft + refillDays;
 
-                let emptyDate = new Date(today);
-                emptyDate.setDate(emptyDate.getDate() + totalDaysLeft);
+                let emptyDateDisplay = "-";
+                if (isFinite(totalDaysLeft) && totalDaysLeft > 0) {
+                    let emptyDate = new Date(today);
+                    emptyDate.setDate(emptyDate.getDate() + totalDaysLeft);
+                    if (!isNaN(emptyDate.getTime())) {
+                        try {
+                            emptyDateDisplay = formatThaiDate(emptyDate.toISOString().split('T')[0]);
+                        } catch(e) {
+                            emptyDateDisplay = "-";
+                        }
+                    }
+                }
 
                 // ==========================================
                 // 2. ยาซื้อเอง / อาหาร (ไม่มีวันนัดหมอ เช่น Pan-Enteral)
@@ -1768,7 +1786,7 @@
                         
                         <div style="display:flex; justify-content:space-between; font-size:11.5px;">
                             <span style="color:var(--text-muted);">ยอดยกมา: ${stockHome.toLocaleString()} ${unit} (${formatThaiDate(startDateStr)})</span>
-                            <span style="color:#facc15; font-weight:600;">คาดว่าจะหมด: ${formatThaiDate(emptyDate.toISOString().split('T')[0])}</span>
+                            <span style="color:#facc15; font-weight:600;">คาดว่าจะหมด: ${emptyDateDisplay}</span>
                         </div>
                     </div>`;
                     return;
@@ -1777,13 +1795,18 @@
                 // ==========================================
                 // 3. ยา รพ. มีวันนัดแพทย์: เกจพลังซ้อน (Stacked Progress Bar)
                 // ==========================================
-                let apptDate = new Date(apptDateStr);
-                apptDate.setHours(0,0,0,0);
-                let daysToAppt = Math.max(1, Math.floor((apptDate - today) / (1000 * 60 * 60 * 24)));
+                let daysToAppt = 30; // ค่าเริ่มต้นเผื่อไม่มีวันนัด
+                if (apptDateStr) {
+                    let d = new Date(apptDateStr);
+                    if (!isNaN(d.getTime())) {
+                        d.setHours(0,0,0,0);
+                        daysToAppt = Math.max(1, Math.floor((d - today) / (1000 * 60 * 60 * 24)));
+                    }
+                }
 
                 // คำนวณความกว้างหลอดซ้อนเทียบกับ daysToAppt (สเกล Max 100%)
-                let homePct = Math.min(100, (homeDaysLeft / daysToAppt) * 100);
-                let refillPct = Math.min(100 - homePct, (refillDays / daysToAppt) * 100);
+                let homePct = isFinite(daysToAppt) && daysToAppt > 0 ? Math.min(100, Math.max(0, (homeDaysLeft / daysToAppt) * 100)) : 0;
+                let refillPct = isFinite(daysToAppt) && daysToAppt > 0 ? Math.min(100 - homePct, Math.max(0, (refillDays / daysToAppt) * 100)) : 0;
 
                 // กำหนดสีหลอดทึบตามเงื่อนไข (< 7 วันเป็นสีแดง)
                 let homeBarColor = 'linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%)';
@@ -1862,7 +1885,7 @@
                     
                     <div style="display:flex; justify-content:space-between; font-size:11.5px;">
                         <span style="color:var(--text-muted);">ยอดยกมา: ${stockHome.toLocaleString()} ${unit} (เริ่ม: ${formatThaiDate(startDateStr)})</span>
-                        <span style="color:#facc15; font-weight:600;">คาดว่าจะหมด: ${formatThaiDate(emptyDate.toISOString().split('T')[0])}</span>
+                        <span style="color:#facc15; font-weight:600;">คาดว่าจะหมด: ${emptyDateDisplay}</span>
                     </div>
                 </div>`;
             });
