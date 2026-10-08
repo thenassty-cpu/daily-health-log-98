@@ -341,6 +341,37 @@
             padding: 0 8px;
             text-align: center;
         }
+        .stock-filter-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .stock-filter-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+        .stock-filter-btn.active {
+            background: rgba(56, 189, 248, 0.2);
+            border-color: #38bdf8;
+            color: #38bdf8;
+            box-shadow: 0 0 8px rgba(56, 189, 248, 0.25);
+        }
+        .stock-group-header {
+            transition: all 0.2s ease;
+        }
+        .stock-group-header:hover {
+            filter: brightness(1.15);
+        }
 
         /* Tabs Container */
         .tab-content { display: none; }
@@ -995,6 +1026,20 @@
                         <span style="display:flex; align-items:center; gap:5px; color:#f87171; font-weight:600;">
                             <span style="display:inline-block; width:8px; height:8px; background:#ef4444; border-radius:50%;"></span> &lt; 7 วัน: เตือนสีแดง
                         </span>
+                    <!-- แถบควบคุม: เลือกดูทีละกลุ่ม / เปิด-พับทั้งหมด -->
+                    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; margin-bottom:14px; background:rgba(7,12,26,0.6); padding:8px 12px; border-radius:8px; border:1px solid #1e293b;">
+                        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                            <span style="font-size:11px; color:var(--text-muted); font-weight:600;">มุมมอง:</span>
+                            <button onclick="showOnlyStockGroup('all')" class="stock-filter-btn active" id="btn-filter-all">📂 ทั้งหมด</button>
+                            <button onclick="showOnlyStockGroup('neuro')" class="stock-filter-btn" id="btn-filter-neuro">🧠 หมอนิวโร</button>
+                            <button onclick="showOnlyStockGroup('nephro')" class="stock-filter-btn" id="btn-filter-nephro">🩺 หมอไต</button>
+                            <button onclick="showOnlyStockGroup('nutrition')" class="stock-filter-btn" id="btn-filter-nutrition">🥛 นม/น้ำมัน</button>
+                            <button onclick="showOnlyStockGroup('sos')" class="stock-filter-btn" id="btn-filter-sos">🚨 ฉุกเฉิน</button>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <button onclick="expandAllStockGroups(true)" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#fff; font-size:11px; font-weight:500; padding:4px 10px; border-radius:6px; cursor:pointer;">📂 เปิดทั้งหมด</button>
+                            <button onclick="expandAllStockGroups(false)" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:var(--text-muted); font-size:11px; font-weight:500; padding:4px 10px; border-radius:6px; cursor:pointer;">📁 พับทั้งหมด</button>
+                        </div>
                     </div>
 
                     <!-- Dynamic Stock Cards Container -->
@@ -1650,6 +1695,78 @@
                 });
         }
 
+        // ==========================================
+        // 🎮 การจัดการแผงสต็อกยา: พับ/กาง & สรุปย่อ
+        // ==========================================
+        let stockGroupState = {
+            neuro: true,
+            nephro: true,
+            nutrition: true,
+            sos: true
+        };
+
+        function toggleStockGroup(grpKey) {
+            stockGroupState[grpKey] = !stockGroupState[grpKey];
+            const bodyEl = document.getElementById(`stock-group-body-${grpKey}`);
+            const arrowEl = document.getElementById(`stock-group-arrow-${grpKey}`);
+            if (bodyEl) {
+                bodyEl.style.display = stockGroupState[grpKey] ? 'block' : 'none';
+            }
+            if (arrowEl) {
+                arrowEl.style.transform = stockGroupState[grpKey] ? 'rotate(0deg)' : 'rotate(-90deg)';
+            }
+            updateStockFilterButtonsState();
+        }
+
+        function expandAllStockGroups(openAll) {
+            ['neuro', 'nephro', 'nutrition', 'sos'].forEach(key => {
+                stockGroupState[key] = openAll;
+                const bodyEl = document.getElementById(`stock-group-body-${key}`);
+                const arrowEl = document.getElementById(`stock-group-arrow-${key}`);
+                if (bodyEl) bodyEl.style.display = openAll ? 'block' : 'none';
+                if (arrowEl) arrowEl.style.transform = openAll ? 'rotate(0deg)' : 'rotate(-90deg)';
+            });
+            updateStockFilterButtonsState(openAll ? 'all' : 'none');
+        }
+
+        function showOnlyStockGroup(targetKey) {
+            if (targetKey === 'all') {
+                expandAllStockGroups(true);
+                return;
+            }
+            ['neuro', 'nephro', 'nutrition', 'sos'].forEach(key => {
+                const isOpen = (key === targetKey);
+                stockGroupState[key] = isOpen;
+                const bodyEl = document.getElementById(`stock-group-body-${key}`);
+                const arrowEl = document.getElementById(`stock-group-arrow-${key}`);
+                if (bodyEl) bodyEl.style.display = isOpen ? 'block' : 'none';
+                if (arrowEl) arrowEl.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(-90deg)';
+            });
+            updateStockFilterButtonsState(targetKey);
+        }
+
+        function updateStockFilterButtonsState(activeKey = null) {
+            const keys = ['all', 'neuro', 'nephro', 'nutrition', 'sos'];
+            keys.forEach(k => {
+                const btn = document.getElementById(`btn-filter-${k}`);
+                if (btn) btn.classList.remove('active');
+            });
+            if (activeKey) {
+                const btn = document.getElementById(`btn-filter-${activeKey}`);
+                if (btn) btn.classList.add('active');
+            } else {
+                const allOpen = ['neuro', 'nephro', 'nutrition', 'sos'].every(k => stockGroupState[k]);
+                const onlyOne = ['neuro', 'nephro', 'nutrition', 'sos'].filter(k => stockGroupState[k]);
+                if (allOpen) {
+                    const btn = document.getElementById('btn-filter-all');
+                    if (btn) btn.classList.add('active');
+                } else if (onlyOne.length === 1) {
+                    const btn = document.getElementById(`btn-filter-${onlyOne[0]}`);
+                    if (btn) btn.classList.add('active');
+                }
+            }
+        }
+
         function renderStock(items) {
             if (!items || !items.length) {
                 let cached = null;
@@ -1746,20 +1863,118 @@
                 if (!groupItems || groupItems.length === 0) return;
 
                 const cfg = groupConfigs[grpKey];
+                const isOpen = stockGroupState[grpKey] !== false;
 
-                // หัวข้อแบนเนอร์ประจำกลุ่ม
+                // ==========================================
+                // คำนวณสรุปย่อกระชับสำหรับหัวแบนเนอร์กลุ่ม
+                // ==========================================
+                let critCount = 0;
+                let warnCount = 0;
+                let minDays = 99999;
+                let totalSos = 0;
+                let milkDays = null;
+
+                groupItems.forEach(rawItem => {
+                    const name = (rawItem['ชื่อรายการ (Item_Name)'] || rawItem.name || rawItem.ชื่อยา || rawItem.รายการ || '').toLowerCase();
+                    const rawHome = rawItem['ยอดที่นับได้จริง (Physical_Stock)'] ?? rawItem.stock_home ?? 0;
+                    const rawDaily = rawItem.Daily_Usage ?? rawItem.daily_usage ?? 0;
+                    const startDateStr = rawItem['วันที่นับสต๊อก (Count_Date)'] || rawItem.start_date || '';
+
+                    let sHome = isNaN(parseFloat(rawHome)) ? 0 : parseFloat(rawHome);
+                    let dUsage = isNaN(parseFloat(rawDaily)) ? 0 : parseFloat(rawDaily);
+
+                    if (sHome === 0 && (!rawHome || rawHome === "")) {
+                        const matched = defaultStockData.find(d => name.includes(d.name.toLowerCase().slice(0, 5)));
+                        if (matched) {
+                            sHome = matched.stock_home;
+                            if (!dUsage) dUsage = matched.daily_usage;
+                        }
+                    }
+
+                    if (grpKey === 'sos') {
+                        totalSos += sHome;
+                        return;
+                    }
+
+                    let sDate = today;
+                    if (startDateStr) {
+                        let d = new Date(startDateStr);
+                        if (!isNaN(d.getTime())) sDate = d;
+                    }
+                    sDate.setHours(0,0,0,0);
+                    let dDays = Math.max(0, Math.floor((today - sDate) / (1000 * 60 * 60 * 24)));
+                    let cHome = Math.max(0, sHome - (dDays * dUsage));
+                    let dLeft = dUsage > 0 ? Math.floor(cHome / dUsage) : 0;
+
+                    if (dLeft < 7) critCount++;
+                    else if (dLeft < 14) warnCount++;
+
+                    if (dLeft < minDays) minDays = dLeft;
+
+                    if (name.includes('pan-enteral') || name.includes('นม')) {
+                        milkDays = dLeft;
+                    }
+                });
+                if (minDays === 99999) minDays = 0;
+
+                // สรุปป้ายย่อกระชับแสดงที่หัวแผง
+                let summaryBadgesHtml = '';
+                if (grpKey === 'sos') {
+                    summaryBadgesHtml = `
+                        <span class="pill" style="background:rgba(239,68,68,0.25); color:#f87171; border:1px solid #ef4444; font-size:11px; font-weight:700;">
+                            💊 มีในมือ ${totalSos.toLocaleString()} เม็ด
+                        </span>
+                        <span style="font-size: 11px; font-weight: 700; color: ${cfg.color}; background: rgba(0,0,0,0.35); padding: 3px 9px; border-radius: 12px; border: 1px solid ${cfg.border};">
+                            ${groupItems.length} รายการ
+                        </span>
+                    `;
+                } else if (grpKey === 'nutrition') {
+                    let statusPill = critCount > 0 ? `<span class="pill" style="background:rgba(239,68,68,0.25); color:#f87171; border:1px solid #ef4444; font-size:11px; font-weight:700;">🚨 เตือนใกล้หมด</span>` :
+                                     warnCount > 0 ? `<span class="pill" style="background:rgba(245,158,11,0.25); color:#fbbf24; border:1px solid #f59e0b; font-size:11px; font-weight:700;">⚠️ เตือน 2 สัปดาห์</span>` :
+                                     `<span class="pill" style="background:rgba(52,211,153,0.18); color:#34d399; border:1px solid #10b981; font-size:11px; font-weight:700;">✅ สต็อกพร้อม</span>`;
+                    summaryBadgesHtml = `
+                        ${statusPill}
+                        <span class="pill" style="background:rgba(245,158,11,0.2); color:#fbbf24; border:1px solid #f59e0b; font-size:11px; font-weight:600;">
+                            🥛 นมเหลือ ~${milkDays !== null ? milkDays : minDays} วัน
+                        </span>
+                        <span style="font-size: 11px; font-weight: 700; color: ${cfg.color}; background: rgba(0,0,0,0.35); padding: 3px 9px; border-radius: 12px; border: 1px solid ${cfg.border};">
+                            ${groupItems.length} รายการ
+                        </span>
+                    `;
+                } else {
+                    let statusPill = critCount > 0 ? `<span class="pill" style="background:rgba(239,68,68,0.25); color:#f87171; border:1px solid #ef4444; font-size:11px; font-weight:700;">🚨 วิกฤต ${critCount} ตัว</span>` :
+                                     warnCount > 0 ? `<span class="pill" style="background:rgba(245,158,11,0.25); color:#fbbf24; border:1px solid #f59e0b; font-size:11px; font-weight:700;">⚠️ ใกล้หมด ${warnCount} ตัว</span>` :
+                                     `<span class="pill" style="background:rgba(52,211,153,0.18); color:#34d399; border:1px solid #10b981; font-size:11px; font-weight:700;">✅ พอถึงวันนัด</span>`;
+                    summaryBadgesHtml = `
+                        ${statusPill}
+                        <span class="pill" style="background:rgba(255,255,255,0.06); color:var(--text-muted); font-size:11px; border:1px solid rgba(255,255,255,0.1); font-weight:600;">
+                            ⏳ ต่ำสุด ${minDays} วัน
+                        </span>
+                        <span style="font-size: 11px; font-weight: 700; color: ${cfg.color}; background: rgba(0,0,0,0.35); padding: 3px 9px; border-radius: 12px; border: 1px solid ${cfg.border};">
+                            ${groupItems.length} รายการ
+                        </span>
+                    `;
+                }
+
+                // หัวข้อแบนเนอร์ประจำกลุ่ม (คลิกพับ/กางได้ + แสดงสรุปย่อกระชับ)
                 html += `
-                <div style="margin: 22px 0 12px 0; padding: 10px 14px; background: ${cfg.bg}; border-left: 4px solid ${cfg.border}; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
-                    <div>
-                        <strong style="color: ${cfg.color}; font-size: 14.5px; display: flex; align-items: center; gap: 6px;">
-                            ${cfg.title}
-                        </strong>
-                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">${cfg.desc}</div>
+                <div onclick="toggleStockGroup('${grpKey}')" class="stock-group-header" style="margin: 20px 0 10px 0; padding: 10px 14px; background: ${cfg.bg}; border-left: 4px solid ${cfg.border}; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); cursor: pointer; user-select: none;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span id="stock-group-arrow-${grpKey}" style="font-size: 13px; color: ${cfg.color}; display: inline-block; transition: transform 0.25s ease; transform: ${isOpen ? 'rotate(0deg)' : 'rotate(-90deg)'};">
+                            ▼
+                        </span>
+                        <div>
+                            <strong style="color: ${cfg.color}; font-size: 14.5px; display: flex; align-items: center; gap: 6px;">
+                                ${cfg.title}
+                            </strong>
+                            <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">${cfg.desc}</div>
+                        </div>
                     </div>
-                    <span style="font-size: 11px; font-weight: 700; color: ${cfg.color}; background: rgba(0,0,0,0.35); padding: 3px 9px; border-radius: 12px; border: 1px solid ${cfg.border};">
-                        ${groupItems.length} รายการ
-                    </span>
-                </div>`;
+                    <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end;">
+                        ${summaryBadgesHtml}
+                    </div>
+                </div>
+                <div id="stock-group-body-${grpKey}" style="display: ${isOpen ? 'block' : 'none'};">`;
 
                 groupItems.forEach(rawItem => {
                     const name = rawItem['ชื่อรายการ (Item_Name)'] || rawItem.name || rawItem.ชื่อยา || rawItem.รายการ || 'ไม่ระบุชื่อ';
@@ -2000,9 +2215,12 @@
                         </div>
                     </div>`;
                 });
+
+                html += `</div>`; // ปิด stock-group-body-${grpKey}
             });
 
             container.innerHTML = html;
+            updateStockFilterButtonsState();
         }
 
         function openModal() {
