@@ -1053,14 +1053,35 @@
             <!-- Sub-tab 4: นัดหมาย (Appointments) -->
             <div id="subtab-appt" class="subtab-content">
                 <div class="section-card" style="background: linear-gradient(145deg, #132238, #182b46);">
-                    <div class="section-heading">
+                    <div class="section-heading" style="display:flex; justify-content:space-between; align-items:center;">
                         <span style="color:#facc15;">📅 ตารางนัดหมายแพทย์</span>
-                        <span style="font-size:11px; color:var(--text-muted);">เรียงตามวันที่</span>
+                        <span id="apptStatusBadge" style="font-size:11px; color:#38bdf8; font-weight:600;">เรียงตามวันที่</span>
                     </div>
 
+                    <!-- Appt 0: Dental (ตรวจแล้ว - ซ่อนอัตโนมัติเมื่อพ้นวันนัด) -->
+                    <div class="appt-card" data-appt-date="2026-10-08" style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #64748b; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                            <div>
+                                <span style="background:#334155; color:#94a3b8; font-size:10px; font-weight:bold; padding:2px 6px; border-radius:4px; margin-right:4px;">ตรวจแล้ว</span>
+                                <strong style="font-size:14px; color:#94a3b8;">🦷 ทันตกรรม (Follow Up)</strong>
+                                <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">ทพญ.สายศุภี วรรณประเสริฐ</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:13.5px; font-weight:bold; color:#94a3b8;">พฤ. 8 ต.ค. 69</div>
+                                <div style="display:flex; justify-content:flex-end; gap:6px; align-items:center; margin-top:2px;">
+                                    <span class="appt-countdown-badge" style="font-size:10px; font-weight:700; padding:1px 6px; border-radius:4px;"></span>
+                                    <span style="font-size:11px; color:var(--text-muted);">ตรวจ 09:30 น.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="background:var(--bg-card); padding:8px 10px; border-radius:6px; font-size:12px; color:var(--text-muted); line-height:1.5;">
+                            📍 <strong>สถานที่:</strong> คลินิกทันตกรรม(เช้า) ตึกผู้ป่วยนอก ชั้น 6 รพ.ศิริราช<br>
+                            🕒 <strong>ยื่นใบนัด:</strong> ก่อน 09:00 น. ที่ช่อง 2
+                        </div>
+                    </div>
 
                     <!-- Appt 1: Neuro -->
-                    <div style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #6366f1; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                    <div class="appt-card" data-appt-date="2026-11-11" style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #6366f1; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                             <div>
                                 <strong style="font-size:14px; color:#fff;">🩺 ศัลยศาสตร์ประสาท</strong>
@@ -1068,7 +1089,10 @@
                             </div>
                             <div style="text-align:right;">
                                 <div style="font-size:13.5px; font-weight:bold; color:#818cf8;">พ. 11 พ.ย. 69</div>
-                                <div style="font-size:11px; color:var(--text-muted);">ตรวจ 09:08 น.</div>
+                                <div style="display:flex; justify-content:flex-end; gap:6px; align-items:center; margin-top:2px;">
+                                    <span class="appt-countdown-badge" style="font-size:10px; font-weight:700; padding:1px 6px; border-radius:4px;"></span>
+                                    <span style="font-size:11px; color:var(--text-muted);">ตรวจ 09:08 น.</span>
+                                </div>
                             </div>
                         </div>
                         <div style="background:var(--bg-card); padding:8px 10px; border-radius:6px; font-size:12px; color:var(--text-main); line-height:1.5;">
@@ -1078,7 +1102,7 @@
                     </div>
 
                     <!-- Appt 1.5: Rehab (เวชศาสตร์ฟื้นฟู) -->
-                    <div style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #14b8a6; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                    <div class="appt-card" data-appt-date="2026-11-16" style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #14b8a6; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                             <div>
                                 <strong style="font-size:14px; color:#fff;">♿ ภาควิชาเวชศาสตร์ฟื้นฟู</strong>
@@ -1086,7 +1110,10 @@
                             </div>
                             <div style="text-align:right;">
                                 <div style="font-size:13.5px; font-weight:bold; color:#2dd4bf;">จ. 16 พ.ย. 69</div>
-                                <div style="font-size:11px; color:var(--text-muted);">ตรวจ 10:40 น.</div>
+                                <div style="display:flex; justify-content:flex-end; gap:6px; align-items:center; margin-top:2px;">
+                                    <span class="appt-countdown-badge" style="font-size:10px; font-weight:700; padding:1px 6px; border-radius:4px;"></span>
+                                    <span style="font-size:11px; color:var(--text-muted);">ตรวจ 10:40 น.</span>
+                                </div>
                             </div>
                         </div>
                         <div style="background:var(--bg-card); padding:8px 10px; border-radius:6px; font-size:12px; color:var(--text-main); line-height:1.5;">
@@ -1097,7 +1124,7 @@
                     </div>
 
                     <!-- Appt 2: Nephro -->
-                    <div style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #ec4899; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                    <div class="appt-card" data-appt-date="2026-11-26" style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #ec4899; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                             <div>
                                 <span style="background:#db2777; color:#fff; font-size:10px; font-weight:bold; padding:2px 6px; border-radius:4px; margin-right:4px;">ตรวจคิว 1</span>
@@ -1106,7 +1133,10 @@
                             </div>
                             <div style="text-align:right;">
                                 <div style="font-size:13.5px; font-weight:bold; color:#f472b6;">พฤ. 26 พ.ย. 69</div>
-                                <div style="font-size:11px; color:var(--text-muted);">ตรวจ 14:10 น.</div>
+                                <div style="display:flex; justify-content:flex-end; gap:6px; align-items:center; margin-top:2px;">
+                                    <span class="appt-countdown-badge" style="font-size:10px; font-weight:700; padding:1px 6px; border-radius:4px;"></span>
+                                    <span style="font-size:11px; color:var(--text-muted);">ตรวจ 14:10 น.</span>
+                                </div>
                             </div>
                         </div>
                         <div style="background:var(--bg-card); padding:8px 10px; border-radius:6px; font-size:12px; color:var(--text-main); line-height:1.5;">
@@ -1120,7 +1150,7 @@
                     </div>
 
                     <!-- Appt 2.5: Neuro-Pediatric (กุมารฯ ประสาทวิทยา) -->
-                    <div style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #8b5cf6; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                    <div class="appt-card" data-appt-date="2026-11-26" style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #8b5cf6; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                             <div>
                                 <span style="background:#7c3aed; color:#fff; font-size:10px; font-weight:bold; padding:2px 6px; border-radius:4px; margin-right:4px;">ตรวจคิว 2 (ต่อจากไต)</span>
@@ -1129,7 +1159,10 @@
                             </div>
                             <div style="text-align:right;">
                                 <div style="font-size:13.5px; font-weight:bold; color:#a78bfa;">พฤ. 26 พ.ย. 69</div>
-                                <div style="font-size:11px; color:#facc15; font-weight:bold;">ตรวจ 14:28 น.</div>
+                                <div style="display:flex; justify-content:flex-end; gap:6px; align-items:center; margin-top:2px;">
+                                    <span class="appt-countdown-badge" style="font-size:10px; font-weight:700; padding:1px 6px; border-radius:4px;"></span>
+                                    <span style="font-size:11px; color:#facc15; font-weight:bold;">ตรวจ 14:28 น.</span>
+                                </div>
                             </div>
                         </div>
                         <div style="background:var(--bg-card); padding:8px 10px; border-radius:6px; font-size:12px; color:var(--text-main); line-height:1.5;">
@@ -1140,7 +1173,7 @@
                     </div>
 
                     <!-- Appt 3: GI -->
-                    <div style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #10b981; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                    <div class="appt-card" data-appt-date="2026-12-16" style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #10b981; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                             <div>
                                 <strong style="font-size:14px; color:#fff;">🩺 กุมารฯ (ระบบทางเดินอาหาร)</strong>
@@ -1148,7 +1181,10 @@
                             </div>
                             <div style="text-align:right;">
                                 <div style="font-size:13.5px; font-weight:bold; color:#34d399;">พ. 16 ธ.ค. 69</div>
-                                <div style="font-size:11px; color:var(--text-muted);">ตรวจ 09:00 น.</div>
+                                <div style="display:flex; justify-content:flex-end; gap:6px; align-items:center; margin-top:2px;">
+                                    <span class="appt-countdown-badge" style="font-size:10px; font-weight:700; padding:1px 6px; border-radius:4px;"></span>
+                                    <span style="font-size:11px; color:var(--text-muted);">ตรวจ 09:00 น.</span>
+                                </div>
                             </div>
                         </div>
                         <div style="background:var(--bg-card); padding:8px 10px; border-radius:6px; font-size:12px; color:var(--text-main); line-height:1.5;">
@@ -1161,7 +1197,7 @@
                     </div>
 
                     <!-- Appt 4: Psych -->
-                    <div style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #f59e0b; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                    <div class="appt-card" data-appt-date="2026-12-22" style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #f59e0b; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                             <div>
                                 <strong style="font-size:14px; color:#fff;">🩺 กุมารเวชศาสตร์ (จิตเวชเด็ก)</strong>
@@ -1169,7 +1205,10 @@
                             </div>
                             <div style="text-align:right;">
                                 <div style="font-size:13.5px; font-weight:bold; color:#fbbf24;">อ. 22 ธ.ค. 69</div>
-                                <div style="font-size:11px; color:var(--text-muted);">ตรวจ 10:30 น.</div>
+                                <div style="display:flex; justify-content:flex-end; gap:6px; align-items:center; margin-top:2px;">
+                                    <span class="appt-countdown-badge" style="font-size:10px; font-weight:700; padding:1px 6px; border-radius:4px;"></span>
+                                    <span style="font-size:11px; color:var(--text-muted);">ตรวจ 10:30 น.</span>
+                                </div>
                             </div>
                         </div>
                         <div style="background:var(--bg-card); padding:8px 10px; border-radius:6px; font-size:12px; color:var(--text-main); line-height:1.5;">
@@ -1182,7 +1221,7 @@
                     </div>
 
                     <!-- Appt 5: Nutrition Clinic (โภชนาการ กุมารเวชศาสตร์) -->
-                    <div style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #10b981; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                    <div class="appt-card" data-appt-date="2027-04-05" style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #10b981; border-radius:8px; padding:12px; margin-bottom:12px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                             <div>
                                 <strong style="font-size:14px; color:#fff;">🥗 กุมารเวชศาสตร์ (คลินิกโภชนาการ)</strong>
@@ -1190,7 +1229,10 @@
                             </div>
                             <div style="text-align:right;">
                                 <div style="font-size:13.5px; font-weight:bold; color:#34d399;">จ. 5 เม.ย. 70</div>
-                                <div style="font-size:11px; color:var(--text-muted);">ตรวจ 09:09 น.</div>
+                                <div style="display:flex; justify-content:flex-end; gap:6px; align-items:center; margin-top:2px;">
+                                    <span class="appt-countdown-badge" style="font-size:10px; font-weight:700; padding:1px 6px; border-radius:4px;"></span>
+                                    <span style="font-size:11px; color:var(--text-muted);">ตรวจ 09:09 น.</span>
+                                </div>
                             </div>
                         </div>
                         <div style="background:var(--bg-card); padding:8px 10px; border-radius:6px; font-size:12px; color:var(--text-main); line-height:1.5;">
@@ -1204,7 +1246,7 @@
                     </div>
 
                     <!-- Appt 6: Dental (ทันตกรรม ศิริราช - นัดครั้งถัดไป) -->
-                    <div style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #06b6d4; border-radius:8px; padding:12px; margin-bottom:8px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                    <div class="appt-card" data-appt-date="2027-05-31" style="background:#0b1329; border:1px solid #1e293b; border-left:4px solid #06b6d4; border-radius:8px; padding:12px; margin-bottom:8px; position:relative; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                             <div>
                                 <span style="background:#0891b2; color:#fff; font-size:10px; font-weight:bold; padding:2px 6px; border-radius:4px; margin-right:4px;">คิวเสริม</span>
@@ -1213,7 +1255,10 @@
                             </div>
                             <div style="text-align:right;">
                                 <div style="font-size:13.5px; font-weight:bold; color:#22d3ee;">จ. 31 พ.ค. 70</div>
-                                <div style="font-size:11px; color:var(--text-muted);">ตรวจ 10:00 น.</div>
+                                <div style="display:flex; justify-content:flex-end; gap:6px; align-items:center; margin-top:2px;">
+                                    <span class="appt-countdown-badge" style="font-size:10px; font-weight:700; padding:1px 6px; border-radius:4px;"></span>
+                                    <span style="font-size:11px; color:var(--text-muted);">ตรวจ 10:00 น.</span>
+                                </div>
                             </div>
                         </div>
                         <div style="background:var(--bg-card); padding:8px 10px; border-radius:6px; font-size:12px; color:var(--text-main); line-height:1.5;">
@@ -1224,6 +1269,13 @@
                                 ⚠️ <strong>คำเตือน:</strong> กรุณามาก่อนเวลานัด 30 นาที (หากมาช้าอาจไม่ได้รับการรักษาในวัน) | โทรเลื่อนนัด 02-419-7415-7 (13:30-15:30 น.)
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Toggle Past Appointments Button -->
+                    <div id="pastApptToggleContainer" style="display:none; margin-top:14px; text-align:center;">
+                        <button id="btnTogglePastAppt" onclick="togglePastAppointments()" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:var(--text-muted); font-size:11.5px; font-weight:600; padding:7px 16px; border-radius:8px; cursor:pointer; transition:0.2s;">
+                            📁 แสดงนัดหมายที่ผ่านมาแล้ว (<span id="pastApptCount">0</span>)
+                        </button>
                     </div>
 
                 </div>
@@ -1308,11 +1360,110 @@
         }
 
         
+        let showPastAppt = false;
+
+        function processAppointments() {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+            const apptCards = document.querySelectorAll('#subtab-appt .appt-card[data-appt-date]');
+            let pastCount = 0;
+            let upcomingCount = 0;
+
+            apptCards.forEach(card => {
+                const dateStr = card.getAttribute('data-appt-date');
+                if (!dateStr) return;
+
+                const parts = dateStr.split('-');
+                if (parts.length !== 3) return;
+                const apptDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+
+                const diffDays = Math.round((apptDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                const badgeEl = card.querySelector('.appt-countdown-badge');
+
+                if (diffDays < 0) {
+                    // พ้นวันนัดแล้ว -> ซ่อนอัตโนมัติ
+                    card.classList.add('past-appointment');
+                    card.style.display = showPastAppt ? 'block' : 'none';
+                    pastCount++;
+                    if (badgeEl) {
+                        badgeEl.innerText = `พ้นนัดแล้ว (${Math.abs(diffDays)} วันก่อน)`;
+                        badgeEl.style.background = 'rgba(100,116,139,0.2)';
+                        badgeEl.style.color = '#94a3b8';
+                        badgeEl.style.border = '1px solid #475569';
+                    }
+                } else if (diffDays === 0) {
+                    // วันนี้!
+                    card.classList.remove('past-appointment');
+                    card.style.display = 'block';
+                    upcomingCount++;
+                    if (badgeEl) {
+                        badgeEl.innerText = '🚨 นัดวันนี้!';
+                        badgeEl.style.background = 'rgba(239,68,68,0.25)';
+                        badgeEl.style.color = '#f87171';
+                        badgeEl.style.border = '1px solid #ef4444';
+                    }
+                } else {
+                    // กำลังจะมาถึง
+                    card.classList.remove('past-appointment');
+                    card.style.display = 'block';
+                    upcomingCount++;
+                    if (badgeEl) {
+                        badgeEl.innerText = `⏳ อีก ${diffDays} วัน`;
+                        if (diffDays <= 7) {
+                            badgeEl.style.background = 'rgba(245,158,11,0.2)';
+                            badgeEl.style.color = '#fbbf24';
+                            badgeEl.style.border = '1px solid #f59e0b';
+                        } else {
+                            badgeEl.style.background = 'rgba(56,189,248,0.15)';
+                            badgeEl.style.color = '#38bdf8';
+                            badgeEl.style.border = '1px solid rgba(56,189,248,0.3)';
+                        }
+                    }
+                }
+            });
+
+            // ปรับข้อความหัวข้อตารางนัดหมาย
+            const statusEl = document.getElementById('apptStatusBadge');
+            if (statusEl) {
+                statusEl.innerText = `นัดหมายที่จะถึง (${upcomingCount} นัด)`;
+            }
+
+            // แสดง/ซ่อนปุ่มดูนัดหมายที่ผ่านมาแล้ว
+            const toggleContainer = document.getElementById('pastApptToggleContainer');
+            if (toggleContainer) {
+                if (pastCount > 0) {
+                    toggleContainer.style.display = 'block';
+                    const countSpan = document.getElementById('pastApptCount');
+                    if (countSpan) countSpan.innerText = pastCount;
+                } else {
+                    toggleContainer.style.display = 'none';
+                }
+            }
+        }
+
+        function togglePastAppointments() {
+            showPastAppt = !showPastAppt;
+            const pastCards = document.querySelectorAll('#subtab-appt .past-appointment');
+            pastCards.forEach(c => {
+                c.style.display = showPastAppt ? 'block' : 'none';
+            });
+            const btn = document.getElementById('btnTogglePastAppt');
+            if (btn) {
+                btn.innerHTML = showPastAppt
+                    ? `📁 ซ่อนนัดหมายที่ผ่านมาแล้ว (${pastCards.length})`
+                    : `📁 แสดงนัดหมายที่ผ่านมาแล้ว (<span id="pastApptCount">${pastCards.length}</span>)`;
+            }
+        }
+
         function switchSubTab(subTabId, btn) {
             document.querySelectorAll('.subtab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.subnav-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(subTabId).classList.add('active');
             btn.classList.add('active');
+            if (subTabId === 'subtab-appt') {
+                processAppointments();
+            }
         }
 
         function switchTab(tabId, btn) {
@@ -2314,6 +2465,7 @@ function submitLog(e) {
             renderChart();
             renderTable(allRecords);
             renderStock();
+            processAppointments();
             fetchLiveSheet();
             fetchStockData();
         };
