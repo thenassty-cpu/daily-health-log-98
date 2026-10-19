@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข้อมูลฉุกเฉินเบื้องต้น - น้องมิน (Min)</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tahoma', 'Sarabun', sans-serif; }
+        body { background-color: #f1f5f9; color: #1e293b; padding: 12px; line-height: 1.5; font-size: 15px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        
+        .card { background: #ffffff; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+        
+        .header { background: #1e3a8a; color: white; padding: 16px; border-radius: 12px; margin-bottom: 12px; text-align: center; }
+        .header h1 { font-size: 20px; font-weight: bold; margin-bottom: 4px; }
+        .header p { font-size: 13px; opacity: 0.9; }
+        
+        .patient-vitals { display: flex; justify-content: space-around; background: #e0f2fe; border-radius: 8px; padding: 12px; margin-top: 10px; }
+        .vital-box { text-align: center; }
+        .vital-box .label { font-size: 12px; color: #0369a1; font-weight: bold; }
+        .vital-box .value { font-size: 20px; font-weight: bold; color: #0c4a6e; }
+        
+        .alert-danger { background: #fee2e2; border-left: 6px solid #dc2626; border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+        .alert-danger h2 { color: #991b1b; font-size: 16px; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        .alert-danger ul { padding-left: 20px; color: #7f1d1d; font-weight: bold; font-size: 14px; }
+        
+        .timeline-item { border-left: 3px solid #3b82f6; padding-left: 12px; margin-bottom: 12px; position: relative; }
+        .timeline-item::before { content: ''; position: absolute; left: -6px; top: 2px; width: 9px; height: 9px; border-radius: 50%; background: #3b82f6; }
+        .timeline-item.warning::before { background: #ef4444; }
+        .timeline-item.warning { border-left-color: #ef4444; }
+        .time-badge { font-size: 12px; font-weight: bold; color: #475569; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 4px; }
+        
+        .med-badge { display: inline-block; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 10px; margin: 3px 0; font-size: 13px; width: 100%; }
+        .med-badge strong { color: #0f172a; }
+        
+        .btn-call { display: block; width: 100%; text-align: center; background: #16a34a; color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Patient Header -->
+        <div class="header">
+            <h1>ข้อมูลผู้ป่วย: ด.ช. มิน (Min)</h1>
+            <p>ประวัติการรักษา: นิวโร-ลมชัก รพ.ศิริราช | มีเครื่องกระตุ้นไฟฟ้า VNS</p>
+            <div class="patient-vitals">
+                <div class="vital-box">
+                    <div class="label">น้ำหนัก (Weight)</div>
+                    <div class="value">26.5 kg</div>
+                </div>
+                <div class="vital-box">
+                    <div class="label">ส่วนสูง (Height)</div>
+                    <div class="value">113 cm</div>
+                </div>
+                <div class="vital-box">
+                    <div class="label">ยาลดไข้ล่าสุด</div>
+                    <div class="value" style="color: #b91c1c;">04:05 น.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Critical Drug Allergy Warning -->
+        <div class="alert-danger">
+            <h2>⚠️ ยาต้องห้ามเด็ดขาด (CRITICAL CONTRAINDICATION)</h2>
+            <p style="margin-bottom: 6px; color: #991b1b; font-size: 13px;"><strong>ห้ามใช้ยากลุ่ม Sodium Channel Blockers เด็ดขาด</strong> (กระตุ้นให้อาการชักรุนแรงวิกฤตทันที):</p>
+            <ul>
+                <li>Dilantin (Phenytoin)</li>
+                <li>Tegretol (Carbamazepine)</li>
+                <li>Trileptal (Oxcarbazepine)</li>
+                <li>Lamictal (Lamotrigine)</li>
+                <li>Banzel / Inovelon (Rufinamide)</li>
+                <li>Cerebyx (Fosphenytoin)</li>
+            </ul>
+        </div>
+
+        <!-- Latest Illness & Symptoms -->
+        <div class="card">
+            <h2 style="font-size: 16px; color: #1e3a8a; margin-bottom: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px;">
+                🦠 ประวัติอาการป่วยล่าสุด (15 - 19 ต.ค. 2569)
+            </h2>
+            
+            <div class="timeline-item warning">
+                <span class="time-badge" style="color: #b91c1c; background: #fee2e2;">18 ต.ค. 69 (ผล ATK)</span>
+                <div><strong>ตรวจพบเชื้อ HMPV:</strong> ATK ขึ้น 2 ขีดจางที่เชื้อ Human Metapneumovirus</div>
+                <div style="font-size: 13px; color: #64748b; margin-top: 2px;">ไอหนัก เสมหะเยอะ มีไอจนอ้วก ดูเหนื่อย หายใจเร็ว Sat 93-96% (ใช้ออกซิเจนบางช่วง) นมย่อยช้า ถ่ายเหลวหลายรอบ</div>
+            </div>
+
+            <div class="timeline-item warning">
+                <span class="time-badge">16 ต.ค. 69 (06:20 - 06:21 น.)</span>
+                <div><strong>ชักรอบที่ 1:</strong> นาน 1 นาที วัดไข้ได้ 38.3°C มีเสมหะเยอะ ดูดเสมหะ เช็ดตัว ให้ยาลดไข้ทุก 4 ชม.</div>
+            </div>
+
+            <div class="timeline-item warning">
+                <span class="time-badge">15 ต.ค. 69 (วันแรกที่เริ่มป่วย - ชัก 3 รอบ)</span>
+                <div>• 14:10 น. เริ่มซึม</div>
+                <div>• 14:20 น. <strong>ชักครั้งที่ 1:</strong> อ้วก (ไข้ 37.9°C เช็ดตัว ให้ยาลดไข้)</div>
+                <div>• 15:00 - 15:02 น. <strong>ชักครั้งที่ 2:</strong> 2 นาที, อ้วก (ไข้ 38.3°C)</div>
+                <div>• 15:38 - 15:40 น. <strong>ชักครั้งที่ 3:</strong> 2 นาที พอไข้ลงนั่งได้ ส่งเสียงได้</div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="time-badge">19 ต.ค. 69 (วันนี้)</span>
+                <div><strong>04:05 น.</strong> ได้รับยาลดไข้ พาราเทมปรา ล่าสุด</div>
+                <div style="font-size: 13px; color: #64748b;">ไอและเสมหะยังมาก เหนื่อย นำส่งโรงพยาบาล</div>
+            </div>
+        </div>
+
+        <!-- Current Medications -->
+        <div class="card">
+            <h2 style="font-size: 16px; color: #1e3a8a; margin-bottom: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px;">
+                💊 ยาประจำตัวที่รับประทานปัจจุบัน
+            </h2>
+            <div class="med-badge"><strong>Valprocid:</strong> 22mg/60ml ทาน 3 ml/วัน</div>
+            <div class="med-badge"><strong>Frisium (5 mg):</strong> ทาน 3 เม็ด/วัน</div>
+            <div class="med-badge"><strong>Topamax (25 mg):</strong> ทาน 4.5 เม็ด/วัน</div>
+            <div class="med-badge"><strong>Fycompa (4 mg):</strong> ทาน 1 เม็ด/วัน (ก่อนนอน)</div>
+            <div class="med-badge"><strong>Ritalin (10 mg):</strong> ทาน 1 เม็ด/วัน (เช้า ½, เที่ยง ½)</div>
+            <div class="med-badge"><strong>Pot. Cit Mixture:</strong> ทาน 140 ml/วัน</div>
+            <div class="med-badge"><strong>Acidic Phosphate Solution:</strong> 15 ml/วัน (ห่างจากนม Pan-Enteral $\ge$ 2 ชม.)</div>
+            <div class="med-badge"><strong>Sodamint (300 mg):</strong> ทาน 20 เม็ด/วัน</div>
+            <div class="med-badge" style="background: #fff1f2; border-color: #fecdd3;">
+                <strong style="color: #be123c;">ยาฉุกเฉิน (SOS):</strong> Clonazepam 0.5 mg ใช้ ¼ เม็ดเฉพาะเมื่อชัก 3 ครั้งติดกัน
+            </div>
+        </div>
+    </div>
+</body>
+</html>
