@@ -12,21 +12,48 @@
         /* Top Banner */
         .for-nurse-banner {
             background: #0284c7; color: #ffffff; text-align: center; padding: 8px 12px;
-            border-radius: 10px; font-weight: bold; font-size: 15px; margin-bottom: 10px;
+            border-radius: 10px; font-weight: bold; font-size: 15px; margin-bottom: 8px;
             box-shadow: 0 2px 4px rgba(2, 132, 199, 0.2);
         }
         
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex; gap: 6px; margin-bottom: 10px; background: #e2e8f0; padding: 4px; border-radius: 10px;
+        }
+        .tab-btn {
+            flex: 1; padding: 10px 6px; text-align: center; border: none; background: transparent;
+            font-size: 14px; font-weight: bold; border-radius: 8px; cursor: pointer; color: #475569;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            background: #ffffff; color: #1e3a8a; box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+        
         /* Patient Header */
-        .header { background: #1e3a8a; color: white; padding: 14px; border-radius: 12px; margin-bottom: 10px; }
-        .header h1 { font-size: 21px; font-weight: bold; margin-bottom: 2px; }
+        .header { background: #1e3a8a; color: white; padding: 12px 14px; border-radius: 12px; margin-bottom: 10px; }
+        .header h1 { font-size: 20px; font-weight: bold; margin-bottom: 2px; }
         .header p { font-size: 13px; color: #bfdbfe; }
         
-        .patient-vitals { display: flex; justify-content: space-between; background: #ffffff; border-radius: 8px; padding: 10px; margin-top: 10px; color: #0f172a; }
+        .patient-vitals { display: flex; justify-content: space-between; background: #ffffff; border-radius: 8px; padding: 10px; margin-top: 8px; color: #0f172a; }
         .vital-box { text-align: center; flex: 1; border-right: 1px solid #e2e8f0; }
         .vital-box:last-child { border-right: none; }
-        .vital-box .label { font-size: 12px; color: #64748b; font-weight: bold; }
-        .vital-box .value { font-size: 20px; font-weight: 800; color: #0f172a; }
+        .vital-box .label { font-size: 11px; color: #64748b; font-weight: bold; }
+        .vital-box .value { font-size: 18px; font-weight: 800; color: #0f172a; }
         .vital-box .value.highlight { color: #dc2626; }
+
+        /* Morning Status Card */
+        .morning-status {
+            background: #ecfdf5; border: 1.5px solid #10b981; border-radius: 8px; padding: 8px 12px; margin-top: 8px; color: #065f46; font-size: 13px;
+        }
+
+        /* Next Dose Callout */
+        .next-dose-banner {
+            background: #fff7ed; border-left: 5px solid #f97316; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;
+        }
+        .next-dose-banner h3 { font-size: 14px; color: #c2410c; margin-bottom: 4px; font-weight: bold; }
         
         /* Red Danger Alert */
         .alert-danger { background: #fee2e2; border: 2px solid #ef4444; border-radius: 10px; padding: 12px; margin-bottom: 10px; }
@@ -36,7 +63,7 @@
         .danger-tag { background: #dc2626; color: white; font-size: 12px; font-weight: bold; padding: 3px 8px; border-radius: 4px; }
         
         /* Meal Cards */
-        .section-title { font-size: 16px; font-weight: bold; color: #1e3a8a; margin: 14px 0 8px 0; display: flex; align-items: center; gap: 6px; }
+        .section-title { font-size: 15px; font-weight: bold; color: #1e3a8a; margin: 12px 0 6px 0; display: flex; align-items: center; gap: 6px; }
         
         .meal-card { background: white; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; border-left: 6px solid #94a3b8; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .meal-card.morning { border-left-color: #f59e0b; background: #fffbeb; }
@@ -46,14 +73,19 @@
         .meal-card.timing { border-left-color: #10b981; background: #f0fdf4; }
         .meal-card.sos { border-left-color: #ef4444; background: #fef2f2; }
         
-        .meal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-weight: bold; font-size: 15px; }
-        .meal-header .badge { font-size: 12px; padding: 2px 8px; border-radius: 12px; background: rgba(0,0,0,0.06); font-weight: normal; }
+        .meal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-weight: bold; font-size: 14px; }
+        .meal-header .badge { font-size: 11px; padding: 2px 8px; border-radius: 12px; background: rgba(0,0,0,0.06); font-weight: normal; }
         
-        .med-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed rgba(0,0,0,0.08); font-size: 14px; }
+        .med-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed rgba(0,0,0,0.08); font-size: 13.5px; }
         .med-row:last-child { border-bottom: none; }
         .med-name { font-weight: 600; color: #1e293b; }
         .med-dose { font-weight: 700; color: #0f172a; text-align: right; }
         .med-note { font-size: 11px; color: #d97706; display: block; font-weight: normal; }
+
+        /* Overview List */
+        .overview-box { background: white; border-radius: 10px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .overview-item { padding: 4px 0; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; display: flex; justify-content: space-between; }
+        .overview-item:last-child { border-bottom: none; }
 
         /* Timeline Box */
         .history-box { background: white; border-radius: 10px; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
@@ -70,10 +102,20 @@
             📋 ยื่นหน้านี้ให้พยาบาลคัดกรอง / แพทย์ผู้ตรวจดูได้ทันที
         </div>
 
-        <!-- Patient Header & Vitals -->
+        <!-- Tab Controls -->
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('tab-schedule')">🕒 1. ตารางยามื้อต่อไป (นำยามาเอง)</button>
+            <button class="tab-btn" onclick="switchTab('tab-triage')">📋 2. สรุปข้อมูล & อาการป่วย</button>
+        </div>
+
+        <!-- Patient Header & Vitals (Always Visible) -->
         <div class="header">
-            <h1>ด.ช. มิน (Min)</h1>
-            <p>ผู้ป่วยโรคลมชัก (Epilepsy) นิวโร-ศิริราช | มีเครื่องกระตุ้นไฟฟ้า VNS</p>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h1>ด.ช. มิน (Min)</h1>
+                <span style="font-size:12px; background:#2563eb; padding:2px 8px; border-radius:4px;">พกยามาจากบ้านครบ</span>
+            </div>
+            <p>ผู้ป่วยโรคลมชัก (Epilepsy) นิวโร-ศิริราช | มีเครื่องกระ催ตุ้นไฟฟ้า VNS</p>
+            
             <div class="patient-vitals">
                 <div class="vital-box">
                     <div class="label">น้ำหนัก (Weight)</div>
@@ -88,15 +130,16 @@
                     <div class="value highlight">04:05 น.</div>
                 </div>
             </div>
-            <!-- Morning Intake Status -->
-            <div style="background: #ecfdf5; border: 1.5px solid #10b981; border-radius: 8px; padding: 8px 12px; margin-top: 8px; color: #065f46; font-size: 14px;">
-                <div style="font-weight: bold; font-size: 14px; margin-bottom: 2px;">⚡ สถานะมื้อเช้าวันนี้ (19 ต.ค. 69):</div>
-                <div>✅ <strong>ยาประจำตัวมื้อเช้า:</strong> ทานครบเรียบร้อยแล้ว (รวม Valprocid รอบ 07:00 น.)</div>
-                <div>🍼 <strong>นมมื้อล่าสุด:</strong> ดื่มจบเมื่อเวลา <strong>07:00 น.</strong></div>
+
+            <!-- Morning Status -->
+            <div class="morning-status">
+                <div>⚡ <strong>สถานะมื้อเช้า (19 ต.ค. 69):</strong></div>
+                <div>• ✅ <strong>ยาเช้า:</strong> ทานครบทุกตัวแล้ว (รวม Valprocid 1 cc รอบ 07:00 น.)</div>
+                <div>• 🍼 <strong>นมมื้อล่าสุด:</strong> จบเวลา <strong>07:00 น.</strong></div>
             </div>
         </div>
 
-        <!-- Critical Danger Block -->
+        <!-- Critical Danger Block (Always Visible) -->
         <div class="alert-danger">
             <h2>⛔ ยาต้องห้ามเด็ดขาด (CONTRAINDICATION)</h2>
             <p>ห้ามใช้ยากลุ่ม Sodium Channel Blockers เด็ดขาด (กระตุ้นชักรุนแรงวิกฤต):</p>
@@ -110,172 +153,183 @@
             </div>
         </div>
 
-        <!-- Medication by Meal -->
-        <div class="section-title">💊 รายการยาประจำตัว (แยกตามมื้อรับประทาน)</div>
+        <!-- ================= TAB 1: SCHEDULE (ตารางยาตามเวลา) ================= -->
+        <div id="tab-schedule" class="tab-pane active">
+            
+            <!-- Alert for Next Dose -->
+            <div class="next-dose-banner">
+                <h3>🔔 มื้อต่อไปที่ต้องให้ในโรงพยาบาล:</h3>
+                <div style="font-size:13.5px; color:#9a3412;">
+                    1. <strong>มื้อเที่ยง (หลังอาหารกลางวัน):</strong> Ritalin, Sodamint, Pot.Cit, Carnitine, Acidic Phos<br>
+                    2. <strong>บ่าย 15:00 น. ตรง:</strong> <strong>Valprocid 1 ซีซี</strong> (รอบทุก 8 ชม.)
+                </div>
+            </div>
 
-        <!-- 1. มื้อเช้า -->
-        <div class="meal-card morning">
-            <div class="meal-header" style="color: #b45309;">
-                <span>🌅 1. มื้อเช้า (Morning)</span>
-                <span class="badge">หลังอาหารเช้า</span>
+            <div class="section-title">🕒 ตารางเวลากินยาตลอดวัน (เรียงตามเวลาจริง)</div>
+
+            <!-- 1. เช้า (ทานแล้ว) -->
+            <div class="meal-card morning" style="opacity: 0.85;">
+                <div class="meal-header" style="color: #b45309;">
+                    <span>🌅 07:00 - 08:30 น. (มื้อเช้า)</span>
+                    <span class="badge" style="background:#10b981; color:white; font-weight:bold;">✅ ทานครบแล้ว</span>
+                </div>
+                <div class="med-row"><span class="med-name">Valprocid (22mg/60ml)</span><span class="med-dose">1 ซีซี (กิน 07:00 น.)</span></div>
+                <div class="med-row"><span class="med-name">Frisium (5 mg)</span><span class="med-dose">1.5 เม็ด</span></div>
+                <div class="med-row"><span class="med-name">Topamax (25 mg)</span><span class="med-dose">2 เม็ด</span></div>
+                <div class="med-row"><span class="med-name">Ritalin (10 mg) (ยาสมาธิ)</span><span class="med-dose">½ เม็ด</span></div>
+                <div class="med-row"><span class="med-name">Sodamint (300 mg)</span><span class="med-dose">5 เม็ด</span></div>
+                <div class="med-row"><span class="med-name">Pot. Cit Mixture</span><span class="med-dose">35 ซีซี</span></div>
+                <div class="med-row"><span class="med-name">L-Carnitine (100mg/mL)</span><span class="med-dose">8 ซีซี</span></div>
+                <div class="med-row">
+                    <span class="med-name">Acidic Phosphate Solution<span class="med-note">⚠️ ห่างจากนม ≥ 2 ชม.</span></span>
+                    <span class="med-dose">5 ซีซี</span>
+                </div>
             </div>
-            <div class="med-row">
-                <span class="med-name">Frisium (5 mg)</span>
-                <span class="med-dose">1.5 เม็ด</span>
+
+            <!-- 2. มื้อกลางวัน -->
+            <div class="meal-card afternoon">
+                <div class="meal-header" style="color: #0e7490;">
+                    <span>☀️ 11:30 - 12:30 น. (มื้อกลางวัน)</span>
+                    <span class="badge" style="background:#0284c7; color:white;">รอทาน</span>
+                </div>
+                <div class="med-row"><span class="med-name">Ritalin (10 mg) (ยาสมาธิ)</span><span class="med-dose">½ เม็ด</span></div>
+                <div class="med-row"><span class="med-name">Sodamint (300 mg)</span><span class="med-dose">5 เม็ด</span></div>
+                <div class="med-row"><span class="med-name">Pot. Cit Mixture</span><span class="med-dose">35 ซีซี</span></div>
+                <div class="med-row"><span class="med-name">L-Carnitine (100mg/mL)</span><span class="med-dose">8 ซีซี</span></div>
+                <div class="med-row">
+                    <span class="med-name">Acidic Phosphate Solution<span class="med-note">⚠️ ห่างจากนม ≥ 2 ชม.</span></span>
+                    <span class="med-dose">5 ซีซี</span>
+                </div>
             </div>
-            <div class="med-row">
-                <span class="med-name">Topamax (25 mg)</span>
-                <span class="med-dose">2 เม็ด</span>
+
+            <!-- 3. รอบบ่าย 15:00 น. -->
+            <div class="meal-card timing">
+                <div class="meal-header" style="color: #047857;">
+                    <span>⏰ 15:00 น. ตรง (ยากันชักรอบบ่าย)</span>
+                    <span class="badge" style="background:#059669; color:white;">สำคัญมาก</span>
+                </div>
+                <div class="med-row">
+                    <span class="med-name">Valprocid (22mg/60ml)
+                        <span class="med-note">กินทุก 8 ชม. (07:00 / 15:00 / 23:00 น.)</span>
+                    </span>
+                    <span class="med-dose" style="font-size:16px; color:#047857;">1 ซีซี</span>
+                </div>
             </div>
-            <div class="med-row">
-                <span class="med-name">Ritalin (10 mg) (ยาสมาธิ)</span>
-                <span class="med-dose">½ เม็ด</span>
+
+            <!-- 4. มื้อเย็น -->
+            <div class="meal-card evening">
+                <div class="meal-header" style="color: #6d28d9;">
+                    <span>🌆 17:30 - 18:30 น. (มื้อเย็น)</span>
+                    <span class="badge">หลังอาหารเย็น</span>
+                </div>
+                <div class="med-row"><span class="med-name">Frisium (5 mg)</span><span class="med-dose">1.5 เม็ด</span></div>
+                <div class="med-row"><span class="med-name">Topamax (25 mg)</span><span class="med-dose">2.5 เม็ด</span></div>
+                <div class="med-row"><span class="med-name">Sodamint (300 mg)</span><span class="med-dose">5 เม็ด</span></div>
+                <div class="med-row"><span class="med-name">Pot. Cit Mixture</span><span class="med-dose">35 ซีซี</span></div>
+                <div class="med-row"><span class="med-name">L-Carnitine (100mg/mL)</span><span class="med-dose">8 ซีซี</span></div>
+                <div class="med-row">
+                    <span class="med-name">Acidic Phosphate Solution<span class="med-note">⚠️ ห่างจากนม ≥ 2 ชม.</span></span>
+                    <span class="med-dose">5 ซีซี</span>
+                </div>
             </div>
-            <div class="med-row">
-                <span class="med-name">Sodamint (300 mg)</span>
-                <span class="med-dose">5 เม็ด</span>
+
+            <!-- 5. ก่อนนอน -->
+            <div class="meal-card bedtime">
+                <div class="meal-header" style="color: #1d4ed8;">
+                    <span>🌙 20:30 - 21:00 น. (ก่อนนอน)</span>
+                    <span class="badge">ก่อนนอน</span>
+                </div>
+                <div class="med-row"><span class="med-name">Fycompa (4 mg)</span><span class="med-dose">1 เม็ด</span></div>
+                <div class="med-row"><span class="med-name">Sodamint (300 mg)</span><span class="med-dose">5 เม็ด</span></div>
+                <div class="med-row"><span class="med-name">Pot. Cit Mixture</span><span class="med-dose">35 ซีซี</span></div>
             </div>
-            <div class="med-row">
-                <span class="med-name">Pot. Cit Mixture</span>
-                <span class="med-dose">35 ซีซี</span>
+
+            <!-- 6. รอบดึก 23:00 น. -->
+            <div class="meal-card timing">
+                <div class="meal-header" style="color: #047857;">
+                    <span>⏰ 23:00 น. ตรง (ยากันชักรอบดึก)</span>
+                    <span class="badge" style="background:#059669; color:white;">สำคัญมาก</span>
+                </div>
+                <div class="med-row">
+                    <span class="med-name">Valprocid (22mg/60ml)
+                        <span class="med-note">กินทุก 8 ชม. (07:00 / 15:00 / 23:00 น.)</span>
+                    </span>
+                    <span class="med-dose" style="font-size:16px; color:#047857;">1 ซีซี</span>
+                </div>
             </div>
-            <div class="med-row">
-                <span class="med-name">L-Carnitine (100mg/mL)</span>
-                <span class="med-dose">8 ซีซี</span>
+
+            <!-- 7. ยาฉุกเฉิน SOS -->
+            <div class="meal-card sos">
+                <div class="meal-header" style="color: #b91c1c;">
+                    <span>🚨 ยาหยุดชักฉุกเฉิน (SOS)</span>
+                    <span class="badge" style="background:#dc2626; color:white;">เมื่อมีข้อบ่งชี้</span>
+                </div>
+                <div class="med-row">
+                    <span class="med-name">Clonazepam (0.5 mg)</span>
+                    <span class="med-dose">กิน ¼ เม็ด</span>
+                </div>
+                <div style="font-size:12px; color:#b91c1c; margin-top:4px;">
+                    ⚠️ ข้อบ่งชี้เฉพาะ: ให้ทานเฉพาะเมื่อ <strong>"มีอาการชัก 3 ครั้งติดกัน"</strong>
+                </div>
             </div>
-            <div class="med-row">
-                <span class="med-name">Acidic Phosphate Solution
-                    <span class="med-note">⚠️ ต้องห่างจากนม Pan-Enteral ≥ 2 ชม.</span>
-                </span>
-                <span class="med-dose">5 ซีซี</span>
-            </div>
+
         </div>
 
-        <!-- 2. มื้อกลางวัน -->
-        <div class="meal-card afternoon">
-            <div class="meal-header" style="color: #0e7490;">
-                <span>☀️ 2. มื้อกลางวัน (Lunch)</span>
-                <span class="badge">หลังอาหารเที่ยง</span>
+        <!-- ================= TAB 2: TRIAGE & OVERVIEW (สรุปภาพรวม) ================= -->
+        <div id="tab-triage" class="tab-pane">
+            
+            <div class="section-title">🦠 อาการป่วย & ไทม์ไลน์การชัก (15 - 19 ต.ค.)</div>
+            <div class="history-box">
+                <div class="timeline-item active">
+                    <div><strong>18 ต.ค. 69:</strong> ตรวจ ATK พบเชื้อ <strong>HMPV</strong> (2 ขีดจาง) ไอเสมหะมาก หายใจเหนื่อย Sat 93-96% ถ่ายเหลว</div>
+                </div>
+                <div class="timeline-item active">
+                    <div><strong>16 ต.ค. 69:</strong> ชัก 1 รอบ (06:20 น. นาน 1 นาที) ไข้ 38.3°C มีเสมหะเยอะ ดูดเสมหะ เช็ดตัว</div>
+                </div>
+                <div class="timeline-item active">
+                    <div><strong>15 ต.ค. 69:</strong> ชัก 3 รอบจากไข้สูง (14:20 น. อ้วก, 15:00 น. นาน 2 นาที ไข้ 38.3°C, 15:38 น. นาน 2 นาที)</div>
+                </div>
+                <div class="timeline-item">
+                    <div><strong>19 ต.ค. 69 (วันนี้):</strong> ยาลดไข้พาราเทมปราล่าสุด <strong>04:05 น.</strong> นมมื้อล่าสุดจบ 07:00 น.</div>
+                </div>
             </div>
-            <div class="med-row">
-                <span class="med-name">Ritalin (10 mg) (ยาสมาธิ)</span>
-                <span class="med-dose">½ เม็ด</span>
-            </div>
-            <div class="med-row">
-                <span class="med-name">Sodamint (300 mg)</span>
-                <span class="med-dose">5 เม็ด</span>
-            </div>
-            <div class="med-row">
-                <span class="med-name">Pot. Cit Mixture</span>
-                <span class="med-dose">35 ซีซี</span>
-            </div>
-            <div class="med-row">
-                <span class="med-name">L-Carnitine (100mg/mL)</span>
-                <span class="med-dose">8 ซีซี</span>
-            </div>
-            <div class="med-row">
-                <span class="med-name">Acidic Phosphate Solution
-                    <span class="med-note">⚠️ ต้องห่างจากนม Pan-Enteral ≥ 2 ชม.</span>
-                </span>
-                <span class="med-dose">5 ซีซี</span>
-            </div>
-        </div>
 
-        <!-- 3. มื้อเย็น -->
-        <div class="meal-card evening">
-            <div class="meal-header" style="color: #6d28d9;">
-                <span>🌆 3. มื้อเย็น (Dinner)</span>
-                <span class="badge">หลังอาหารเย็น</span>
+            <div class="section-title">📊 สรุปขนาดยาทั้งหมดต่อวัน (Daily Dose Overview)</div>
+            <div class="overview-box">
+                <div class="overview-item"><span>Valprocid (22mg/60ml)</span><strong>3 ซีซี/วัน (1 ซีซี x 3 มื้อ)</strong></div>
+                <div class="overview-item"><span>Frisium (5 mg)</span><strong>3 เม็ด/วัน (เช้า 1.5, เย็น 1.5)</strong></div>
+                <div class="overview-item"><span>Topamax (25 mg)</span><strong>4.5 เม็ด/วัน (เช้า 2, เย็น 2.5)</strong></div>
+                <div class="overview-item"><span>Fycompa (4 mg)</span><strong>1 เม็ด/วัน (ก่อนนอน)</strong></div>
+                <div class="overview-item"><span>Ritalin (10 mg)</span><strong>1 เม็ด/วัน (เช้า ½, กลางวัน ½)</strong></div>
+                <div class="overview-item"><span>Pot. Cit Mixture</span><strong>140 ซีซี/วัน (มื้อละ 35 ซีซี x 4 มื้อ)</strong></div>
+                <div class="overview-item"><span>Acidic Phosphate Solution</span><strong>15 ซีซี/วัน (5 ซีซี x 3 มื้อ)</strong></div>
+                <div class="overview-item"><span>Sodamint (300 mg)</span><strong>20 เม็ด/วัน (มื้อละ 5 เม็ด x 4 มื้อ)</strong></div>
+                <div class="overview-item"><span>L-Carnitine (100mg/mL)</span><strong>24 ซีซี/วัน (8 ซีซี x 3 มื้อ)</strong></div>
+                <div class="overview-item" style="color:#b91c1c;"><span>Clonazepam (0.5 mg)</span><strong>¼ เม็ด เฉพาะชัก 3 ครั้งติด</strong></div>
             </div>
-            <div class="med-row">
-                <span class="med-name">Frisium (5 mg)</span>
-                <span class="med-dose">1.5 เม็ด</span>
-            </div>
-            <div class="med-row">
-                <span class="med-name">Topamax (25 mg)</span>
-                <span class="med-dose">2.5 เม็ด</span>
-            </div>
-            <div class="med-row">
-                <span class="med-name">Sodamint (300 mg)</span>
-                <span class="med-dose">5 เม็ด</span>
-            </div>
-            <div class="med-row">
-                <span class="med-name">Pot. Cit Mixture</span>
-                <span class="med-dose">35 ซีซี</span>
-            </div>
-            <div class="med-row">
-                <span class="med-name">L-Carnitine (100mg/mL)</span>
-                <span class="med-dose">8 ซีซี</span>
-            </div>
-            <div class="med-row">
-                <span class="med-name">Acidic Phosphate Solution
-                    <span class="med-note">⚠️ ต้องห่างจากนม Pan-Enteral ≥ 2 ชม.</span>
-                </span>
-                <span class="med-dose">5 ซีซี</span>
-            </div>
-        </div>
 
-        <!-- 4. มื้อก่อนนอน -->
-        <div class="meal-card bedtime">
-            <div class="meal-header" style="color: #1d4ed8;">
-                <span>🌙 4. ก่อนนอน (Bedtime / 20:00 - 21:00 น.)</span>
-                <span class="badge">ก่อนนอน</span>
+            <div class="section-title">🥛 นมและการดูแลโภชนาการ</div>
+            <div class="overview-box" style="font-size:13px;">
+                <div>• <strong>นม Pan-Enteral:</strong> ทาน 4 มื้อ/วัน (มื้อละ 8 ช้อน = 64g) ดื่มน้ำตาม</div>
+                <div>• <strong>มื้อล่าสุด:</strong> จบเวลา <strong>07:00 น.</strong> วันนี้</div>
+                <div style="color:#b45309; margin-top:2px;">• ⚠️ <strong>กฎเหล็ก:</strong> ห้ามให้ Acidic Phosphate พร้อมนม ต้องห่างกันอย่างน้อย 2 ชม.</div>
             </div>
-            <div class="med-row">
-                <span class="med-name">Fycompa (4 mg)</span>
-                <span class="med-dose">1 เม็ด</span>
-            </div>
-            <div class="med-row">
-                <span class="med-name">Sodamint (300 mg)</span>
-                <span class="med-dose">5 เม็ด</span>
-            </div>
-            <div class="med-row">
-                <span class="med-name">Pot. Cit Mixture</span>
-                <span class="med-dose">35 ซีซี</span>
-            </div>
-        </div>
 
-        <!-- 5. ยาวนเวลาคงที่ -->
-        <div class="meal-card timing">
-            <div class="meal-header" style="color: #047857;">
-                <span>⏰ 5. ยาวนเวลาคงที่ (ทุก 8 ชั่วโมง)</span>
-                <span class="badge">07:00 / 15:00 / 23:00 น.</span>
-            </div>
-            <div class="med-row">
-                <span class="med-name">Valprocid (22mg/60ml)</span>
-                <span class="med-dose">ครั้งละ 1 ซีซี (วันละ 3 ซีซี)</span>
-            </div>
-        </div>
-
-        <!-- 6. ยาฉุกเฉิน SOS -->
-        <div class="meal-card sos">
-            <div class="meal-header" style="color: #b91c1c;">
-                <span>🚨 6. ยาฉุกเฉิน (SOS Emergency)</span>
-                <span class="badge">เมื่อชักซ้ำ</span>
-            </div>
-            <div class="med-row">
-                <span class="med-name">Clonazepam (0.5 mg)</span>
-                <span class="med-dose">กิน ¼ เม็ด (เฉพาะเมื่อชัก 3 ครั้งติดกัน)</span>
-            </div>
-        </div>
-
-        <!-- Recent Illness -->
-        <div class="section-title">🦠 อาการป่วย & ไทม์ไลน์การชัก (15 - 19 ต.ค.)</div>
-        <div class="history-box">
-            <div class="timeline-item active">
-                <div><strong>18 ต.ค. 69:</strong> ตรวจ ATK พบเชื้อ <strong>HMPV</strong> (2 ขีดจาง) ไอเสมหะมาก หายใจเหนื่อย Sat 93-96% ถ่ายเหลว</div>
-            </div>
-            <div class="timeline-item active">
-                <div><strong>16 ต.ค. 69:</strong> ชัก 1 รอบ (06:20 น. นาน 1 นาที) ไข้ 38.3°C มีเสมหะเยอะ ดูดเสมหะ เช็ดตัว</div>
-            </div>
-            <div class="timeline-item active">
-                <div><strong>15 ต.ค. 69:</strong> ชัก 3 รอบจากไข้สูง (14:20 น. อ้วก, 15:00 น. นาน 2 นาที ไข้ 38.3°C, 15:38 น. นาน 2 นาที)</div>
-            </div>
-            <div class="timeline-item">
-                <div><strong>19 ต.ค. 69 (วันนี้):</strong> ยาลดไข้พาราเทมปราล่าสุด <strong>04:05 น.</strong> มีอาการไอเหนื่อยนำส่ง รพ.</div>
-            </div>
         </div>
 
     </div>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if (tabId === 'tab-schedule') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            }
+        }
+    </script>
 </body>
 </html>
