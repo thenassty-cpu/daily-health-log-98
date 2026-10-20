@@ -149,8 +149,21 @@ function recalculateRounds(sheet) {
   const lastRow = sheet.getLastRow();
   if (lastRow <= 1) return;
 
+  // ลบแถวว่างท้ายตาราง (ถ้ามี)
+  for (let r = lastRow; r >= 2; r--) {
+    const checkDate = sheet.getRange(r, 1).getValue();
+    if (checkDate === "" || checkDate === null || checkDate === undefined) {
+      sheet.deleteRow(r);
+    } else {
+      break;
+    }
+  }
+
+  const updatedLastRow = sheet.getLastRow();
+  if (updatedLastRow <= 1) return;
+
   // เรียงข้อมูลตามวันที่ (Col 1) และเวลา (Col 2)
-  const range = sheet.getRange(2, 1, lastRow - 1, 14);
+  const range = sheet.getRange(2, 1, updatedLastRow - 1, 14);
   range.sort([
     { column: 1, ascending: true },
     { column: 2, ascending: true }
@@ -161,8 +174,17 @@ function recalculateRounds(sheet) {
   let dayRound = 0;
 
   for (let i = 0; i < values.length; i++) {
-    const rowDate = Utilities.formatDate(new Date(values[i][0]), "GMT+7", "yyyy-MM-dd");
+    if (!values[i][0]) continue;
+    
+    let rowDate = "";
+    try {
+      rowDate = Utilities.formatDate(new Date(values[i][0]), "GMT+7", "yyyy-MM-dd");
+    } catch(e) {
+      rowDate = String(values[i][0]);
+    }
+
     const symptom = String(values[i][9] || "");
+    const note = String(values[i][13] || "");
 
     // ถ้าเปลี่ยนวัน ให้รีเซ็ตรอบชัก
     if (rowDate !== currentDay) {
@@ -170,14 +192,18 @@ function recalculateRounds(sheet) {
       dayRound = 0;
     }
 
-    // ถ้าไม่ใช่พบแพทย์ ให้นับเป็นรอบชัก
-    if (symptom.indexOf("พบแพทย์") === -1) {
+    // ตรวจสอบว่าไม่ใช่การชัก (เช่น พบแพทย์ หรือ สัญญาณเตือน / ไม่แน่ใจว่าชัก)
+    const isNotSeizure = symptom.indexOf("พบแพทย์") !== -1 || 
+                         symptom.indexOf("สัญญาณ") !== -1 || 
+                         note.indexOf("ไม่แน่ใจว่าชัก") !== -1;
+
+    if (!isNotSeizure) {
       dayRound++;
       values[i][2] = dayRound; // Col C: รอบชักของวัน
       values[i][3] = dayRound === 1 ? 1 : 0; // Col D: นับวันชัก (หมอ)
     } else {
-      values[i][2] = 0;
-      values[i][3] = 0;
+      values[i][2] = 0; // ไม่นับรอบชัก
+      values[i][3] = 0; // หมอไม่นับ
     }
   }
 

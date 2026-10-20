@@ -418,6 +418,8 @@
         .pill-doc { background: rgba(52, 211, 153, 0.2); color: var(--accent-green); }
         .pill-round-counted { background: rgba(56, 189, 248, 0.2); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.4); }
         .pill-round-sub { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
+        .pill-warning { background: rgba(251, 191, 36, 0.15); color: #fde047; border: 1px solid rgba(251, 191, 36, 0.35); }
+
     
         /* Sub-navigation bar */
         .subnav-container {
@@ -662,7 +664,7 @@
                     <span class="dot"></span>
                     <span id="statusText">กำลังซิงค์...</span>
                 </div>
-                <div style="font-size:9.5px; color:var(--text-muted); margin-top:4px; letter-spacing:0.2px;">v1.20 - 22 ก.ย. 2569 20:08</div>
+                <div style="font-size:9.5px; color:var(--text-muted); margin-top:4px; letter-spacing:0.2px;">v1.22 - 20 ต.ค. 2569 21:40 (พักสต็อก รพ.)</div>
             </div>
         </div>
     </header>
@@ -752,6 +754,8 @@
 
             <!-- Sub-tab 1: โภชนาการ -->
             <div id="subtab-nutrition" class="subtab-content active">
+                <!-- แบนเนอร์แจ้งเตือนโหมดพักสต็อก รพ. -->
+                <div id="hospitalAlertNutrition" style="margin-bottom:12px;"></div>
 
                 <!-- Growth & Vitals Card (Shared) -->
                 <div class="section-card" style="background: linear-gradient(145deg, #132238, #182b46);">
@@ -867,6 +871,8 @@
 
             <!-- Sub-tab 2: ยา -->
             <div id="subtab-meds" class="subtab-content">
+                <!-- แบนเนอร์แจ้งเตือนโหมดพักสต็อก รพ. -->
+                <div id="hospitalAlertMeds" style="margin-bottom:12px;"></div>
 
                 <!-- Growth & Vitals Card (Shared) -->
                 <div class="section-card" style="background: linear-gradient(145deg, #132238, #182b46);">
@@ -1011,6 +1017,9 @@
                             <span>🔄</span> ซิงค์ชีต
                         </button>
                     </div>
+
+                    <!-- แบนเนอร์ควบคุมโหมดแอดมิท รพ. (พักสต็อกยา & นม) -->
+                    <div id="hospitalPendingControl" style="margin-bottom:14px;"></div>
 
                     <!-- คำอธิบายเกจพลังซ้อน (Legend Guide) -->
                     <div style="background:#070c1a; border:1px solid #1e293b; border-radius:8px; padding:10px 12px; margin-bottom:14px; font-size:11px; display:flex; flex-wrap:wrap; gap:12px; align-items:center; line-height:1.5;">
@@ -1551,22 +1560,60 @@
         function renderTable(data) {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
-            const sorted = [...data].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            const parseMinutes = (r) => {
+                const t = r.time ? String(r.time).trim() : '';
+                if (t.includes(':') || t.includes('.')) {
+                    const parts = t.split(/[:.]/);
+                    const h = parseInt(parts[0]) || 0;
+                    const m = parseInt(parts[1]) || 0;
+                    return h * 60 + m;
+                }
+                if (r.hour !== null && r.hour !== undefined && !isNaN(r.hour)) {
+                    return parseInt(r.hour) * 60;
+                }
+                return 0;
+            };
+
+            const sorted = [...data].sort((a,b) => {
+                // 1. เรียงวันที่ล่าสุดอยู่บนสุด (Newest date first)
+                const dateDiff = new Date(b.date) - new Date(a.date);
+                if (dateDiff !== 0) return dateDiff;
+                
+                // 2. ถ้าเป็นวันเดียวกัน ให้เรียงตามเวลาจากเช้าไปบ่าย/เย็น (บนลงล่างตามไทม์ไลน์จริง)
+                const minA = parseMinutes(a);
+                const minB = parseMinutes(b);
+                if (minA !== minB) return minA - minB;
+                
+                // 3. ถ้าเวลาเท่ากัน ให้เรียงรอบ (0 สัญญาณเตือน -> รอบ 1 -> รอบ 2)
+                const rA = parseInt(a.round) || 0;
+                const rB = parseInt(b.round) || 0;
+                return rA - rB;
+            });
             
             sorted.forEach(row => {
                 const tr = document.createElement('tr');
-                const hText = row.hour !== null ? (row.hour < 10 ? '0'+row.hour : row.hour) + ':00' : '-';
+                
+                // เวลาแสดงผล: แสดงเวลาจริงระดับนาที (เช่น 14:10, 14:20) ถ้าไม่มีให้ใช้ hour + :00
+                let timeDisplay = '-';
+                if (row.time && String(row.time).trim() !== '') {
+                    timeDisplay = String(row.time).trim();
+                } else if (row.hour !== null && row.hour !== undefined) {
+                    timeDisplay = (row.hour < 10 ? '0' + row.hour : row.hour) + ':00';
+                }
                 
                 // Badges for VNS / Fever / Doctor
                 let pills = '';
                 if(row.vns === 'Yes') pills += '<span class="pill pill-vns">⚡VNS</span> ';
-                if(row.note.includes('ไข้')) pills += '<span class="pill pill-fever">🌡️ไข้</span> ';
+                if(row.note && row.note.includes('ไข้')) pills += '<span class="pill pill-fever">🌡️ไข้</span> ';
                 if(row.category === 'พบแพทย์ (ไม่มีชัก)') pills += '<span class="pill pill-doc">🩺พบหมอ</span> ';
 
-                // Badge รอบชักของวัน และ นับวันชัก (หมอ)
+                // Badge รอบชักของวัน / นับวันชัก (หมอ) / สัญญาณเตือน
                 let roundBadge = '';
                 if (row.category === 'พบแพทย์ (ไม่มีชัก)') {
                     roundBadge = `<span class="pill pill-doc" style="margin-top:2px;">ไม่นับชัก</span>`;
+                } else if (row.category === 'สัญญาณเตือน (ไม่นับชัก)' || row.round === 0 || row.round === '0' || String(row.round).includes('ไม่นับ')) {
+                    roundBadge = `<span class="pill pill-warning" style="margin-top:2px;">⚠️ สัญญาณเตือน</span>`;
                 } else if (row.round !== undefined && row.round !== null && row.round !== '') {
                     const isCounted = row.doctor_count === 1 || row.doctor_count === '1';
                     if (isCounted) {
@@ -1583,7 +1630,7 @@
                         <div style="font-size:10.5px; color:var(--text-muted);">${row.day}</div>
                         ${roundBadge}
                     </td>
-                    <td><span style="font-size:11px; background:#0b1329; padding:2px 5px; border-radius:4px; border:1px solid var(--border-color);">${hText}</span></td>
+                    <td><span style="font-size:11px; background:#0b1329; padding:2px 5px; border-radius:4px; border:1px solid var(--border-color); font-weight:600;">${timeDisplay}</span></td>
                     <td style="font-size:12px; line-height:1.4;">${pills}${row.note}</td>
                 `;
                 tbody.appendChild(tr);
@@ -1593,11 +1640,13 @@
         function filterTable() {
             const q = document.getElementById('searchInput').value.toLowerCase();
             const filtered = allRecords.filter(r => 
-                r.note.toLowerCase().includes(q) || 
-                r.date.includes(q) || 
-                formatThaiDate(r.date).toLowerCase().includes(q) ||
-                r.day.toLowerCase().includes(q) ||
-                r.vns.toLowerCase().includes(q)
+                (r.note && r.note.toLowerCase().includes(q)) || 
+                (r.date && r.date.includes(q)) || 
+                (r.date && formatThaiDate(r.date).toLowerCase().includes(q)) ||
+                (r.day && r.day.toLowerCase().includes(q)) ||
+                (r.vns && r.vns.toLowerCase().includes(q)) ||
+                (r.category && r.category.toLowerCase().includes(q)) ||
+                (r.time && r.time.includes(q))
             );
             renderTable(filtered);
         }
@@ -1683,7 +1732,10 @@
                     liveRows.forEach((row, idx) => {
                         const dateVal = row['วันที่'] || row['ชักวันที่'];
                         if (dateVal && dateVal.trim() !== '') {
-                            const timeVal = row['เวลาที่ชัก'] || row['เวลาเริ่มชัก'] || '';
+                            let timeVal = (row['เวลาที่ชัก'] || row['เวลาเริ่มชัก'] || '').trim();
+                            if (timeVal.includes('.') && !timeVal.includes(':')) {
+                                timeVal = timeVal.replace('.', ':');
+                            }
                             let hourVal = null;
                             if(timeVal && timeVal.includes(':')) {
                                 hourVal = parseInt(timeVal.split(':')[0]);
@@ -1696,13 +1748,33 @@
                             const noteText = (row['รายละเอียดเพิ่มเติม'] || row['หมายเหตุ'] || row['อาการ'] || '').trim();
                             
                             // ดึงคอลัมน์ รอบชักของวัน และ นับวันชัก (หมอ) จาก Sheet
-                            const roundVal = row['รอบชักของวัน'] || row['รอบที่ชักของวัน'] || (idx + 1);
-                            const docCountVal = row['นับวันชัก (หมอ)'] !== undefined ? parseInt(row['นับวันชัก (หมอ)']) : (roundVal == 1 ? 1 : 0);
+                            let roundVal = row['รอบชักของวัน'] || row['รอบที่ชักของวัน'];
+                            let docCountVal = row['นับวันชัก (หมอ)'] !== undefined && row['นับวันชัก (หมอ)'] !== '' ? parseInt(row['นับวันชัก (หมอ)']) : (roundVal == 1 ? 1 : 0);
+
+                            // จัดหมวดหมู่ Category & ตรวจสอบสัญญาณเตือน (ไม่นับชัก)
+                            let finalCategory = 'ชัก';
+                            if (catVal.includes('พบแพทย์')) {
+                                finalCategory = 'พบแพทย์ (ไม่มีชัก)';
+                                roundVal = 0;
+                                docCountVal = 0;
+                            } else if (
+                                catVal.includes('สัญญาณ') || 
+                                noteText.includes('ไม่แน่ใจว่าชัก') || 
+                                noteText.includes('เป็นสัญญาณ') ||
+                                (dateVal.trim() === '2026-10-15' && timeVal.startsWith('14:10')) ||
+                                roundVal === 0 || roundVal === '0' || String(roundVal).includes('ไม่นับ')
+                            ) {
+                                finalCategory = 'สัญญาณเตือน (ไม่นับชัก)';
+                                roundVal = 0;
+                                docCountVal = 0;
+                            } else {
+                                roundVal = roundVal || (idx + 1);
+                            }
 
                             const isDup = baselineRecords.some(b => 
                                 b.date === dateVal.trim() && 
                                 b.hour === (isNaN(hourVal) ? null : hourVal) &&
-                                b.category === (catVal.includes('พบแพทย์') ? 'พบแพทย์ (ไม่มีชัก)' : 'ชัก') &&
+                                b.category === finalCategory &&
                                 b.note === (noteText || catVal)
                             );
 
@@ -1710,10 +1782,11 @@
                                 newRecords.push({
                                     id: baselineRecords.length + newRecords.length + 1,
                                     date: dateVal.trim(),
+                                    time: timeVal,
                                     day: row['วันในสัปดาห์'] || '',
                                     hour: isNaN(hourVal) ? null : hourVal,
                                     vns: (vnsVal === 'Yes' || vnsVal === 'yes') ? 'Yes' : 'No',
-                                    category: catVal.includes('พบแพทย์') ? 'พบแพทย์ (ไม่มีชัก)' : 'ชัก',
+                                    category: finalCategory,
                                     round: roundVal,
                                     doctor_count: docCountVal,
                                     note: noteText || catVal
@@ -1805,6 +1878,148 @@
                 note: "ทาน 1/4 เม็ด เฉพาะเมื่อชัก 3 ครั้งติดกัน (ไม่หักลดรายวัน)"
             }
         ];
+
+        
+        // ==========================================
+        // 🏥 ระบบควบคุมสถานะพักสต็อก (Hospital Pending Mode)
+        // ==========================================
+        function getHospitalPendingConfig() {
+            let enabled = localStorage.getItem('min_hospital_pending');
+            // เริ่มต้นให้เป็น true อัตโนมัติเนื่องจากปัจจุบันน้องมินแอดมิทอยู่ที่ รพ.
+            if (enabled === null) {
+                enabled = 'true';
+                localStorage.setItem('min_hospital_pending', 'true');
+            }
+            let admitDate = localStorage.getItem('min_hospital_admit_date') || '2026-10-19';
+            return {
+                enabled: enabled === 'true',
+                admitDate: admitDate
+            };
+        }
+
+        function setHospitalPendingConfig(enabled, admitDate) {
+            localStorage.setItem('min_hospital_pending', enabled ? 'true' : 'false');
+            if (admitDate) {
+                localStorage.setItem('min_hospital_admit_date', admitDate);
+            }
+        }
+
+        function renderHospitalBannersAndControls() {
+            const cfg = getHospitalPendingConfig();
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            let daysAdmitted = 1;
+            if (cfg.admitDate) {
+                const aD = new Date(cfg.admitDate);
+                if (!isNaN(aD.getTime())) {
+                    aD.setHours(0,0,0,0);
+                    daysAdmitted = Math.max(1, Math.floor((today - aD) / (1000 * 60 * 60 * 24)) + 1);
+                }
+            }
+
+            // 1. แบนเนอร์ควบคุมในแท็บสต็อก (#hospitalPendingControl)
+            const stockCtrl = document.getElementById('hospitalPendingControl');
+            if (stockCtrl) {
+                if (cfg.enabled) {
+                    stockCtrl.innerHTML = `
+                    <div style="background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(15,23,42,0.92)); border: 1.5px solid rgba(245,158,11,0.5); border-radius: 10px; padding: 12px 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.35);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
+                            <div style="display:flex; align-items:center; gap:9px;">
+                                <span style="font-size:24px; line-height:1;">🏥</span>
+                                <div>
+                                    <strong style="font-size:14.5px; color:#fbbf24; display:flex; align-items:center; gap:6px;">
+                                        โหมดแอดมิท รพ. (พักสต็อกยา & นม)
+                                        <span class="pill" style="background:#f59e0b; color:#000; font-weight:800; font-size:10px;">FREEZE ON</span>
+                                    </strong>
+                                    <span style="font-size:11.5px; color:#cbd5e1;">แช่แข็งสต็อกตั้งแต่วันที่ <strong>${formatThaiDate(cfg.admitDate)}</strong> (วันที่ ${daysAdmitted} ของการแอดมิท)</span>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                                <button onclick="changeHospitalAdmitDate()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#e2e8f0; font-size:11px; padding:5px 9px; border-radius:6px; cursor:pointer;">
+                                    ✏️ แก้ไขวันแอดมิท
+                                </button>
+                                <button onclick="toggleHospitalPending(false)" style="background:linear-gradient(135deg, #10b981, #059669); border:none; color:#fff; font-size:11.5px; font-weight:700; padding:6px 12px; border-radius:6px; cursor:pointer; box-shadow:0 2px 6px rgba(16,185,129,0.35);">
+                                    🏠 มินกลับบ้านแล้ว (ปลดล็อก)
+                                </button>
+                            </div>
+                        </div>
+                        <div style="font-size:11.5px; color:#94a3b8; line-height:1.5; background:rgba(0,0,0,0.28); padding:8px 12px; border-radius:6px; border-left:3px solid #f59e0b;">
+                            ℹ️ <strong>หมายเหตุคุณพ่อ:</strong> ขณะนี้น้องมินใช้ยาและนมของทางโรงพยาบาล ระบบจึงหยุดหักลดยอดสต็อกที่บ้านชั่วคราว เพื่อรักษายอดยกมา เมื่อน้องมินกลับถึงบ้าน คุณพ่อสามารถกด <strong>"มินกลับบ้านแล้ว"</strong> เพื่อเริ่มคำนวณต่อหรืออัปเดตนับสต็อกจริงใน Sheet ครับ
+                        </div>
+                    </div>`;
+                } else {
+                    stockCtrl.innerHTML = `
+                    <div style="background: rgba(15,23,42,0.6); border: 1px dashed rgba(56,189,248,0.35); border-radius: 9px; padding: 10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:18px;">🏠</span>
+                            <span style="font-size:12px; color:#cbd5e1;">
+                                สถานะปัจจุบัน: <strong style="color:#34d399;">อยู่บ้าน</strong> (ระบบหักลดสต็อกตามการใช้งานจริงประจำวัน)
+                            </span>
+                        </div>
+                        <button onclick="toggleHospitalPending(true)" style="background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.4); color:#fbbf24; font-size:11px; font-weight:600; padding:5px 10px; border-radius:6px; cursor:pointer;">
+                            🏥 สลับเป็นโหมดแอดมิท รพ. (พักสต็อก)
+                        </button>
+                    </div>`;
+                }
+            }
+
+            // 2. แบนเนอร์แจ้งเตือนในแท็บโภชนาการ และ ยา
+            const alertHtml = cfg.enabled ? `
+            <div style="background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(15,23,42,0.88)); border: 1px solid rgba(245,158,11,0.45); border-radius: 8px; padding: 9px 13px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#fde047;">
+                    <span>🏥</span>
+                    <span><strong>โหมดแอดมิท รพ.:</strong> ขณะนี้น้องมินใช้ยาและนมของโรงพยาบาล สต็อกที่บ้านถูกแช่แข็งไว้ตั้งแต่วันที่ <strong>${formatThaiDate(cfg.admitDate)}</strong></span>
+                </div>
+                <button onclick="switchSubTab('subtab-stock', document.getElementById('btn-subtab-stock'))" style="background:rgba(245,158,11,0.25); border:1px solid rgba(245,158,11,0.5); color:#fef08a; font-size:11px; font-weight:600; padding:4px 9px; border-radius:5px; cursor:pointer;">
+                    📦 ดูสต็อกที่ถูกพักไว้
+                </button>
+            </div>` : '';
+
+            const nutAlert = document.getElementById('hospitalAlertNutrition');
+            if (nutAlert) nutAlert.innerHTML = alertHtml;
+
+            const medsAlert = document.getElementById('hospitalAlertMeds');
+            if (medsAlert) medsAlert.innerHTML = alertHtml;
+        }
+
+        function toggleHospitalPending(enable) {
+            if (!enable) {
+                const confirmReturn = confirm(
+                    "น้องมินกลับบ้านแล้วใช่ไหมครับคุณพ่อ? ❤️\n\n" +
+                    "กด [ตกลง / OK] เพื่อปลดล็อกสต็อกและกลับสู่โหมดปกติ\n" +
+                    "(ระบบจะเริ่มตัดสต็อกที่บ้านต่อ แนะนำให้ตรวจนับยอดจริงที่บ้านอีกครั้งเพื่อความแม่นยำสูงสุดครับ)"
+                );
+                if (!confirmReturn) return;
+                
+                setHospitalPendingConfig(false);
+                renderHospitalBannersAndControls();
+                renderStock();
+                
+                alert("ปลดล็อกเรียบร้อยแล้วครับคุณพ่อ! ❤️\n\nระบบกลับมาหักลดสต็อกตามปกติแล้ว หากสะดวกลองเช็กนับยอดสต็อกยาและนมที่บ้านจริงเพื่ออัปเดตลง Sheet ในภายหลังนะครับ");
+            } else {
+                const defaultDate = new Date().toISOString().split('T')[0];
+                const curAdmit = localStorage.getItem('min_hospital_admit_date') || defaultDate;
+                const newDate = prompt("ระบุวันที่น้องมินเริ่มแอดมิท (รูปแบบ YYYY-MM-DD):", curAdmit);
+                if (newDate === null) return;
+                
+                const validDate = newDate.trim() || defaultDate;
+                setHospitalPendingConfig(true, validDate);
+                renderHospitalBannersAndControls();
+                renderStock();
+                
+                alert("เปิดโหมดแอดมิท รพ. เรียบร้อยแล้วครับ!\nสต็อกยาและนมที่บ้านจะถูกแช่แข็ง (Freeze) ตั้งแต่วันที่ " + formatThaiDate(validDate));
+            }
+        }
+
+        function changeHospitalAdmitDate() {
+            const cur = localStorage.getItem('min_hospital_admit_date') || '2026-10-19';
+            const newDate = prompt("แก้ไขวันที่น้องมินเริ่มแอดมิท (รูปแบบ YYYY-MM-DD):", cur);
+            if (!newDate || newDate.trim() === cur) return;
+            setHospitalPendingConfig(true, newDate.trim());
+            renderHospitalBannersAndControls();
+            renderStock();
+        }
 
         function fetchStockData(isManual = false) {
             const btnSync = document.getElementById('btnSyncStock');
@@ -1930,8 +2145,24 @@
             const container = document.getElementById('stockCardsContainer');
             if (!container) return;
 
+            renderHospitalBannersAndControls();
+
+            const hospCfg = getHospitalPendingConfig();
+            const isPending = hospCfg.enabled;
             const today = new Date();
             today.setHours(0,0,0,0);
+
+            // วันที่ใช้อ้างอิงการหักลดสต็อก: หากเปิดโหมดแอดมิท รพ. ให้หยุดหักลบ ณ วันที่เริ่มแอดมิท
+            let effectiveDateForStock = today;
+            if (isPending && hospCfg.admitDate) {
+                let aDate = new Date(hospCfg.admitDate);
+                if (!isNaN(aDate.getTime())) {
+                    aDate.setHours(0,0,0,0);
+                    if (aDate < today) {
+                        effectiveDateForStock = aDate;
+                    }
+                }
+            }
 
             let html = '';
 
@@ -2052,7 +2283,7 @@
                         if (!isNaN(d.getTime())) sDate = d;
                     }
                     sDate.setHours(0,0,0,0);
-                    let dDays = Math.max(0, Math.floor((today - sDate) / (1000 * 60 * 60 * 24)));
+                    let dDays = Math.max(0, Math.floor((effectiveDateForStock - sDate) / (1000 * 60 * 60 * 24)));
                     let cHome = Math.max(0, sHome - (dDays * dUsage));
                     let dLeft = dUsage > 0 ? Math.floor(cHome / dUsage) : 0;
 
@@ -2079,26 +2310,28 @@
                         </span>
                     `;
                 } else if (grpKey === 'nutrition') {
-                    let statusPill = critCount > 0 ? `<span class="pill" style="background:rgba(239,68,68,0.25); color:#f87171; border:1px solid #ef4444; font-size:11px; font-weight:700;">🚨 เตือนใกล้หมด</span>` :
+                    let statusPill = isPending ? `<span class="pill" style="background:rgba(245,158,11,0.25); color:#fbbf24; border:1px solid #f59e0b; font-size:11px; font-weight:700;">⏸️ พักสต็อก รพ.</span>` :
+                                     (critCount > 0 ? `<span class="pill" style="background:rgba(239,68,68,0.25); color:#f87171; border:1px solid #ef4444; font-size:11px; font-weight:700;">🚨 เตือนใกล้หมด</span>` :
                                      warnCount > 0 ? `<span class="pill" style="background:rgba(245,158,11,0.25); color:#fbbf24; border:1px solid #f59e0b; font-size:11px; font-weight:700;">⚠️ เตือน 2 สัปดาห์</span>` :
-                                     `<span class="pill" style="background:rgba(52,211,153,0.18); color:#34d399; border:1px solid #10b981; font-size:11px; font-weight:700;">✅ สต็อกพร้อม</span>`;
+                                     `<span class="pill" style="background:rgba(52,211,153,0.18); color:#34d399; border:1px solid #10b981; font-size:11px; font-weight:700;">✅ สต็อกพร้อม</span>`);
                     summaryBadgesHtml = `
                         ${statusPill}
                         <span class="pill" style="background:rgba(245,158,11,0.2); color:#fbbf24; border:1px solid #f59e0b; font-size:11px; font-weight:600;">
-                            🥛 นมเหลือ ~${milkDays !== null ? milkDays : minDays} วัน
+                            🥛 นมเหลือ ~${milkDays !== null ? milkDays : minDays} วัน ${isPending ? '(คงค้าง)' : ''}
                         </span>
                         <span style="font-size: 11px; font-weight: 700; color: ${cfg.color}; background: rgba(0,0,0,0.35); padding: 3px 9px; border-radius: 12px; border: 1px solid ${cfg.border};">
                             ${groupItems.length} รายการ
                         </span>
                     `;
                 } else {
-                    let statusPill = critCount > 0 ? `<span class="pill" style="background:rgba(239,68,68,0.25); color:#f87171; border:1px solid #ef4444; font-size:11px; font-weight:700;">🚨 วิกฤต ${critCount} ตัว</span>` :
+                    let statusPill = isPending ? `<span class="pill" style="background:rgba(245,158,11,0.25); color:#fbbf24; border:1px solid #f59e0b; font-size:11px; font-weight:700;">⏸️ พักสต็อก รพ.</span>` :
+                                     (critCount > 0 ? `<span class="pill" style="background:rgba(239,68,68,0.25); color:#f87171; border:1px solid #ef4444; font-size:11px; font-weight:700;">🚨 วิกฤต ${critCount} ตัว</span>` :
                                      warnCount > 0 ? `<span class="pill" style="background:rgba(245,158,11,0.25); color:#fbbf24; border:1px solid #f59e0b; font-size:11px; font-weight:700;">⚠️ ใกล้หมด ${warnCount} ตัว</span>` :
-                                     `<span class="pill" style="background:rgba(52,211,153,0.18); color:#34d399; border:1px solid #10b981; font-size:11px; font-weight:700;">✅ พอถึงวันนัด</span>`;
+                                     `<span class="pill" style="background:rgba(52,211,153,0.18); color:#34d399; border:1px solid #10b981; font-size:11px; font-weight:700;">✅ พอถึงวันนัด</span>`);
                     summaryBadgesHtml = `
                         ${statusPill}
                         <span class="pill" style="background:rgba(255,255,255,0.06); color:var(--text-muted); font-size:11px; border:1px solid rgba(255,255,255,0.1); font-weight:600;">
-                            ⏳ ต่ำสุด ${minDays} วัน
+                            ⏳ ต่ำสุด ${minDays} วัน ${isPending ? '(คงค้าง)' : ''}
                         </span>
                         <span style="font-size: 11px; font-weight: 700; color: ${cfg.color}; background: rgba(0,0,0,0.35); padding: 3px 9px; border-radius: 12px; border: 1px solid ${cfg.border};">
                             ${groupItems.length} รายการ
@@ -2195,7 +2428,7 @@
                         if (!isNaN(d.getTime())) startDate = d;
                     }
                     startDate.setHours(0,0,0,0);
-                    let diffDays = Math.max(0, Math.floor((today - startDate) / (1000 * 60 * 60 * 24)));
+                    let diffDays = Math.max(0, Math.floor((effectiveDateForStock - startDate) / (1000 * 60 * 60 * 24)));
                     
                     let currentHome = Math.max(0, stockHome - (diffDays * dailyUsage));
                     let homeDaysLeft = dailyUsage > 0 ? Math.floor(currentHome / dailyUsage) : 0;
@@ -2203,7 +2436,9 @@
                     let totalDaysLeft = homeDaysLeft + refillDays;
 
                     let emptyDateDisplay = "-";
-                    if (isFinite(totalDaysLeft) && totalDaysLeft > 0) {
+                    if (isPending) {
+                        emptyDateDisplay = `⏸️ พักนับวัน (คงค้าง ${homeDaysLeft} วัน)`;
+                    } else if (isFinite(totalDaysLeft) && totalDaysLeft > 0) {
                         let emptyDate = new Date(today);
                         emptyDate.setDate(emptyDate.getDate() + totalDaysLeft);
                         if (!isNaN(emptyDate.getTime())) {
@@ -2222,7 +2457,10 @@
                         const pct = stockHome > 0 ? Math.max(0, Math.min(100, (currentHome / stockHome) * 100)) : 0;
                         let barColor = 'linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%)';
                         let countColor = '#34d399';
-                        if (homeDaysLeft < 7) {
+                        if (isPending) {
+                            barColor = 'repeating-linear-gradient(-45deg, #f59e0b, #f59e0b 6px, #b45309 6px, #b45309 12px)';
+                            countColor = '#fbbf24';
+                        } else if (homeDaysLeft < 7) {
                             barColor = 'linear-gradient(180deg, #f87171 0%, #ef4444 50%, #b91c1c 100%)';
                             countColor = '#f87171';
                         } else if (homeDaysLeft < 14) {
@@ -2237,9 +2475,12 @@
                                     <span style="display:inline-block; width:10px; height:10px; background:${cfg.color}; border-radius:50%;"></span>
                                     ${name}
                                 </strong>
-                                <span class="pill" style="background:${cfg.bg}; color:${cfg.color}; border:1px solid ${cfg.border};">
-                                    ใช้ ${dailyUsage.toLocaleString()} ${unit}/วัน
-                                </span>
+                                <div style="display:flex; gap:6px; align-items:center;">
+                                    <span class="pill" style="background:${cfg.bg}; color:${cfg.color}; border:1px solid ${cfg.border};">
+                                        ใช้ ${dailyUsage.toLocaleString()} ${unit}/วัน
+                                    </span>
+                                    ${isPending ? `<span class="pill" style="background:rgba(245,158,11,0.2); color:#fbbf24; border:1px solid #f59e0b; font-weight:700;">⏸️ พักสต็อก (ใช้ของ รพ.)</span>` : ''}
+                                </div>
                             </div>
                             
                             <div style="display:flex; gap:10px; margin-bottom:12px;">
@@ -2251,7 +2492,7 @@
                                 <div style="flex:1; background:var(--bg-card); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
                                     <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">ใช้ได้อีก</div>
                                     <div style="font-size:22px; font-weight:800; color:var(--accent-blue); line-height:1;">${homeDaysLeft}</div>
-                                    <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">วัน</div>
+                                    <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">วัน ${isPending ? '(คงค้าง)' : ''}</div>
                                 </div>
                             </div>
 
@@ -2259,7 +2500,7 @@
                             <div class="stock-stacked-bar-container">
                                 <div style="height:100%; width:${pct}%; background:${barColor}; transition:width 1s cubic-bezier(0.4,0,0.2,1); box-shadow:inset 0 2px 2px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.4);"></div>
                                 <div class="stock-bar-text">
-                                    ${currentHome.toLocaleString()} / ${stockHome.toLocaleString()} ${unit} (${homeDaysLeft} วัน)
+                                    ${isPending ? '⏸️ พักสต็อก: ' : ''}${currentHome.toLocaleString()} / ${stockHome.toLocaleString()} ${unit} (${homeDaysLeft} วัน)
                                 </div>
                             </div>
                             
@@ -2288,7 +2529,10 @@
 
                     let homeBarColor = 'linear-gradient(180deg, #34d399 0%, #10b981 50%, #059669 100%)';
                     let homeCountColor = '#34d399';
-                    if (homeDaysLeft < 7) {
+                    if (isPending) {
+                        homeBarColor = 'repeating-linear-gradient(-45deg, #f59e0b, #f59e0b 6px, #b45309 6px, #b45309 12px)';
+                        homeCountColor = '#fbbf24';
+                    } else if (homeDaysLeft < 7) {
                         homeBarColor = 'linear-gradient(180deg, #f87171 0%, #ef4444 50%, #b91c1c 100%)';
                         homeCountColor = '#f87171';
                     } else if (homeDaysLeft < 14) {
@@ -2297,7 +2541,9 @@
                     }
 
                     let statusBadge = '';
-                    if (homeDaysLeft >= daysToAppt) {
+                    if (isPending) {
+                        statusBadge = `<span class="pill" style="background:rgba(245,158,11,0.2); color:#fbbf24; border:1px solid #f59e0b; font-weight:700;">⏸️ พักสต็อก (ใช้ของ รพ.)</span>`;
+                    } else if (homeDaysLeft >= daysToAppt) {
                         statusBadge = `<span class="pill" style="background:rgba(52,211,153,0.18); color:#34d399; border:1px solid rgba(52,211,153,0.35);">✅ ยาพอถึงวันนัด</span>`;
                     } else if (totalDaysLeft >= daysToAppt) {
                         statusBadge = `<span class="pill" style="background:rgba(56,189,248,0.18); color:#38bdf8; border:1px solid rgba(56,189,248,0.35);">⚠️ พอเมื่อใช้ใบต่อยา</span>`;
@@ -2355,7 +2601,7 @@
 
                             <!-- ข้อความแสดงบนหลอด -->
                             <div class="stock-bar-text">
-                                ที่บ้าน ${homeDaysLeft} วัน (${Math.round(homePct)}%) ${refillDays > 0 ? '+ ใบต่อยา ' + refillDays + ' วัน' : ''} / เป้าหมายนัด ${daysToAppt} วัน
+                                ${isPending ? '⏸️ พักสต็อก: ' : ''}ที่บ้าน ${homeDaysLeft} วัน (${Math.round(homePct)}%) ${refillDays > 0 ? '+ ใบต่อยา ' + refillDays + ' วัน' : ''} / เป้าหมายนัด ${daysToAppt} วัน
                             </div>
                         </div>
                         
@@ -2464,6 +2710,7 @@ function submitLog(e) {
             renderHeatmap();
             renderChart();
             renderTable(allRecords);
+            renderHospitalBannersAndControls();
             renderStock();
             processAppointments();
             fetchLiveSheet();
