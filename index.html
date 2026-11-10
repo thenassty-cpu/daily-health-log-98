@@ -971,19 +971,19 @@
                     </details>
 
                     <!-- กลุ่ม 3: ยาปรับสมดุลร่างกาย/ไต -->
-                    <details class="med-accordion">
+                    <details class="med-accordion" open>
                         <summary class="group-kidney">
-                            <span>🔹 กลุ่มที่ 3: ยาปรับสมดุลร่างกาย / ไต [3 ชนิด]</span>
+                            <span>🔹 กลุ่มที่ 3: ยาปรับสมดุลร่างกาย / ไต [2 ชนิดหลัก + 1 OFF]</span>
                         </summary>
                         <div class="accordion-body">
                             <div class="med-row bar-kidney">
-                                <strong>6. Sodamint (300mg)</strong> • 5 เม็ด หลังอาหาร 4 มื้อ (เช้า, กลางวัน, เย็น, ก่อนนอน)
+                                <strong>6. Sodamint (300mg)</strong> • 4 เม็ด หลังอาหาร 4 มื้อ (เช้า, กลางวัน, เย็น, ก่อนนอน) <span style="color:var(--accent-amber); font-size:11px;">(ปรับเหลือ 4 เม็ด 10 พ.ย. 69)</span>
                             </div>
                             <div class="med-row bar-kidney" style="background:rgba(239,68,68,0.08);">
                                 <strong style="color:var(--accent-red);">7. Acidic Phosphate Solution</strong> • 5 ซีซี วันละ 3 มื้อ <span style="color:var(--accent-red); font-weight:700;">(⚠️ เว้นห่างมื้อนม 2 ชม.)</span>
                             </div>
-                            <div class="med-row bar-kidney">
-                                <strong>8. Pot. Cit Mixture (1000 mL)</strong> • 35 ซีซี หลังอาหาร 4 มื้อ (จิบน้ำตาม)
+                            <div class="med-row bar-kidney" style="background:rgba(100,116,139,0.1); border-left-color:#64748b; opacity:0.75;">
+                                <strong style="color:#94a3b8; text-decoration:line-through;">8. Pot. Cit Mixture (1000 mL)</strong> • <span class="pill" style="background:rgba(239,68,68,0.2); color:#f87171; border:1px solid #ef4444; font-size:11px; font-weight:700;">🚫 OFF หยุดยาแล้ว (10 พ.ย. 69)</span>
                             </div>
                         </div>
                     </details>
@@ -1845,6 +1845,40 @@
                 note: "ทานเช้า 1/2, กลางวัน 1/2 (วันละ 1 เม็ด)"
             },
             {
+                name: "Sodamint (300mg)",
+                category: "หมอไต (Nephro)",
+                stock_home: 1300,
+                stock_refill: 0,
+                daily_usage: 16,
+                unit: "เม็ด",
+                start_date: "2026-10-08",
+                appt_date: "2026-11-26",
+                note: "4 เม็ด หลังอาหาร 4 มื้อ (ปรับ 10 พ.ย. 69)"
+            },
+            {
+                name: "Acidic Phosphate",
+                category: "หมอไต (Nephro)",
+                stock_home: 1500,
+                stock_refill: 0,
+                daily_usage: 15,
+                unit: "ml",
+                start_date: "2026-10-08",
+                appt_date: "2026-11-26",
+                note: "5 ซีซี x 3 มื้อ (ห่างนม 2 ชม.)"
+            },
+            {
+                name: "Pot. Cit Mixture",
+                category: "หมอไต (Nephro)",
+                stock_home: 11500,
+                stock_refill: 0,
+                daily_usage: 0,
+                unit: "ml",
+                start_date: "2026-10-08",
+                appt_date: "2026-11-26",
+                is_off: true,
+                note: "🚫 OFF หยุดยาแล้ว (10 พ.ย. 69)"
+            },
+            {
                 name: "L-Carnitine Sol. (240ml)",
                 category: "รพ.ศิริราช",
                 stock_home: 2400,
@@ -1858,11 +1892,11 @@
             {
                 name: "นม Pan-Enteral (ผงชง)",
                 category: "อาหารทางการแพทย์",
-                stock_home: 5000,
+                stock_home: 4167,
                 stock_refill: 0,
                 daily_usage: 256,
                 unit: "กรัม",
-                start_date: "2026-10-05",
+                start_date: "2026-10-08",
                 appt_date: "", // ยาซื้อเอง ไม่มีวันนัด
                 note: "ชง 4 มื้อ/วัน (มื้อละ 8 ช้อน = 64g)"
             },
@@ -1884,23 +1918,35 @@
         // 🏥 ระบบควบคุมสถานะพักสต็อก (Hospital Pending Mode)
         // ==========================================
         function getHospitalPendingConfig() {
+            // ปรับเวอร์ชันอัตโนมัติ: น้องมินกลับบ้านแล้ว ณ วันที่ 10 พ.ย. 2569 (เปิดรันระบบสต็อก)
+            const dischargedVersion = '2026-11-10_discharged';
+            if (localStorage.getItem('min_hospital_version') !== dischargedVersion) {
+                localStorage.setItem('min_hospital_version', dischargedVersion);
+                localStorage.setItem('min_hospital_pending', 'false');
+                localStorage.setItem('min_hospital_admit_date', '2026-10-19');
+                localStorage.setItem('min_hospital_discharge_date', '2026-11-10');
+            }
             let enabled = localStorage.getItem('min_hospital_pending');
-            // เริ่มต้นให้เป็น true อัตโนมัติเนื่องจากปัจจุบันน้องมินแอดมิทอยู่ที่ รพ.
             if (enabled === null) {
-                enabled = 'true';
-                localStorage.setItem('min_hospital_pending', 'true');
+                enabled = 'false';
+                localStorage.setItem('min_hospital_pending', 'false');
             }
             let admitDate = localStorage.getItem('min_hospital_admit_date') || '2026-10-19';
+            let dischargeDate = localStorage.getItem('min_hospital_discharge_date') || '2026-11-10';
             return {
                 enabled: enabled === 'true',
-                admitDate: admitDate
+                admitDate: admitDate,
+                dischargeDate: dischargeDate
             };
         }
 
-        function setHospitalPendingConfig(enabled, admitDate) {
+        function setHospitalPendingConfig(enabled, admitDate, dischargeDate) {
             localStorage.setItem('min_hospital_pending', enabled ? 'true' : 'false');
             if (admitDate) {
                 localStorage.setItem('min_hospital_admit_date', admitDate);
+            }
+            if (dischargeDate) {
+                localStorage.setItem('min_hospital_discharge_date', dischargeDate);
             }
         }
 
@@ -1950,16 +1996,26 @@
                     </div>`;
                 } else {
                     stockCtrl.innerHTML = `
-                    <div style="background: rgba(15,23,42,0.6); border: 1px dashed rgba(56,189,248,0.35); border-radius: 9px; padding: 10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <span style="font-size:18px;">🏠</span>
-                            <span style="font-size:12px; color:#cbd5e1;">
-                                สถานะปัจจุบัน: <strong style="color:#34d399;">อยู่บ้าน</strong> (ระบบหักลดสต็อกตามการใช้งานจริงประจำวัน)
-                            </span>
+                    <div style="background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(15,23,42,0.85)); border: 1.5px solid rgba(16,185,129,0.45); border-radius: 10px; padding: 12px 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.25);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span style="font-size:26px; line-height:1;">🏠</span>
+                                <div>
+                                    <strong style="font-size:14.5px; color:#34d399; display:flex; align-items:center; gap:6px;">
+                                        น้องมินกลับบ้านแล้ว (ปลดล็อกระบบสต็อกยาพร้อมใช้งาน)
+                                        <span class="pill" style="background:#10b981; color:#000; font-weight:800; font-size:10px;">ACTIVE RUNNING</span>
+                                    </strong>
+                                    <div style="font-size:11.5px; color:#cbd5e1; margin-top:2px;">
+                                        สถานะ: <strong>อยู่บ้าน</strong> (ระบบหักลดสต็อกตามจริง ยกเว้นช่วงนอน รพ. 19 ต.ค. - 10 พ.ย. 69 รวม 22 วันให้อัตโนมัติ)
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                                <button onclick="toggleHospitalPending(true)" style="background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.4); color:#fbbf24; font-size:11px; font-weight:600; padding:6px 11px; border-radius:6px; cursor:pointer;">
+                                    🏥 สลับโหมดแอดมิท รพ.
+                                </button>
+                            </div>
                         </div>
-                        <button onclick="toggleHospitalPending(true)" style="background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.4); color:#fbbf24; font-size:11px; font-weight:600; padding:5px 10px; border-radius:6px; cursor:pointer;">
-                            🏥 สลับเป็นโหมดแอดมิท รพ. (พักสต็อก)
-                        </button>
                     </div>`;
                 }
             }
@@ -1974,7 +2030,16 @@
                 <button onclick="switchSubTab('subtab-stock', document.getElementById('btn-subtab-stock'))" style="background:rgba(245,158,11,0.25); border:1px solid rgba(245,158,11,0.5); color:#fef08a; font-size:11px; font-weight:600; padding:4px 9px; border-radius:5px; cursor:pointer;">
                     📦 ดูสต็อกที่ถูกพักไว้
                 </button>
-            </div>` : '';
+            </div>` : `
+            <div style="background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(15,23,42,0.88)); border: 1px solid rgba(16,185,129,0.4); border-radius: 8px; padding: 8px 12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#6ee7b7;">
+                    <span>🏠</span>
+                    <span><strong>น้องมินกลับบ้านแล้ว:</strong> สต็อกยา & อาหารทางการแพทย์เปิดรันคำนวณตามการใช้งานจริงเรียบร้อยแล้วครับ</span>
+                </div>
+                <button onclick="switchSubTab('subtab-stock', document.getElementById('btn-subtab-stock'))" style="background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.4); color:#a7f3d0; font-size:11px; font-weight:600; padding:4px 9px; border-radius:5px; cursor:pointer;">
+                    📦 ตรวจสอบสต็อกยา
+                </button>
+            </div>`;
 
             const nutAlert = document.getElementById('hospitalAlertNutrition');
             if (nutAlert) nutAlert.innerHTML = alertHtml;
@@ -1985,18 +2050,19 @@
 
         function toggleHospitalPending(enable) {
             if (!enable) {
+                const todayStr = new Date().toISOString().split('T')[0];
                 const confirmReturn = confirm(
                     "น้องมินกลับบ้านแล้วใช่ไหมครับคุณพ่อ? ❤️\n\n" +
                     "กด [ตกลง / OK] เพื่อปลดล็อกสต็อกและกลับสู่โหมดปกติ\n" +
-                    "(ระบบจะเริ่มตัดสต็อกที่บ้านต่อ แนะนำให้ตรวจนับยอดจริงที่บ้านอีกครั้งเพื่อความแม่นยำสูงสุดครับ)"
+                    "(ระบบจะเปิดรันตัดสต็อกที่บ้านต่อตามจริง โดยยกเว้นช่วงที่น้องมินนอน รพ. ให้อัตโนมัติครับ)"
                 );
                 if (!confirmReturn) return;
                 
-                setHospitalPendingConfig(false);
+                setHospitalPendingConfig(false, null, todayStr);
                 renderHospitalBannersAndControls();
                 renderStock();
                 
-                alert("ปลดล็อกเรียบร้อยแล้วครับคุณพ่อ! ❤️\n\nระบบกลับมาหักลดสต็อกตามปกติแล้ว หากสะดวกลองเช็กนับยอดสต็อกยาและนมที่บ้านจริงเพื่ออัปเดตลง Sheet ในภายหลังนะครับ");
+                alert("ปลดล็อกเรียบร้อยแล้วครับคุณพ่อ! ❤️\n\nระบบเปิดรันสถานะสต็อกยาตามปกติแล้วครับ");
             } else {
                 const defaultDate = new Date().toISOString().split('T')[0];
                 const curAdmit = localStorage.getItem('min_hospital_admit_date') || defaultDate;
@@ -2152,16 +2218,56 @@
             const today = new Date();
             today.setHours(0,0,0,0);
 
-            // วันที่ใช้อ้างอิงการหักลดสต็อก: หากเปิดโหมดแอดมิท รพ. ให้หยุดหักลบ ณ วันที่เริ่มแอดมิท
-            let effectiveDateForStock = today;
-            if (isPending && hospCfg.admitDate) {
-                let aDate = new Date(hospCfg.admitDate);
-                if (!isNaN(aDate.getTime())) {
-                    aDate.setHours(0,0,0,0);
-                    if (aDate < today) {
-                        effectiveDateForStock = aDate;
-                    }
+            // Normalize & ปรับขนาดยาล่าสุด (10 พ.ย. 69)
+            items.forEach(rawItem => {
+                const name = (rawItem['ชื่อรายการ (Item_Name)'] || rawItem.name || rawItem.ชื่อยา || rawItem.รายการ || '').toLowerCase();
+                
+                // 1. Sodamint: ปรับลดเหลือ 4 เม็ด x 4 มื้อ = 16 เม็ด/วัน
+                if (name.includes('sodamint')) {
+                    rawItem.Daily_Usage = 16;
+                    rawItem.daily_usage = 16;
+                    rawItem.note = "4 เม็ด หลังอาหาร 4 มื้อ (ปรับ 10 พ.ย. 69)";
                 }
+                
+                // 2. Pot. Cit Mixture: OFF หยุดยา
+                if (name.includes('pot. cit') || name.includes('potassium citrate')) {
+                    rawItem.Daily_Usage = 0;
+                    rawItem.daily_usage = 0;
+                    rawItem.is_off = true;
+                    rawItem.note = "🚫 OFF หยุดยาแล้ว (10 พ.ย. 69)";
+                }
+            });
+
+            // ฟังก์ชันคำนวณจำนวนวันที่บริโภคยาจริงที่บ้าน (หักลบช่วงเวลาที่นอน รพ. ออก)
+            function getHomeConsumptionDays(startDateStr) {
+                let sDate = today;
+                if (startDateStr) {
+                    let d = new Date(startDateStr);
+                    if (!isNaN(d.getTime())) sDate = d;
+                }
+                sDate.setHours(0,0,0,0);
+
+                if (isPending) {
+                    let aDate = hospCfg.admitDate ? new Date(hospCfg.admitDate) : today;
+                    if (isNaN(aDate.getTime())) aDate = today;
+                    aDate.setHours(0,0,0,0);
+                    return Math.max(0, Math.floor((Math.min(today, aDate) - sDate) / (1000 * 60 * 60 * 24)));
+                }
+
+                let aDate = hospCfg.admitDate ? new Date(hospCfg.admitDate) : null;
+                let dDate = hospCfg.dischargeDate ? new Date(hospCfg.dischargeDate) : null;
+                if (aDate && !isNaN(aDate.getTime())) aDate.setHours(0,0,0,0);
+                else aDate = null;
+                if (dDate && !isNaN(dDate.getTime())) dDate.setHours(0,0,0,0);
+                else dDate = null;
+
+                if (!aDate || !dDate || sDate >= dDate) {
+                    return Math.max(0, Math.floor((today - sDate) / (1000 * 60 * 60 * 24)));
+                }
+
+                let preHospDays = Math.max(0, Math.floor((aDate - sDate) / (1000 * 60 * 60 * 24)));
+                let postHospDays = Math.max(0, Math.floor((today - dDate) / (1000 * 60 * 60 * 24)));
+                return preHospDays + postHospDays;
             }
 
             let html = '';
@@ -2170,7 +2276,6 @@
             function getItemCategoryGroup(rawItem) {
                 const name = (rawItem['ชื่อรายการ (Item_Name)'] || rawItem.name || rawItem.ชื่อยา || rawItem.รายการ || '').toLowerCase();
                 const cat = String(rawItem.Category || rawItem.category || rawItem.หมวดหมู่ || rawItem.ประเภท || '').toLowerCase();
-                const daily = rawItem.Daily_Usage ?? rawItem.daily_usage ?? 0;
 
                 // 1. ยาฉุกเฉิน
                 if (cat.includes("ฉุกเฉิน") || name.includes("clonazepam") || name.includes("sos")) {
@@ -2236,7 +2341,6 @@
                 else grouped.neuro.push(item);
             });
 
-            // ลำดับการแสดงผลของกลุ่ม
             const renderOrder = ['neuro', 'nephro', 'nutrition', 'sos'];
 
             renderOrder.forEach(grpKey => {
@@ -2246,9 +2350,7 @@
                 const cfg = groupConfigs[grpKey];
                 const isOpen = stockGroupState[grpKey] !== false;
 
-                // ==========================================
-                // คำนวณสรุปย่อกระชับสำหรับหัวแบนเนอร์กลุ่ม
-                // ==========================================
+                // สรุปย่อกระชับสำหรับหัวแบนเนอร์กลุ่ม
                 let critCount = 0;
                 let warnCount = 0;
                 let minDays = 99999;
@@ -2277,13 +2379,12 @@
                         return;
                     }
 
-                    let sDate = today;
-                    if (startDateStr) {
-                        let d = new Date(startDateStr);
-                        if (!isNaN(d.getTime())) sDate = d;
+                    // ข้ามยาที่ OFF แล้ว ไม่นำมาเตือนวิกฤต
+                    if (rawItem.is_off || (name.includes('pot. cit') && dUsage === 0)) {
+                        return;
                     }
-                    sDate.setHours(0,0,0,0);
-                    let dDays = Math.max(0, Math.floor((effectiveDateForStock - sDate) / (1000 * 60 * 60 * 24)));
+
+                    let dDays = getHomeConsumptionDays(startDateStr);
                     let cHome = Math.max(0, sHome - (dDays * dUsage));
                     let dLeft = dUsage > 0 ? Math.floor(cHome / dUsage) : 0;
 
@@ -2298,7 +2399,6 @@
                 });
                 if (minDays === 99999) minDays = 0;
 
-                // สรุปป้ายย่อกระชับแสดงที่หัวแผง
                 let summaryBadgesHtml = '';
                 if (grpKey === 'sos') {
                     summaryBadgesHtml = `
@@ -2339,7 +2439,6 @@
                     `;
                 }
 
-                // หัวข้อแบนเนอร์ประจำกลุ่ม (คลิกพับ/กางได้ + แสดงสรุปย่อกระชับ)
                 html += `
                 <div onclick="toggleStockGroup('${grpKey}')" class="stock-group-header" style="margin: 20px 0 10px 0; padding: 10px 14px; background: ${cfg.bg}; border-left: 4px solid ${cfg.border}; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); cursor: pointer; user-select: none;">
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -2370,7 +2469,6 @@
                     let stockRefill = isNaN(parseFloat(rawRefill)) ? 0 : parseFloat(rawRefill);
                     let dailyUsage = isNaN(parseFloat(rawDaily)) ? 0 : parseFloat(rawDaily);
 
-                    // หากค่าในชีตยังว่างอยู่ ให้ดึงจากฐานข้อมูลเริ่มต้น
                     if (stockHome === 0 && (!rawHome || rawHome === "")) {
                         const matchedDefault = defaultStockData.find(d => name.toLowerCase().includes(d.name.toLowerCase().slice(0, 5)));
                         if (matchedDefault) {
@@ -2380,7 +2478,6 @@
                         }
                     }
 
-                    // กำหนดหน่วยอัตโนมัติตามชนิดยา
                     let unit = rawItem.Unit || rawItem.unit || rawItem.หน่วย;
                     if (!unit) {
                         if (name.includes('Pan-Enteral') || category.includes('นม') || name.includes('นม')) unit = 'กรัม';
@@ -2421,15 +2518,37 @@
                         return;
                     }
 
-                    // คำนวณวันตั้งแต่วันเริ่มนับ
-                    let startDate = today;
-                    if (startDateStr) {
-                        let d = new Date(startDateStr);
-                        if (!isNaN(d.getTime())) startDate = d;
+                    // ==========================================
+                    // 1.5 การ์ดยาที่หยุดใช้แล้ว (OFF Medication)
+                    // ==========================================
+                    if (rawItem.is_off || (name.toLowerCase().includes('pot. cit') && dailyUsage === 0)) {
+                        html += `
+                        <div class="stock-card" style="border-left: 4px solid #64748b; opacity:0.85;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                <strong style="font-size:14px; color:#cbd5e1; display:flex; align-items:center; gap:6px;">
+                                    <span style="display:inline-block; width:10px; height:10px; background:#64748b; border-radius:50%;"></span>
+                                    <span style="text-decoration:line-through; color:#94a3b8;">${name}</span>
+                                </strong>
+                                <span class="pill" style="background:rgba(239,68,68,0.18); color:#f87171; border:1px solid rgba(239,68,68,0.4); font-weight:700;">
+                                    🚫 OFF หยุดยาแล้ว (10 พ.ย. 69)
+                                </span>
+                            </div>
+                            <div style="display:flex; gap:10px; margin-bottom:8px;">
+                                <div style="flex:1; background:var(--bg-card); padding:10px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
+                                    <div style="font-size:11px; color:var(--text-muted); margin-bottom:2px;">คงเหลือเก็บสำรองไว้ที่บ้าน</div>
+                                    <div style="font-size:22px; font-weight:700; color:#94a3b8; line-height:1.1;">${stockHome.toLocaleString()}</div>
+                                    <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">${unit}</div>
+                                </div>
+                            </div>
+                            <div style="background:#070c1a; padding:8px 10px; border-radius:6px; font-size:11.5px; color:#94a3b8; line-height:1.4; border-left:2px solid #ef4444;">
+                                ℹ️ <strong>สถานะ:</strong> แพทย์สั่งหยุดยาตัวนี้แล้ว ไม่มีการหักลดยาในระบบรายวัน (เก็บขวดยาที่เหลือไว้สำรอง)
+                            </div>
+                        </div>`;
+                        return;
                     }
-                    startDate.setHours(0,0,0,0);
-                    let diffDays = Math.max(0, Math.floor((effectiveDateForStock - startDate) / (1000 * 60 * 60 * 24)));
-                    
+
+                    // คำนวณวันบริโภคจริง
+                    let diffDays = getHomeConsumptionDays(startDateStr);
                     let currentHome = Math.max(0, stockHome - (diffDays * dailyUsage));
                     let homeDaysLeft = dailyUsage > 0 ? Math.floor(currentHome / dailyUsage) : 0;
                     let refillDays = dailyUsage > 0 ? Math.floor(stockRefill / dailyUsage) : 0;
@@ -2496,7 +2615,6 @@
                                 </div>
                             </div>
 
-                            <!-- 🎮 หลอดพลังเดี่ยวแบบเกม -->
                             <div class="stock-stacked-bar-container">
                                 <div style="height:100%; width:${pct}%; background:${barColor}; transition:width 1s cubic-bezier(0.4,0,0.2,1); box-shadow:inset 0 2px 2px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.4);"></div>
                                 <div class="stock-bar-text">
@@ -2567,7 +2685,6 @@
                             </div>
                         </div>
                         
-                        <!-- Scorecards 3 ช่อง: ยาที่บ้าน / ใบต่อยา / นัดแพทย์ -->
                         <div style="display:grid; grid-template-columns: 1fr 1fr 1.1fr; gap:8px; margin-bottom:12px;">
                             <div style="background:var(--bg-card); padding:8px; border-radius:8px; text-align:center; border:1px solid rgba(255,255,255,0.05);">
                                 <div style="font-size:10.5px; color:var(--text-muted); margin-bottom:2px;">🏠 ยาที่บ้าน</div>
@@ -2588,18 +2705,10 @@
                             </div>
                         </div>
 
-                        <!-- 🎮 เกจพลังซ้อนแบบเกม (Stacked Progress Bar) -->
                         <div class="stock-stacked-bar-container">
-                            <!-- หลอดทึบ = ยาที่บ้าน -->
                             <div class="stock-bar-home" style="width: ${homePct}%; background: ${homeBarColor};"></div>
-                            
-                            <!-- หลอดลายขวาง = ยาจากใบต่อยา -->
                             ${refillPct > 0 ? `<div class="stock-bar-refill" style="width: ${refillPct}%;"></div>` : ''}
-
-                            <!-- เส้นชัยวันนัดพบแพทย์ 100% -->
                             <div class="stock-target-line"></div>
-
-                            <!-- ข้อความแสดงบนหลอด -->
                             <div class="stock-bar-text">
                                 ${isPending ? '⏸️ พักสต็อก: ' : ''}ที่บ้าน ${homeDaysLeft} วัน (${Math.round(homePct)}%) ${refillDays > 0 ? '+ ใบต่อยา ' + refillDays + ' วัน' : ''} / เป้าหมายนัด ${daysToAppt} วัน
                             </div>

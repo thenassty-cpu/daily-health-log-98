@@ -24,8 +24,8 @@
 
 #### ☀️ 1. มื้อกลางวัน (11:30 - 12:30 น.)
 * **Ritalin (10 mg) (ยาสมาธิ):** ½ เม็ด
-* **Sodamint (300 mg):** 5 เม็ด
-* **Pot. Cit Mixture:** 35 ซีซี
+* **Sodamint (300 mg):** 4 เม็ด
+* *(Pot. Cit Mixture: 🚫 OFF หยุดยาแล้ว 10 พ.ย. 69)*
 * **L-Carnitine (100mg/mL):** 8 ซีซี
 * **Acidic Phosphate Solution:** 5 ซีซี *(⚠️ ต้องทานห่างจากนม Pan-Enteral ≥ 2 ชม.)*
 
@@ -35,15 +35,15 @@
 #### 🌆 3. มื้อเย็น (17:30 - 18:30 น.)
 * **Frisium (5 mg):** 1.5 เม็ด
 * **Topamax (25 mg):** 2.5 เม็ด
-* **Sodamint (300 mg):** 5 เม็ด
-* **Pot. Cit Mixture:** 35 ซีซี
+* **Sodamint (300 mg):** 4 เม็ด
+* *(Pot. Cit Mixture: 🚫 OFF หยุดยาแล้ว 10 พ.ย. 69)*
 * **L-Carnitine (100mg/mL):** 8 ซีซี
 * **Acidic Phosphate Solution:** 5 ซีซี *(⚠️ ต้องทานห่างจากนม Pan-Enteral ≥ 2 ชม.)*
 
 #### 🌙 4. ก่อนนอน (20:30 - 21:00 น.)
 * **Fycompa (4 mg):** 1 เม็ด
-* **Sodamint (300 mg):** 5 เม็ด
-* **Pot. Cit Mixture:** 35 ซีซี
+* **Sodamint (300 mg):** 4 เม็ด
+* *(Pot. Cit Mixture: 🚫 OFF หยุดยาแล้ว 10 พ.ย. 69)*
 
 #### ⏰ 5. รอบดึก 23:00 น. ตรง (ยากันชักรอบดึก)
 * **Valprocid (22mg/60ml):** **1 ซีซี** *(กินทุก 8 ชม.: 07:00 / 15:00 / 23:00 น.)*
