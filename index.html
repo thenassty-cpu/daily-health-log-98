@@ -2131,7 +2131,43 @@
             renderStock();
         }
 
+        const STOCK_OVERRIDE_VERSION = '2026-11-26_neuro_audit';
+        const physicalCountOverrides_20261126 = [
+            { match: ['topamax', 'pitamate'], stock_home: 443, daily_usage: 4.5, unit: 'เม็ด', start_date: '2026-11-26', note: 'Topamax 380 + Pitamate 63 = 443 เม็ด (นับ 26 พ.ย. 69) | เช้า 2 / เย็น 2.5' },
+            { match: ['frisium'], stock_home: 152, daily_usage: 3, unit: 'เม็ด', start_date: '2026-11-26', note: 'เช้า 1.5 / เย็น 1.5 (นับ 26 พ.ย. 69)' },
+            { match: ['fycompa'], stock_home: 66, daily_usage: 1, unit: 'เม็ด', start_date: '2026-11-26', note: '1 เม็ด ก่อนนอน 20:00 น. (นับ 26 พ.ย. 69)' },
+            { match: ['valprocid'], stock_home: 4, daily_usage: 0, unit: 'ขวด', start_date: '2026-11-26', note: 'เหลือ 4 ขวด (นับ 26 พ.ย. 69) | ทาน 1 cc x 3 มื้อ (07:00, 15:00, 22:00)' },
+            { match: ['carnitine'], stock_home: 2160, daily_usage: 24, unit: 'ซีซี (ml)', start_date: '2026-11-26', note: 'มื้อละ 8 ml x 3 มื้อ (เหลือ 9 ขวด นับ 26 พ.ย. 69)' }
+        ];
+
+        function applyPhysicalCountOverrides(items) {
+            if (!Array.isArray(items)) return defaultStockData;
+            return items.map(raw => {
+                const nameLower = String(raw['ชื่อยา / รายการ'] ?? raw.name ?? '').toLowerCase();
+                const ov = physicalCountOverrides_20261126.find(o => o.match.some(m => nameLower.includes(m)));
+                if (!ov) return raw;
+                const sheetDate = String(raw['วันที่เริ่มนับ (Start_Date)'] ?? raw.start_date ?? '');
+                if (sheetDate && sheetDate > '2026-11-26') return raw;
+                const cloned = Object.assign({}, raw);
+                cloned.stock_home = ov.stock_home;
+                cloned['ยอดที่นับได้จริง (Physical_Stock)'] = ov.stock_home;
+                cloned.daily_usage = ov.daily_usage;
+                cloned['ปริมาณใช้ต่อวัน (Daily_Usage)'] = ov.daily_usage;
+                cloned.unit = ov.unit;
+                cloned['หน่วย (Unit)'] = ov.unit;
+                cloned.start_date = ov.start_date;
+                cloned['วันที่เริ่มนับ (Start_Date)'] = ov.start_date;
+                cloned.note = ov.note;
+                cloned['หมายเหตุ (Note)'] = ov.note;
+                return cloned;
+            });
+        }
+
         function fetchStockData(isManual = false) {
+            if (localStorage.getItem('min_stock_version') !== STOCK_OVERRIDE_VERSION) {
+                localStorage.setItem('min_stock_version', STOCK_OVERRIDE_VERSION);
+                localStorage.removeItem('min_stock_cache');
+            }
             const btnSync = document.getElementById('btnSyncStock');
             if (btnSync && isManual) btnSync.innerHTML = '<span>⏳</span> กำลังโหลด...';
 
@@ -2139,9 +2175,10 @@
                 .then(res => res.json())
                 .then(res => {
                     if (res && res.status === "success" && Array.isArray(res.data) && res.data.length > 0) {
-                        renderStock(res.data);
+                        const updatedData = applyPhysicalCountOverrides(res.data);
+                        renderStock(updatedData);
                         try {
-                            localStorage.setItem('min_stock_cache', JSON.stringify(res.data));
+                            localStorage.setItem('min_stock_cache', JSON.stringify(updatedData));
                         } catch(e) {}
                         if (btnSync && isManual) {
                             btnSync.innerHTML = '<span>✅</span> ซิงค์สำเร็จ';
@@ -2159,7 +2196,7 @@
                         if (raw) cached = JSON.parse(raw);
                     } catch(e) {}
                     try {
-                        renderStock(cached || defaultStockData);
+                        renderStock(applyPhysicalCountOverrides(cached || defaultStockData));
                     } catch(e) {
                         renderStock(defaultStockData);
                     }
